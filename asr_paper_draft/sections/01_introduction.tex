@@ -1,0 +1,91 @@
+% ── Section 1: Introduction ────────────────────────────────────────────────────
+\section{Introduction}
+\label{sec:intro}
+
+Bangladesh has a population of approximately 170~million people, the vast
+majority of whom speak Bengali (Bangla) as their first language.
+However, standard written Bengali---as used in formal media and education---
+differs substantially from the \emph{regional spoken dialects} used in everyday
+conversation.
+At least 15 regionally distinct dialect groups have been identified across
+Bangladesh, each with unique phonological, lexical, and prosodic characteristics
+that diverge sharply from the standard Dhaka dialect used in broadcast
+media~\citep{chowdhury2014bengali}.
+
+A second, equally important phenomenon is \emph{code-switching} (CS): the
+practice of mixing two languages within a single utterance.
+Among educated, urban Bangladeshi speakers---particularly those aged 18--35---
+intra-sentential Bengali--English CS is the norm rather than the exception.
+A typical utterance from a Chittagong-dialect YouTube creator might be:
+\begin{quote}
+\small\textit{``আমি এই phone-টা unboxing করতাছি, honestly speaking এইটার
+camera performance অনেক ভালো।''}\\
+\normalsize (\emph{I am unboxing this phone, honestly speaking its camera
+performance is very good.})
+\end{quote}
+Here, Bengali dialect words (\textit{করতাছি}) co-occur with standard Bengali
+(\textit{অনেক ভালো}) and English technical terms (\textit{unboxing, camera,
+performance}), all within one sentence.
+
+\paragraph{The gap in existing resources.}
+Existing Bengali ASR resources address either dialect \emph{or} code-switching,
+but never both simultaneously.
+\citet{ben10_2025} released Ben-10, a 78-hour corpus covering 10 Bengali
+dialects---but with no English code-switching, achieving a best WER of 70\%
+on unseen dialects.
+\citet{mucs2021} released the MUCS~2021 challenge dataset with Bengali--English
+CS speech---but only in standard Dhaka Bengali, with no dialectal variation.
+The intersection---\emph{dialectal Bengali mixed with English}---remains
+entirely uncovered (Table~\ref{tab:gap}).
+
+\begin{table}[h]
+\centering
+\caption{Existing Bengali ASR datasets and the gap filled by BanglaMix.}
+\label{tab:gap}
+\small
+\begin{tabular}{lccc}
+\toprule
+\textbf{Dataset} & \textbf{Dialect?} & \textbf{CS?} & \textbf{Hours} \\
+\midrule
+OpenSLR-37 \citep{kjartansson2018bengali}   & \ding{55} & \ding{55} & 100 \\
+MUCS 2021 \citep{mucs2021}                  & \ding{55} & \ding{51} & 16  \\
+Ben-10 \citep{ben10_2025}                   & \ding{51} & \ding{55} & 78  \\
+\midrule
+\textbf{BanglaMix (ours)}                   & \ding{51} & \ding{51} & \textbf{164} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Contributions.}
+This paper makes the following contributions:
+\begin{enumerate}[leftmargin=*, itemsep=2pt]
+  \item \textbf{BanglaMix dataset}: 51,857 clips / 164.74~hours of dialectal
+        Bengali--English CS speech across 15 regional dialects, sourced from
+        YouTube and Facebook using dialect-name keyword queries.
+  \item \textbf{Automated pipeline}: an end-to-end data collection pipeline
+        using VAD segmentation, Whisper-based silver-standard transcription,
+        automatic CS detection via Unicode script analysis, and a three-model
+        LLM ensemble judge (Mistral, LLaMA~3.1, Gemma~2) for borderline
+        transcript validation---enabling large-scale annotation without any
+        human transcribers.
+  \item \textbf{Comprehensive benchmark}: systematic evaluation of five ASR
+        architectures (Whisper, MMS, wav2vec2, WavLM, Tugstugi) under
+        zero-shot and fine-tuned conditions, with metrics including WER, CER,
+        MIX-ER, and CS-detection F1.
+  \item \textbf{Ablation study}: we show that training on the combination of
+        dialect-only and code-switched clips outperforms either subset alone,
+        and that LM shallow fusion further improves CTC model performance.
+  \item \textbf{Cross-dialect generalisation}: per-dialect WER analysis
+        demonstrating which dialect--model combinations pose the greatest
+        remaining challenge.
+\end{enumerate}
+
+\paragraph{Paper structure.}
+Section~\ref{sec:related} reviews related work.
+Section~\ref{sec:dataset} describes dataset construction.
+Section~\ref{sec:method} describes the ASR models and training procedure.
+Section~\ref{sec:experiments} presents the experimental setup.
+Section~\ref{sec:results} reports results.
+Section~\ref{sec:analysis} provides error analysis and cross-dialect
+generalisation results.
+Section~\ref{sec:conclusion} concludes.

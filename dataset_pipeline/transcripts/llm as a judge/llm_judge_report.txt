@@ -1,0 +1,20 @@
+============================================================
+Step 4c — LLM Transcript Judge Report
+============================================================
+Judge models         : qwen2.5
+Clips judged         : 8712
+
+DECISIONS:
+  ACCEPT             : 1727  (19.8%)
+  REJECT             : 6985  (80.2%)
+  UNCERTAIN          : 0  (0.0%)
+
+FINAL DATASET:
+  Step 4b accepted   : 39772
+  Step 4c accepted   : 1727
+  Total for Step 5   : 41499
+
+UNCERTAIN clips saved to: /content/drive/MyDrive/ASM Bangla Dialect/dataset_pipeline/transcripts/llm_judge_uncertain.json
+  → Optionally review these manually
+  → Or re-run with different models
+============================================================

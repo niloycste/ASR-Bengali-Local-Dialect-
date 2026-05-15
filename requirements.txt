@@ -1,0 +1,61 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# Bengali Dialect CS-ASR — Master Requirements
+# Python 3.12  |  Install: pip install -r requirements.txt
+#
+# For GPU (recommended): install torch FIRST from https://pytorch.org/get-started
+#   pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu121
+# Then run this file.
+# ══════════════════════════════════════════════════════════════════════════════
+
+# ── Core deep learning ────────────────────────────────────────────────────────
+torch>=2.3.0
+torchaudio>=2.3.0
+numpy>=1.26.0
+
+# ── HuggingFace ecosystem (Whisper, wav2vec2, WavLM, HuBERT, MMS) ────────────
+transformers>=4.40.0        # Whisper, wav2vec2, WavLM, HuBERT, MMS all here
+datasets>=2.19.0            # HF dataset format, audio loading
+evaluate>=0.4.2             # WER metric
+accelerate>=0.30.0          # multi-GPU / mixed precision training
+sentencepiece>=0.2.0        # required by Whisper tokenizer
+protobuf>=4.25.0            # required by sentencepiece
+
+# ── ASR models (openai-whisper library — for zero-shot Whisper baseline) ─────
+openai-whisper>=20240930
+faster-whisper>=1.1.0
+
+# ── Audio processing ──────────────────────────────────────────────────────────
+pydub>=0.25.1               # audio loading, segmentation, format conversion
+soundfile>=0.12.1           # fast wav read/write (used by datasets Audio loader)
+librosa>=0.10.1             # audio analysis, resampling, feature viz
+imageio-ffmpeg>=0.5.1       # bundled ffmpeg binary — no system install needed
+
+# ── Voice Activity Detection ──────────────────────────────────────────────────
+webrtcvad-wheels>=2.0.10    # VAD for segmentation (Python 3.12 compatible)
+
+# ── YouTube / web download ────────────────────────────────────────────────────
+yt-dlp>=2024.11.18
+
+# ── Data & evaluation ────────────────────────────────────────────────────────
+pandas>=2.2.0
+scikit-learn>=1.4.0         # train/dev/test stratified split
+jiwer>=3.0.3                # WER / CER computation
+
+# ── Plotting & statistics ─────────────────────────────────────────────────────
+matplotlib>=3.9.0
+seaborn>=0.13.2             # heatmaps, violin plots
+scipy>=1.13.0               # Mann-Whitney U, Wilcoxon tests (alternative to bootstrap)
+
+# ── Utilities ─────────────────────────────────────────────────────────────────
+tqdm>=4.66.0                # progress bars
+
+# ── Optional: Synthetic TTS data (only needed if you run --tts flag) ─────────
+gTTS>=2.5.0                 # Google Text-to-Speech for generate_synthetic_cs.py --tts
+
+# ── Optional: LLM-as-a-Judge ensemble (evaluation/11_llm_judge.py) ────────────
+requests>=2.31.0            # Ollama API calls (usually pre-installed)
+
+# ── Optional: LM shallow fusion (only needed for evaluation Step 11) ─────────
+# pyctcdecode>=0.5.0        # CTC beam search with LM
+# kenlm                     # n-gram LM (needs system build — see README)
+#                           # Install: pip install https://github.com/kpu/kenlm/archive/master.zip

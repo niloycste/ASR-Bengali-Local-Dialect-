@@ -1,0 +1,125 @@
+% ============================================================
+% Dialectal Bengali–English Code-Switching ASR
+% Target venue: INTERSPEECH 2026 / ACL 2026
+% Compiled with: pdflatex main.tex
+% ============================================================
+
+\documentclass[a4paper,12pt]{article}
+
+% ── Packages ──────────────────────────────────────────────
+\usepackage[margin=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{times}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{xcolor}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{subcaption}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{soul}           % for \hl{}
+\usepackage{setspace}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage[normalem]{ulem}
+
+% ── Hyperref setup ─────────────────────────────────────────
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    citecolor=green!50!black,
+    urlcolor=blue!70!black,
+}
+
+% ── Custom colours ─────────────────────────────────────────
+\definecolor{proposed}{RGB}{27,94,32}      % dark green — highlight proposed system
+\definecolor{baseline}{RGB}{66,66,66}      % grey — baselines
+\definecolor{ablation}{RGB}{13,71,161}     % dark blue — ablations
+\definecolor{resultTODO}{RGB}{180,0,0}     % red — placeholder cells
+
+% ── Placeholder macro ──────────────────────────────────────
+% Use \TODO{X.XX} wherever a result number goes.
+% After experiments, replace \TODO{X.XX} with the real number.
+\newcommand{\TODO}[1]{\textcolor{resultTODO}{\textbf{[#1]}}}
+\newcommand{\BEST}[1]{\textcolor{proposed}{\textbf{#1}}}
+
+% ── Section style ──────────────────────────────────────────
+\titleformat{\section}{\large\bfseries}{{\thesection.}}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{{\thesubsection}}{0.5em}{}
+
+% ── Page header ────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{\small Dialectal Bengali–English CS-ASR}
+\lhead{\small Draft — Results TBD}
+\rfoot{\thepage}
+
+% ============================================================
+\begin{document}
+
+% ── Title ─────────────────────────────────────────────────
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+
+{\LARGE\bfseries
+BanglaMix: A Large-Scale Dataset and Benchmark\\
+for Dialectal Bengali--English Code-Switching\\
+Automatic Speech Recognition
+\par}
+
+\vspace{1.5cm}
+
+{\large
+[Author Name]$^{1}$\quad
+[Supervisor Name]$^{1}$
+\par}
+
+\vspace{0.5cm}
+
+{\normalsize
+$^{1}$[University Name], [Department]\\
+[City, Country]\\
+\texttt{[author@email]}
+\par}
+
+\vspace{1cm}
+
+{\small \today}
+
+\vspace{2cm}
+
+\begin{abstract}
+\input{sections/abstract}
+\end{abstract}
+
+\end{titlepage}
+
+% ── Table of Contents (remove for camera-ready submission) ─
+\tableofcontents
+\newpage
+
+% ── Main Sections ──────────────────────────────────────────
+\input{sections/01_introduction}
+\input{sections/02_related_work}
+\input{sections/03_dataset}
+\input{sections/04_methodology}
+\input{sections/05_experiments}
+\input{sections/06_results}
+\input{sections/07_analysis}
+\input{sections/08_conclusion}
+
+% ── References ─────────────────────────────────────────────
+\bibliographystyle{plainnat}
+\bibliography{references}
+
+\end{document}

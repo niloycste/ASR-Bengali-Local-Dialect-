@@ -1,0 +1,19 @@
+# Fine-tuning dependencies
+# Install from root: pip install -r ../requirements.txt
+# This file lists only the fine-tuning-specific pins.
+# See ../requirements.txt for the full environment.
+
+torch>=2.3.0
+torchaudio>=2.3.0
+transformers>=4.40.0
+datasets>=2.19.0
+evaluate>=0.4.2
+accelerate>=0.30.0
+sentencepiece>=0.2.0
+jiwer>=3.0.3
+pandas>=2.2.0
+numpy>=1.26.0
+soundfile>=0.12.1
+pydub>=0.25.1
+imageio-ffmpeg>=0.5.1
+tqdm>=4.66.0

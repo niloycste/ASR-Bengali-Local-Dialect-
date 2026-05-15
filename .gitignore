@@ -1,0 +1,40 @@
+# Python & Environments
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+env/
+ASR/
+.ipynb_checkpoints/
+
+# Large Audio & Video Files
+dataset_pipeline/raw_audio/
+dataset_pipeline/segments/
+dataset_pipeline/final_dataset/
+*.mp4
+*.webm
+*.m4a
+*.wav
+*.mp3
+
+# Large temporary data files & Massive JSONs
+*.jsonl
+*.path_backup
+dataset_pipeline/transcripts/*.json
+dataset_pipeline/transcripts/**/*.json
+dataset_pipeline/Data ASR/**/*.json
+
+# HuggingFace Datasets (Massive 81GB Arrow files)
+fine_tuning/hf_datasets/
+
+# Trained Models & Checkpoints
+fine_tuning/models/
+fine_tuning/language_models/*.arpa
+fine_tuning/language_models/*.binary
+*.pt
+*.safetensors
+
+# OS Files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,28 @@
+% ── Abstract ──────────────────────────────────────────────────────────────────
+Automatic Speech Recognition (ASR) for low-resource, dialectal, and
+code-switched speech remains an open challenge. While recent work has
+addressed Bengali dialect recognition~\citep{ben10_2025} and Bengali--English
+code-switching (CS) separately~\citep{mucs2021}, no dataset or model covers
+\emph{dialectal Bengali speech mixed with English}---the dominant communication
+style of young, educated Bangladeshi speakers.
+
+We present \textbf{BanglaMix}, the first large-scale dataset for dialectal
+Bengali--English CS-ASR, comprising \textbf{51,857 audio clips totalling
+164.74~hours} spanning \textbf{15 regional dialects} of Bangladesh.
+Audio is sourced from YouTube and Facebook using dialect-name search queries
+targeting creator vlogs, comedy, technology reviews, and campus content---
+domains where natural English code-switching is most prevalent.
+
+We benchmark five ASR architectures under zero-shot and fine-tuned conditions:
+Whisper~\citep{radford2023whisper} (multiple sizes), the Ben-10 dialect-tuned
+Whisper model~\citep{ben10_2025}, Meta MMS~\citep{pratap2024mms},
+wav2vec2-XLS-R~\citep{babu2022xlsr}, and WavLM~\citep{chen2022wavlm}.
+For CTC-based models we further apply n-gram language model shallow
+fusion~\citep{hannun2014deep}.
+Through systematic ablation we show that \emph{combining dialect-only and
+code-switched training data} yields the best performance.
+Our fine-tuned Whisper model achieves \TODO{XX.X}\%~WER overall and
+\TODO{XX.X}\%~WER on code-switched clips, outperforming the strongest baseline
+by a relative \TODO{XX.X}\% reduction.
+We release the dataset, models, and full pipeline to support future research
+in low-resource dialectal CS-ASR.

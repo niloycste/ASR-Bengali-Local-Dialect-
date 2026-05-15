@@ -1,0 +1,119 @@
+% ── Section 5: Experimental Setup ─────────────────────────────────────────────
+\section{Experimental Setup}
+\label{sec:experiments}
+
+\subsection{Evaluation Metrics}
+
+We report the following metrics:
+
+\paragraph{WER (Word Error Rate).}
+Standard ASR evaluation metric: $(S + D + I) / N$, where $S$, $D$, $I$ are
+substitution, deletion, and insertion counts and $N$ is the number of
+reference words. Lower is better.
+
+\paragraph{CER (Character Error Rate).}
+Character-level equivalent of WER. Particularly important for Bengali due to
+its morphologically complex script: a single incorrect word may span many
+characters. Computed using \texttt{jiwer}~\citep{jiwer}.
+
+\paragraph{WER-BN.}
+WER computed exclusively on Bengali-script words in the reference.
+Measures how well each model handles the dialectal Bengali component of speech.
+
+\paragraph{WER-EN.}
+WER computed exclusively on Latin-script (English) words in the reference.
+Measures how well each model preserves the code-switched English component.
+High WER-EN indicates the model silently drops or mis-transcribes English words.
+
+\paragraph{MIX-ER (Mixed Error Rate).}
+A code-switching-aware metric computed as the unweighted average of WER-BN
+and WER-EN on CS clips only:
+\begin{equation}
+\text{MIX-ER} = \frac{\text{WER-BN}_{\text{CS}} + \text{WER-EN}_{\text{CS}}}{2}
+\end{equation}
+This captures the difficulty of both language components within CS utterances
+simultaneously and is more informative than overall WER for our task.
+
+\paragraph{CS-Detection F1.}
+Precision, Recall, and F1 for correctly classifying a clip as CS vs.\ BN\_ONLY
+based on the model's output transcript (script-analysis rule applied to
+hypothesis).
+Measures whether the model's output preserves the CS structure of the input.
+
+\paragraph{Normalisation-aware WER (WER\textsubscript{norm}).}
+A second set of WER scores computed after applying pronunciation variant
+normalisation to both reference and hypothesis.
+Known surface variants of borrowed English words (e.g.\ \textit{miting},
+\textit{মিটিং} $\to$ \textit{meeting}) are mapped to a canonical form using
+a hand-curated lexicon of \TODO{200+} entries before scoring.
+WER\textsubscript{norm} isolates genuine recognition errors from legitimate
+spelling variation of English loanwords, giving a more accurate picture of
+model capability on code-switched speech.
+Both raw WER and WER\textsubscript{norm} are reported in all tables.
+
+\paragraph{Statistical significance.}
+All WER comparisons between pairs of models use paired bootstrap resampling
+\citep{berg2012empirical} with $N=10{,}000$ iterations at $\alpha=0.05$.
+We report 95\% confidence intervals (CIs) for the proposed system.
+Effect sizes are reported as Cohen's~$d$.
+
+\subsection{Baseline Models}
+
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+  \item \textbf{Whisper large-v3 (zero-shot)}: strongest publicly available
+        multilingual ASR model, evaluated without any fine-tuning.
+  \item \textbf{Tugstugi/whisper-bn}: Ben-10 dialect-fine-tuned Whisper;
+        dialect-aware but CS-naive.
+  \item \textbf{MMS-1B (zero-shot)}: Meta's massively multilingual CTC model.
+  \item \textbf{wav2vec2-XLS-R-BN (zero-shot)}: Bengali-fine-tuned CTC model,
+        trained on standard Bengali only.
+\end{itemize}
+
+\subsection{Proposed Models}
+
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+  \item \textbf{wav2vec2 (fine-tuned, no LM)}: wav2vec2-XLS-R fine-tuned on
+        BanglaMix ``all'' subset.
+  \item \textbf{wav2vec2 + LM}: above model with 5-gram LM shallow fusion.
+  \item \textbf{WavLM (fine-tuned, no LM)}: WavLM-Large fine-tuned on
+        BanglaMix ``all'' subset.
+  \item \textbf{WavLM + LM}: above model with 5-gram LM shallow fusion.
+  \item \textbf{Whisper FT BN\_ONLY} (Ablation A): Whisper large-v3 fine-tuned
+        on dialect-only clips.
+  \item \textbf{Whisper FT CS\_ONLY} (Ablation B): Whisper large-v3 fine-tuned
+        on CS clips only.
+  \item \textbf{Whisper FT ALL} (\textbf{Proposed}): Whisper large-v3 fine-tuned
+        on all BanglaMix clips.
+\end{itemize}
+
+\subsection{Whisper Model Size Comparison}
+
+We additionally evaluate all five Whisper model sizes (tiny, base, small,
+medium, large-v3) in both zero-shot and fine-tuned (``all'' subset) modes
+to characterise the accuracy--efficiency tradeoff.
+Real-time factor (RTF = decode time / audio duration) is measured on a single
+NVIDIA GPU.
+
+\subsection{Cross-Dialect Generalisation}
+
+We perform two generalisation analyses:
+\begin{enumerate}[leftmargin=2em, itemsep=2pt]
+  \item \textbf{Per-dialect breakdown}: WER and CER computed separately for
+        each of the 15 dialects in the test set.
+  \item \textbf{Leave-one-dialect-out (LODO)}: for selected dialects, we
+        retrain Whisper large-v3 on all dialects \emph{except} the target
+        dialect, then evaluate on that dialect's test clips.
+        This simulates deployment on a new dialect not seen during training.
+\end{enumerate}
+
+\subsection{Implementation Details}
+
+All experiments are run on a single NVIDIA A100 (80~GB) GPU.
+Fine-tuning Whisper large-v3 for 10~epochs takes approximately \TODO{XX}~hours.
+wav2vec2 and WavLM fine-tuning takes approximately \TODO{XX}~hours.
+All code is implemented in Python 3.12 using HuggingFace
+Transformers \citep{wolf2020transformers},
+Datasets \citep{lhoest2021datasets},
+and Evaluate \citep{evaluate2022}.
+The full pipeline, including data collection, segmentation, transcription,
+fine-tuning, and evaluation, is released at \texttt{[repository URL]}.

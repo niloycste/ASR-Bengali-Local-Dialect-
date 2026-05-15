@@ -1,0 +1,115 @@
+% ── Section 2: Related Work ────────────────────────────────────────────────────
+\section{Related Work}
+\label{sec:related}
+
+\subsection{Bengali ASR}
+
+Early Bengali ASR systems used Gaussian Mixture Model--Hidden Markov Model
+(GMM-HMM) acoustic models with hand-crafted pronunciation lexicons
+\citep{hasnat2007isolated}.
+These systems required large amounts of supervised data, could not handle
+out-of-vocabulary words, and achieved word error rates above 50\% even on
+read speech.
+Deep Neural Network--HMM (DNN-HMM) hybrids improved matters somewhat
+\citep{ali2015automatic}, but the fundamental bottleneck of lexicon
+construction and standard-Bengali-only coverage remained.
+
+End-to-end deep learning systems, starting with CTC-based models
+\citep{graves2006ctc} and culminating in attention-based encoder--decoders,
+substantially reduced WER on standard Bengali
+\citep{islam2019banglasr}.
+\citet{kjartansson2018bengali} released a 100-hour read-speech corpus
+(OpenSLR-37) that became the standard benchmark.
+More recently, large pre-trained multilingual models---wav2vec2~\citep{babu2022xlsr},
+WavLM~\citep{chen2022wavlm}, Whisper~\citep{radford2023whisper}, and
+MMS~\citep{pratap2024mms}---have achieved strong performance on standard Bengali
+through transfer learning, even under low-resource conditions.
+
+\subsection{Dialectal Bengali ASR}
+
+Regional Bengali dialects differ from standard Dhaka Bengali in vowel quality,
+consonant clusters, prosody, and vocabulary.
+\citet{ben10_2025} presented Ben-10, the first large-scale dialectal Bengali
+ASR corpus, covering 10 regional dialects with 78~hours of speech.
+They showed that even Whisper large-v3 achieves a WER of approximately 70\%
+on unseen dialects, and that fine-tuning on dialect data reduces this
+substantially.
+Their best model, Tugstugi, is fine-tuned on Ben-10 and serves as our
+dialect-aware baseline.
+
+Prior to Ben-10, dialectal Bengali was largely unstudied computationally,
+with the exception of small datasets for Sylheti \citep{sylheti2019} and
+Chittagong \citep{chatgaiya2022} varieties.
+No prior work covers more than two dialects simultaneously.
+
+\subsection{Code-Switching ASR}
+
+CS-ASR---recognising speech that mixes two languages within utterances---is
+an active area of research~\citep{yilmaz2016cs_survey}.
+The MUCS~2021 shared task \citep{mucs2021} provided the first benchmark for
+Bengali--English CS-ASR, but used only standard Dhaka Bengali.
+\citet{sitaram2019survey} surveys the broader CS-NLP landscape.
+
+Key challenges in CS-ASR include: (1)~vocabulary coverage spanning two
+scripts; (2)~the rarity of CS utterances in training data;
+(3)~the interplay of language switching with acoustic variation such as
+accent and dialect.
+Seq2seq models such as Whisper handle script mixing naturally because their
+tokeniser contains both Bengali Unicode and Latin ASCII subwords.
+CTC models require an explicit mixed vocabulary and benefit significantly from
+language model shallow fusion~\citep{hannun2014deep,chan2016listen}.
+
+\subsection{Whisper for Low-Resource and CS-ASR}
+
+\citet{radford2023whisper} trained Whisper on 680,000~hours of multilingual
+web audio using weak supervision from subtitles.
+The model has strong zero-shot multilingual performance, including Bengali.
+Several works have fine-tuned Whisper for low-resource languages with strong
+results~\citep{gandhi2023whisper}.
+For CS specifically, Whisper's seq2seq decoder can generate mixed-script
+hypotheses in a single forward pass, making it particularly well-suited to
+our task.
+
+\subsection{Language Model Shallow Fusion}
+
+Shallow fusion integrates an external language model into CTC beam search:
+\begin{equation}
+\hat{y} = \arg\max_y \left[\log p_{\text{CTC}}(y|x)
+          + \alpha \log p_{\text{LM}}(y)
+          + \beta |y| \right]
+\label{eq:shallow_fusion}
+\end{equation}
+where $\alpha$ controls LM weight and $\beta$ is a word insertion bonus
+\citep{hannun2014deep}.
+We use a 5-gram KenLM model \citep{heafield2011kenlm} trained on our
+transcript corpus.
+The hyperparameters $\alpha$ and $\beta$ are tuned on the development set.
+
+\subsection{LLM-as-a-Judge for Data Quality}
+
+Using large language models as automatic evaluators has gained traction
+across NLP tasks~\citep{zheng2023judging}.
+\citet{wang2023pandalm} showed that LLM judges can replace human raters for
+pairwise response evaluation.
+\citet{fu2023gptscore} used GPT-4 to score generated text along multiple
+dimensions simultaneously.
+In the speech domain, LLM judges have been explored for evaluating
+spoken dialogue system responses~\citep{kim2023llm_eval_spoken}, but their
+use for \emph{dataset construction quality control}---specifically for
+code-switched low-resource ASR---has not been studied.
+
+We propose a novel application: using a three-model LLM ensemble
+(Mistral-7B, LLaMA-3.1-8B, Gemma-2-9B) as an automated judge to validate
+borderline Whisper transcripts during dataset construction.
+Each model evaluates four dimensions independently; majority vote (2/3)
+determines acceptance.
+This eliminates the need for human annotators for borderline clips while
+providing a more principled acceptance criterion than a simple confidence
+threshold alone.
+
+\subsection{Summary and Positioning}
+
+Table~\ref{tab:gap} in Section~\ref{sec:intro} summarises the positioning of
+BanglaMix relative to existing work.
+To our knowledge, this is the first dataset and the first systematic benchmark
+for ASR on \emph{dialectal Bengali speech with English code-switching}.

@@ -1,0 +1,235 @@
+% ── Section 3: Dataset Construction ───────────────────────────────────────────
+\section{Dataset Construction}
+\label{sec:dataset}
+
+\subsection{Design Principles}
+
+BanglaMix is designed around three principles:
+\begin{enumerate}[leftmargin=*, itemsep=2pt]
+  \item \textbf{Dialectal authenticity}: audio must contain genuine regional
+        dialect, not standard Bengali spoken by someone from a particular region.
+  \item \textbf{Natural code-switching}: CS must arise spontaneously in
+        informal speech, not from scripted content.
+  \item \textbf{Scalability}: the pipeline must be fully automated to allow
+        future expansion without human transcribers.
+\end{enumerate}
+
+\subsection{Data Sources}
+
+We source audio from two platforms:
+\begin{itemize}[leftmargin=*, itemsep=2pt]
+  \item \textbf{YouTube} (primary): creator vlogs, technology reviews, comedy
+        and roast videos, reaction videos, and campus/career discussions.
+  \item \textbf{Facebook} (supplementary): short-form videos and reels,
+        particularly for dialects underrepresented on YouTube (Comilla,
+        Old~Dhaka, Noakhali).
+\end{itemize}
+
+YouTube is downloaded using \texttt{yt-dlp}~\citep{ytdlp} with Bengali-script
+search queries targeting dialect-name terms.
+Facebook downloads use the same tool with direct URLs and browser cookie
+authentication.
+
+\paragraph{Query design.}
+A critical design decision is the search query strategy.
+Region-name queries (e.g., ``চট্টগ্রামের vlog'', ``Chittagong travel'')
+retrieve videos of people \emph{from} that region who predominantly speak
+standard Bengali for a general audience.
+Instead, we use \emph{dialect-name} queries (e.g., ``চাটগাঁইয়া ভাষায়
+comedy english'') that only surface videos where creators consciously use the
+dialect---a much stronger signal for genuine dialectal content.
+We additionally use the phrase ``আঞ্চলিক ভাষায়'' (in regional dialect) as a
+search signal.
+
+For each dialect we design 12 queries across five content angles:
+\begin{enumerate}[label=\Alph*., leftmargin=2em, itemsep=1pt]
+  \item Dialect-name + technology / phone review (elicits CS with technical
+        English terms)
+  \item Dialect-name + comedy / roast / prank (natural unscripted dialect;
+        comedy cannot sustain a fake accent)
+  \item Dialect-name + reaction / gaming (spontaneous commentary)
+  \item ``আঞ্চলিক ভাষায়'' + campus / career (CS with academic English)
+  \item ``আঞ্চলিক ভাষায়'' + vlog / day-in-my-life (mixed informal CS)
+\end{enumerate}
+
+Quality filters \texttt{--dateafter 20210101} and
+\texttt{--match-filter "view\_count > 500"} are applied to exclude pre-2021
+content (which is less likely to contain CS) and zero-audience uploads.
+
+\subsection{Dialects and Coverage}
+
+Table~\ref{tab:dataset_stats} shows the 15 dialects covered, with clip counts
+and durations after segmentation.
+
+\begin{table}[h]
+\centering
+\caption{BanglaMix dialect statistics after segmentation (Step 2).}
+\label{tab:dataset_stats}
+\small
+\begin{tabular}{llrr}
+\toprule
+\textbf{Dialect} & \textbf{Region} & \textbf{Clips} & \textbf{Hours} \\
+\midrule
+Sylhet       & Northeast Bangladesh + UK diaspora & 9{,}665 & 31.85 \\
+Old\_Dhaka   & Historic Dhaka city               & 5{,}767 & 17.84 \\
+Sandwip      & Island, Chittagong coast           & 5{,}744 & 16.31 \\
+Barishal     & South-central Bangladesh           & 4{,}048 & 13.57 \\
+Khulna       & Southwest Bangladesh               & 3{,}540 & 11.40 \\
+Chittagong   & Southeast Bangladesh               & 3{,}661 & 11.16 \\
+Kishoreganj  & Central Bangladesh                 & 3{,}038 &  9.52 \\
+Comilla      & Southeast Bangladesh               & 2{,}724 &  9.39 \\
+Narail       & Southwest Bangladesh               & 2{,}714 &  8.93 \\
+Rangpur      & Northwest Bangladesh               & 2{,}650 &  8.67 \\
+Narsingdi    & Central Bangladesh                 & 2{,}150 &  6.63 \\
+Mymensingh   & North-central Bangladesh           & 1{,}831 &  5.50 \\
+Habiganj     & Northeast Bangladesh               & 1{,}694 &  5.28 \\
+Tangail      & Central Bangladesh                 & 1{,}396 &  4.77 \\
+Noakhali     & Southeast Bangladesh               & 1{,}235 &  3.93 \\
+\midrule
+\textbf{Total} & 15 dialects, 9 districts & \textbf{51{,}857} & \textbf{164.74} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Audio Processing Pipeline}
+
+\paragraph{Step 1 --- Download.}
+Audio is extracted at 16~kHz mono WAV using \texttt{yt-dlp} with
+\texttt{ffmpeg}. A shared deduplication archive prevents the same video being
+downloaded twice across dialect folders.
+
+\paragraph{Step 2 --- Voice Activity Detection and Segmentation.}
+Long audio files are segmented into 5--15~second clips using WebRTC~VAD
+\citep{webrtcvad} at aggressiveness level~2.
+Speech frames are merged with a 300~ms padding on each boundary.
+Clips shorter than 5~seconds are discarded; clips longer than 15~seconds are
+split into equal-length sub-clips.
+This produces 51,857 clips with a mean duration of $11.4 \pm 2.8$~seconds.
+
+\paragraph{Step 3 --- Transcription and CS Detection.}
+Each clip is transcribed using Whisper large-v3 \citep{radford2023whisper}
+with forced language decoding (\texttt{language=``bn''}).
+Three filtering rules are applied:
+\begin{enumerate}[leftmargin=2em, itemsep=1pt]
+  \item \textbf{Noise filter}: clips where the average \texttt{no\_speech\_prob}
+        $\geq 0.60$ are discarded.
+  \item \textbf{Language filter}: clips whose transcript contains more
+        Hindi/Telugu/Tamil Unicode characters than Bengali characters are
+        discarded.
+  \item \textbf{CS detection}: each remaining clip is classified using
+        word-level script tags. A clip is labelled \textbf{CS} if it contains
+        $\geq 2$ Bengali words, $\geq 2$ English words, $\geq 1$ language
+        boundary, and an English word ratio of 5--70\%. Otherwise it is
+        labelled \textbf{BN\_ONLY}.
+\end{enumerate}
+
+CS detection exploits the fact that Bengali and Latin scripts are visually
+distinct Unicode ranges ($\backslash$u0980--$\backslash$u09FF vs. ASCII
+a--z), making word-level language identification near-perfect without a
+dedicated LID model.
+We validate the CS labels by manually verifying a random sample of 200 clips
+(see Section~\ref{sec:analysis}).
+
+\paragraph{Step 4 --- Silver-standard annotation with LLM ensemble validation.}
+We apply a two-stage annotation strategy that eliminates the need for human
+transcribers entirely.
+
+\textit{Stage 4a --- Automatic acceptance.}
+High-confidence Whisper transcripts (\texttt{no\_speech\_prob} $< 0.30$,
+$\geq 3$ Bengali characters in output) are accepted directly as silver-standard
+labels~\citep{gandhi2023whisper}.
+Clips with \texttt{no\_speech\_prob} $\geq 0.60$ are rejected as noise.
+
+\textit{Stage 4b --- LLM ensemble judgment for borderline clips.}
+The remaining clips ($0.30 \leq$ \texttt{no\_speech\_prob} $< 0.60$),
+which Whisper is uncertain about, are evaluated by a three-model LLM ensemble
+using Mistral-7B \citep{jiang2023mistral}, LLaMA-3.1-8B \citep{dubey2024llama},
+and Gemma-2-9B \citep{team2024gemma}, all running locally via Ollama.
+Each model independently scores the transcript on four dimensions:
+(1) Bengali script validity,
+(2) code-switching naturalness,
+(3) dialect authenticity, and
+(4) absence of noise or hallucination.
+A clip is \textbf{accepted} if $\geq 2$ of the 3 models vote ACCEPT,
+\textbf{rejected} if $\geq 2$ vote REJECT, and flagged as \textbf{uncertain}
+otherwise.
+Uncertain clips are excluded from training data (conservative approach).
+
+This ensemble design mitigates individual LLM biases: a single model may
+be inconsistent in judging dialectal Bengali, but the majority vote across
+three architecturally distinct models is substantially more reliable.
+Running models locally preserves data privacy and incurs no API costs.
+
+\paragraph{Step 5 --- Transcript normalisation.}
+Before building the final dataset, all transcripts are processed through a
+two-level normalisation pipeline implemented in \texttt{text\_normalization.py}:
+
+\begin{enumerate}[leftmargin=2em, itemsep=1pt]
+  \item \textbf{Surface cleaning} (applied to both training and evaluation
+        transcripts): Unicode NFC normalisation; removal of zero-width
+        characters (ZWNJ, BOM), URLs, hashtags, @mentions, and emoji;
+        Bengali digit to ASCII digit conversion ($\text{০} \to \text{0}$);
+        repeated character collapse (\textit{হাহাহাহা} $\to$ \textit{হাহা});
+        punctuation stripping and whitespace normalisation.
+  \item \textbf{Pronunciation variant mapping} (applied during evaluation
+        only): maps phonetic and script variants of borrowed English words to
+        a single canonical form using a curated lexicon of \TODO{200+} entries
+        (e.g., \textit{miting} $\to$ \textit{meeting},
+        \textit{মিটিং} $\to$ \textit{meeting},
+        \textit{ofis} $\to$ \textit{office}).
+        This prevents WER inflation due to legitimate spelling variation of
+        English loanwords rather than genuine recognition errors.
+        Models are trained on the \emph{original} transcript; only evaluation
+        references and hypotheses are normalised.
+\end{enumerate}
+
+The normalisation-aware WER is reported alongside raw WER in all tables.
+
+\paragraph{Step 6 --- Dataset splits.}
+Clips are split at the \emph{source level}: all clips from the same original
+video are kept in the same split to prevent speaker leakage across train/dev/test.
+An 80/10/10 ratio with dialect-stratified source-level sampling ensures every
+dialect appears in all three splits proportionally.
+
+\begin{table}[h]
+\centering
+\caption{BanglaMix train/dev/test split statistics.}
+\label{tab:splits}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Split} & \textbf{Clips} & \textbf{Hours} & \textbf{CS clips} & \textbf{CS\%} \\
+\midrule
+Train & 33{,}568 & 105.15 & 1{,}940 & 5.8\% \\
+Dev   & 2{,}768  & 8.89   & 185    & 6.7\% \\
+Test  & 5{,}163  & 17.18  & 236    & 4.6\% \\
+\midrule
+Total & 41{,}499 & 131.23 & 2{,}361 & 5.7\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\subsection{Data Augmentation}
+
+With \TODO{XX,XXX} CS clips in the training set, our corpus is already
+substantially larger than prior CS-ASR benchmarks (MUCS~2021: $\sim$5~hours
+of CS speech; SEAME: 60~hours).
+We therefore do not apply synthetic data generation in our primary experiments.
+However, to study robustness to data scarcity we conduct an auxiliary
+experiment in which audio augmentation is applied to the CS training subset:
+speed perturbation (factors $\times 0.9$ and $\times 1.1$), additive white
+noise (20~dB SNR), and pitch shift ($\pm2$ semitones).
+Results of this ablation are reported in Appendix~A.
+Augmented clips are added to the training set only; the dev and test sets
+remain unaugmented.
+
+\subsection{Dataset Quality}
+
+To validate silver-standard transcript quality we manually transcribed a
+random sample of 200 CS clips and computed human-verified WER against the
+Whisper-generated labels.
+Results are reported in Section~\ref{sec:analysis}.
+We also verify dialect authenticity by having a native speaker of each dialect
+listen to 20 randomly sampled clips and confirm that the clips contain genuine
+dialectal speech rather than standard Bengali.

@@ -1,0 +1,133 @@
+% ── Section 4: Methodology ─────────────────────────────────────────────────────
+\section{ASR Models and Training}
+\label{sec:method}
+
+We evaluate five families of ASR model, covering both sequence-to-sequence
+(seq2seq) and CTC architectures, across zero-shot and fine-tuned conditions.
+
+\subsection{Model Architectures}
+
+\paragraph{Whisper (seq2seq).}
+Whisper~\citep{radford2023whisper} is an encoder--decoder Transformer trained
+on 680,000~hours of weakly supervised multilingual audio.
+The encoder processes log-mel spectrograms; the decoder autoregressively
+generates subword tokens using a multilingual tokeniser that covers both
+Bengali Unicode and Latin ASCII in a single shared vocabulary.
+This makes Whisper naturally capable of producing mixed-script output (e.g.,
+\textit{আমি phone কিনছি}) in a single decoding pass---a key advantage for
+CS-ASR.
+We evaluate five model sizes: \textit{tiny} (39M), \textit{base} (74M),
+\textit{small} (244M), \textit{medium} (769M), and \textit{large-v3} (1.55B
+parameters).
+All inference uses forced language decoding (\texttt{language=``bengali''},
+\texttt{task=``transcribe''}).
+
+\paragraph{Tugstugi/whisper-bn (dialect-tuned Whisper).}
+This is the Whisper large-v2 model fine-tuned by \citet{ben10_2025} on the
+Ben-10 dataset (78~hours, 10 dialects, no CS).
+It serves as our \emph{dialect-aware but CS-naive} baseline: it has learned
+to handle dialectal phonology but has never seen English code-switching.
+Comparing our model against Tugstugi isolates the contribution of CS training
+data.
+
+\paragraph{Meta MMS-1B (CTC, multilingual).}
+Meta's Massively Multilingual Speech model~\citep{pratap2024mms} covers
+1,100+ languages using a CTC-based architecture with per-language output
+adapter layers.
+Bengali is activated via adapter loading (\texttt{lang=``ben''}).
+MMS is a strong zero-shot multilingual baseline but cannot produce mixed-script
+output by design (CTC vocabulary is monolingual).
+
+\paragraph{wav2vec2-XLS-R-300M (CTC, self-supervised).}
+\citet{babu2022xlsr} pre-trained a 300M-parameter wav2vec2 Transformer on
+436,000~hours of multilingual audio using contrastive self-supervised learning.
+We use the Bengali-fine-tuned checkpoint \texttt{arijitx/wav2vec2-xls-r-300m-bengali}
+as a zero-shot baseline, and additionally fine-tune it on BanglaMix.
+
+\paragraph{WavLM-Large (CTC, self-supervised).}
+WavLM~\citep{chen2022wavlm} extends wav2vec2 with a masked speech denoising
+pre-training objective.
+It achieves state-of-the-art results on the SUPERB benchmark across multiple
+speech tasks.
+We fine-tune \texttt{microsoft/wavlm-large} (316M parameters) on BanglaMix.
+
+\subsection{Fine-Tuning Procedure}
+
+\paragraph{Whisper fine-tuning (seq2seq).}
+We fine-tune Whisper large-v3 using the HuggingFace Transformers
+library~\citep{wolf2020transformers} with the \texttt{Seq2SeqTrainer}.
+The log-mel spectrogram extractor and tokeniser are frozen; all Transformer
+weights are updated.
+Hyperparameters: learning rate $10^{-5}$, effective batch size 16
+(8 per device $\times$ 2 gradient accumulation steps), 10~epochs, linear
+warmup for 500~steps.
+The best checkpoint is selected by development WER.
+Mixed-precision (FP16) training is used on GPU.
+
+\paragraph{CTC fine-tuning (wav2vec2 / WavLM).}
+For CTC models, we first build a character-level vocabulary covering
+Bengali Unicode (U+0980--U+09FF), Latin ASCII (a--z, A--Z), and common
+punctuation from the training transcripts.
+The CTC output head is reinitialised with this vocabulary.
+The feature encoder (convolutional layers) is frozen; the Transformer encoder
+and CTC head are fine-tuned.
+Hyperparameters: learning rate $10^{-4}$, batch size 16, 10~epochs.
+\texttt{group\_by\_length=True} is used to minimise padding within batches,
+improving training efficiency.
+
+\subsection{LM Shallow Fusion for CTC Models}
+
+CTC greedy or beam-search decoding without a language model tends to make
+locally consistent but globally incoherent errors (e.g., acoustically
+plausible but grammatically incorrect word sequences).
+We address this by applying n-gram LM shallow fusion \citep{hannun2014deep}
+at decode time using Equation~\ref{eq:shallow_fusion}.
+
+\paragraph{LM training.}
+A 5-gram language model with Kneser-Ney smoothing is trained on the BanglaMix
+training and development transcripts using KenLM \citep{heafield2011kenlm}.
+The corpus contains both Bengali and English words, so the LM learns
+mixed-script $n$-gram statistics that reflect natural CS patterns in our data.
+
+\paragraph{Decoding.}
+We use \texttt{pyctcdecode}~\citep{pyctcdecode} for beam search with LM
+integration.
+Beam width is set to 100.
+The hyperparameters $\alpha$ (LM weight) and $\beta$ (word insertion bonus)
+are tuned on the development set via grid search over
+$\alpha \in \{0.1, 0.3, 0.5, 0.7, 1.0\}$ and
+$\beta \in \{0.5, 1.0, 1.5, 2.0\}$.
+Optimal values are reported in Section~\ref{sec:results}.
+
+\subsection{Transcript Normalisation}
+
+All training transcripts undergo surface cleaning before feature extraction:
+Unicode NFC normalisation, zero-width character removal, URL/hashtag/emoji
+stripping, Bengali-to-ASCII digit conversion, and whitespace normalisation.
+Models are always trained on cleaned original transcripts.
+
+During evaluation, a second \emph{pronunciation variant normalisation} step
+maps known surface variants of English loanwords to canonical forms using a
+curated lexicon (e.g., \textit{miting} $\to$ \textit{meeting},
+\textit{ofis} $\to$ \textit{office}).
+This step is applied symmetrically to both reference and hypothesis before
+WER computation, and is never used during training.
+
+\subsection{Training Subsets and Ablation Design}
+
+To understand the contribution of each data type, we train three variants
+of our proposed system:
+
+\begin{enumerate}[leftmargin=2em, itemsep=2pt]
+  \item \textbf{BN\_ONLY} (Ablation A): trained on dialect-only clips,
+        no CS examples. Tests whether dialect training data alone is sufficient.
+  \item \textbf{CS\_ONLY} (Ablation B): trained on CS clips only.
+        Tests whether CS training without the full dialect variety is sufficient.
+  \item \textbf{ALL} (Proposed): trained on all clips (BN\_ONLY + CS combined).
+        Our full proposed system.
+\end{enumerate}
+
+All three variants use the same Whisper large-v3 base model, fine-tuning
+procedure, and evaluation test set.
+This design isolates the contribution of CS training data and dialect variety
+independently.

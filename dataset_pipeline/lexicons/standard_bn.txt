@@ -1,0 +1,1 @@
+# One Bengali standard word per line.
