@@ -4,7 +4,8 @@
 
 | | |
 |---|---|
-| **Dataset** | 86,053 clips · 273.46 hours (augmented) · 15 dialects |
+| **Dataset** | 41,499 clips · 131.23 hours (unaugmented) · 15 dialects |
+| **Hugging Face** | [niloycste68/Bangali_local_dialect_ASR_HF_Dataset](https://huggingface.co/datasets/niloycste68/Bangali_local_dialect_ASR_HF_Dataset) |
 | **Task** | Automatic Speech Recognition (ASR) |
 | **Languages** | Bengali (15 regional dialects) + English code-switching |
 | **Target venues** | INTERSPEECH 2026 / ACL 2026 |
@@ -20,7 +21,7 @@ Existing Bengali ASR resources cover either **dialect** or **code-switching (CS)
 | OpenSLR-37 | No | No | 100 |
 | MUCS 2021 | No | Yes (standard Bengali only) | 16 |
 | Ben-10 (AACL 2025) | Yes (10 dialects) | No | 78 |
-| **BanglaMix (ours)** | **Yes (15 dialects)** | **Yes** | **273** |
+| **BanglaMix (ours)** | **Yes (15 dialects)** | **Yes** | **131** |
 
 Young Bangladeshi speakers naturally mix English into regional dialect speech ("চাটগাঁইয়া ভাষায় phone unboxing করতাছি, honestly speaking camera performance অনেক ভালো"). No model or dataset covers this intersection.
 
@@ -91,7 +92,7 @@ conda activate ASR
 # 2. Install PyTorch with CUDA (recommended — replace cu121 with your CUDA version)
 pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu121
 
-# 3. Install everything else
+# 3. Install all other requirements
 pip install -r requirements.txt
 ```
 
@@ -463,20 +464,3 @@ kenlm                     # n-gram LM (optional, for Step 09)
 ```
 
 ---
-
-## Troubleshooting
-
-| Problem | Fix |
-|---|---|
-| `webrtcvad` install fails | Use `pip install webrtcvad-wheels` (pre-built for Python 3.12) |
-| Whisper FP16 warning on CPU | Harmless — uses FP32 automatically |
-| Facebook download fails | Must be logged in to Facebook in Chrome; cookies extracted automatically |
-| `lmplz` not found | KenLM binary not on PATH — see Installation section |
-| CUDA out of memory | Reduce `per_device_train_batch_size` in `fine_tuning/config.py` |
-| `segments_manifest.json` path errors | Run from `dataset_pipeline/` folder, not project root |
-| `gTTS not installed` error | Run `pip install gTTS` — only needed for `generate_synthetic_cs.py --tts` |
-| `gTTS` network error during TTS | Needs internet connection — gTTS calls Google's servers |
-| `soundfile` / `librosa` missing | Run `pip install -r requirements.txt` again — these are in the file |
-| `Cannot connect to Ollama` | Run `ollama serve` in a separate terminal before running `11_llm_judge.py` |
-| `model not pulled` error in judge | Run `ollama pull mistral`, `ollama pull llama3.1`, `ollama pull gemma2` |
-| Judge parse error / no JSON | Model returned bad format — script retries automatically, then skips |
