@@ -1,0 +1,56 @@
+======================================================================
+STATISTICAL ANALYSIS REPORT
+======================================================================
+
+1. BOOTSTRAP CONFIDENCE INTERVALS (95%)
+----------------------------------------------------------------------
+  Whisper small (zero-shot)                        WER = 1.0656  95% CI [1.0572, 1.0746]
+  Whisper large-v3 (zero-shot)                     WER = 0.9102  95% CI [0.8972, 0.9234]
+  MMS-1B (zero-shot)                               WER = 0.9901  95% CI [0.9770, 1.0037]
+  wav2vec2-XLS-R-BN (zero-shot)                    WER = 0.9631  95% CI [0.9553, 0.9714]
+  wav2vec2 fine-tuned (no LM)                      WER = 0.8607  95% CI [0.8523, 0.8695]
+  Whisper FT BN_ONLY (ablation A)                  WER = 0.8004  95% CI [0.7894, 0.8120]
+  Whisper FT CS only (ablation B)                  WER = 0.8831  95% CI [0.8703, 0.8971]
+  Whisper FT ALL (proposed)                        WER = 0.8009  95% CI [0.7893, 0.8128]
+
+2. PAIRED BOOTSTRAP SIGNIFICANCE TESTS
+   (Testing if our proposed system 'ft_all' is significantly better)
+----------------------------------------------------------------------
+  vs Whisper small (zero-shot)               
+     WER reduction: 1.0656 → 0.8009  (+24.8%)  p=0.0000 ***  Cohen's d=0.239
+  vs Whisper large-v3 (zero-shot)            
+     WER reduction: 0.9102 → 0.8009  (+12.0%)  p=0.0000 ***  Cohen's d=0.094
+  vs MMS-1B (zero-shot)                      
+     WER reduction: 0.9901 → 0.8009  (+19.1%)  p=0.0000 ***  Cohen's d=0.251
+  vs wav2vec2-XLS-R-BN (zero-shot)           
+     WER reduction: 0.9631 → 0.8009  (+16.8%)  p=0.0000 ***  Cohen's d=0.138
+  vs wav2vec2 fine-tuned (no LM)             
+     WER reduction: 0.8607 → 0.8009  (+7.0%)  p=0.0000 ***  Cohen's d=0.029
+  vs Whisper FT BN_ONLY (ablation A)         
+     WER reduction: 0.8004 → 0.8009  (-0.1%)  p=0.5388   Cohen's d=-0.016
+  vs Whisper FT CS only (ablation B)         
+     WER reduction: 0.8831 → 0.8009  (+9.3%)  p=0.0000 ***  Cohen's d=0.101
+
+  * p<0.05  ** p<0.01  *** p<0.001
+
+3. CODE-SWITCHING DIFFICULTY: CS clips vs BN_ONLY clips WER gap
+----------------------------------------------------------------------
+  Whisper small (zero-shot)                        WER-CS=1.0337  WER-BN=1.1405  Gap=-0.1068
+  Whisper large-v3 (zero-shot)                     WER-CS=0.8537  WER-BN=1.0430  Gap=-0.1893
+  MMS-1B (zero-shot)                               WER-CS=1.0618  WER-BN=1.2027  Gap=-0.1408
+  wav2vec2-XLS-R-BN (zero-shot)                    WER-CS=0.9684  WER-BN=1.0585  Gap=-0.0900
+  wav2vec2 fine-tuned (no LM)                      WER-CS=0.9479  WER-BN=0.9697  Gap=-0.0219
+  Whisper FT BN_ONLY (ablation A)                  WER-CS=0.8880  WER-BN=0.9328  Gap=-0.0448
+  Whisper FT CS only (ablation B)                  WER-CS=0.9160  WER-BN=1.0475  Gap=-0.1315
+  Whisper FT ALL (proposed)                        WER-CS=0.9266  WER-BN=0.9464  Gap=-0.0198
+
+======================================================================
+INTERPRETATION NOTES FOR PAPER
+======================================================================
+  - Bootstrap CI: if CI of model A and model B do not overlap,
+    the difference is significant without needing a p-value.
+  - Paired bootstrap p < 0.05 → statistically significant improvement.
+  - Cohen's d > 0.5 = medium effect, > 0.8 = large effect.
+  - CS difficulty gap (WER-CS > WER-BN) proves that code-switching
+    adds difficulty on top of dialect variation — key research finding.
+======================================================================

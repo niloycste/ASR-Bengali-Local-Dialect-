@@ -81,6 +81,24 @@ COMMON_SUFFIXES = (
 
 # ── Level 1: Full transcript cleaning ─────────────────────────────────────────
 
+def _collapse_word_repetition(text: str, max_run: int = 2) -> str:
+    """Collapse degenerate consecutive word repetition.
+
+    Seq2seq decoders (notably Whisper) can fall into repetition loops on
+    out-of-distribution audio, e.g. "এই এই এই এই ..." for dozens of tokens,
+    which massively inflates WER through insertions. This keeps at most
+    ``max_run`` consecutive copies of any word; non-repetitive text is
+    unaffected, so it is a no-op on well-formed transcripts and on CTC output.
+    """
+    words = text.split()
+    out: list[str] = []
+    for w in words:
+        if len(out) >= max_run and all(out[-i] == w for i in range(1, max_run + 1)):
+            continue
+        out.append(w)
+    return " ".join(out)
+
+
 def normalize_transcript(text: str) -> str:
     """
     Full cleaning pipeline for transcripts.
@@ -125,6 +143,9 @@ def normalize_transcript(text: str) -> str:
 
     # 8. Collapse whitespace
     text = _WHITESPACE_RE.sub(" ", text)
+
+    # 8b. Collapse degenerate consecutive word repetition (decoder loops)
+    text = _collapse_word_repetition(text)
 
     # 9. Strip
     return text.strip()

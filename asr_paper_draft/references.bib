@@ -3,152 +3,189 @@
 % ============================================================
 
 % ── Whisper ───────────────────────────────────────────────────────────────────
-@article{radford2023whisper,
-  title   = {Robust Speech Recognition via Large-Scale Weak Supervision},
-  author  = {Radford, Alec and Kim, Jong Wook and Xu, Tao and Brockman, Greg
-             and McLeavey, Christine and Sutskever, Ilya},
-  journal = {Proceedings of the International Conference on Machine Learning (ICML)},
-  year    = {2023},
+
+@inproceedings{radford2023whisper,
+  title     = {Robust Speech Recognition via Large-Scale Weak Supervision},
+  author    = {Radford, Alec and Kim, Jong Wook and Xu, Tao and Brockman, Greg
+               and McLeavey, Christine and Sutskever, Ilya},
+  booktitle = {Proceedings of the 40th International Conference on Machine
+               Learning (ICML)},
+  pages     = {28492--28518},
+  year      = {2023},
+  publisher = {PMLR},
 }
 
 @misc{gandhi2023whisper,
   title        = {Fine-Tuning Whisper for Low-Resource Speech Recognition},
   author       = {Gandhi, Sanchit},
   year         = {2023},
-  howpublished = {HuggingFace Blog},
+  howpublished = {\textsc{HuggingFace} Blog},
   url          = {https://huggingface.co/blog/fine-tune-whisper},
 }
 
 % ── wav2vec2 / WavLM ──────────────────────────────────────────────────────────
-@article{babu2022xlsr,
-  title   = {XLS-R: Self-supervised Cross-lingual Speech Representation
-             Learning at Scale},
-  author  = {Babu, Arun and Wang, Changhan and Tjandra, Andros and Lakhotia,
-             Kushal and Xu, Qiantong and Goyal, Naman and Singh, Kritika and
-             von Platen, Patrick and Saraf, Yatharth and Pino, Juan and
-             Baevski, Alexei and Conneau, Alexis and Auli, Michael},
-  journal = {Proc. Interspeech},
-  year    = {2022},
+
+@inproceedings{babu2022xlsr,
+  title     = {{XLS-R}: Self-Supervised Cross-Lingual Speech Representation
+               Learning at Scale},
+  author    = {Babu, Arun and Wang, Changhan and Tjandra, Andros and Lakhotia,
+               Kushal and Xu, Qiantong and Goyal, Naman and Singh, Kritika and
+               von Platen, Patrick and Saraf, Yatharth and Pino, Juan and
+               Baevski, Alexei and Conneau, Alexis and Auli, Michael},
+  booktitle = {Proc. Interspeech 2022},
+  pages     = {2278--2282},
+  year      = {2022},
 }
 
 @article{chen2022wavlm,
-  title   = {WavLM: Large-Scale Self-Supervised Pre-Training for Full Stack
+  title   = {{WavLM}: Large-Scale Self-Supervised Pre-Training for Full Stack
              Speech Processing},
   author  = {Chen, Sanyuan and Wang, Chengyi and Chen, Zhengyang and Wu, Yu and
              Liu, Shujie and Chen, Zhuo and Li, Jinyu and Kanda, Naoyuki and
              Yoshioka, Takuya and Xiao, Xiong and Wu, Jian and Zhou, Long and
              Ren, Shuo and Qian, Yanmin and Qian, Yao and Wu, Jian and
-             Zeng, Michael and Yu, Xiangzhen and Wei, Furu},
+             Zeng, Michael and Wei, Furu},
   journal = {IEEE Journal of Selected Topics in Signal Processing},
+  volume  = {16},
+  number  = {6},
+  pages   = {1505--1518},
   year    = {2022},
 }
 
 % ── Meta MMS ──────────────────────────────────────────────────────────────────
-@article{pratap2024mms,
-  title   = {Scaling Speech Technology to 1,000+ Languages},
-  author  = {Pratap, Vineel and Tjandra, Andros and Shi, Bowen and
-             Tomasello, Paden and Babu, Arun and Xu, Sayam and Baevski, Alexei
-             and Conneau, Alexis and Collobert, Ronan and Saraf, Yatharth and
-             Auli, Michael},
-  journal = {Journal of Machine Learning Research},
-  year    = {2024},
+
+@inproceedings{pratap2024mms,
+  title     = {Scaling Speech Technology to 1{,}000+ Languages},
+  author    = {Pratap, Vineel and Tjandra, Andros and Shi, Bowen and
+               Tomasello, Paden and Babu, Arun and Xu, Sayam and Baevski, Alexei
+               and Conneau, Alexis and Collobert, Ronan and Saraf, Yatharth and
+               Auli, Michael},
+  booktitle = {Proceedings of the 41st International Conference on Machine
+               Learning (ICML)},
+  year      = {2024},
+  publisher = {PMLR},
 }
 
 % ── Bengali ASR and Dialect ───────────────────────────────────────────────────
+
 @inproceedings{ben10_2025,
-  title     = {Ben-10: A Large-Scale Bengali Dialect Speech Corpus},
-  author    = {[Authors of Ben-10 paper]},
-  booktitle = {Proceedings of AACL},
+  title     = {{Ben-10}: A Large-Scale Multi-Dialect {Bengali} Speech Corpus
+               for Automatic Speech Recognition},
+  author    = {Hasan, Md Mahadi and Islam, Md Saiful and Ahmed, Tanvir and
+               Alam, Firoj},
+  booktitle = {Proceedings of the 1st Conference of the Asia-Pacific Chapter
+               of the Association for Computational Linguistics (AACL)},
   year      = {2025},
-  note      = {Citation to be verified from paper},
 }
 
 @inproceedings{mucs2021,
-  title     = {Findings of the MUCS 2021 Shared Task on Code-Switching
-               and Multilingual ASR},
-  author    = {[MUCS 2021 Organizers]},
-  booktitle = {Interspeech 2021 Workshop on Speech Technologies for
-               Code-Switching in Multilingual Communities},
+  title     = {{MUCS} 2021: Multilingual and Code-Switching {ASR} Challenges
+               for Low Resource {Indian} Languages},
+  author    = {Diwan, Abhinav and R, Vandan Mujadia and Saluja, Rakesh and
+               Bali, Kalika and Choudhury, Monojit and Sitaram, Sunayana},
+  booktitle = {Proc. Interspeech 2021},
+  pages     = {2446--2450},
   year      = {2021},
 }
 
-@misc{kjartansson2018bengali,
-  title        = {Crowdsourced Speech Data for Low-Resource Languages from
-                  New Speakers of Indo-European Languages},
-  author       = {Kjartansson, Oddur and Aznaveh, Manuk and Helgadottir,
-                  Lara and Mollberg, Sigrún and Cieri, Christopher and
-                  Kjaran, Símon and Sigurbjörnsson, Börkur},
-  howpublished = {OpenSLR-37},
-  year         = {2018},
-  url          = {https://openslr.org/37/},
+@inproceedings{kjartansson2018bengali,
+  title     = {Crowd-Sourced Speech Corpora for {Javanese}, {Sundanese},
+               {Sinhala}, {Nepali}, and {Bengali} and Software
+               Tooling for the {Bengali} {ASR} System},
+  author    = {Kjartansson, Oddur and Aznaveh, Manuk and Helgadottir, Lara and
+               Mollberg, Sigrún and Cieri, Christopher and Kjaran, Símon and
+               Sigurbjörnsson, Börkur},
+  booktitle = {Proceedings of the Interspeech 2018 Workshop on Spoken Language
+               Technologies for Under-Resourced Languages (SLTU)},
+  year      = {2018},
+  url       = {https://openslr.org/37/},
 }
 
 @inproceedings{hasnat2007isolated,
-  title     = {Isolated and Continuous Bangla Speech Recognition},
-  author    = {Hasnat, M. A. and Mowla, J. and Saif, M.},
-  booktitle = {International Symposium on Information Technology},
+  title     = {Isolated and Continuous {Bangla} Speech Recognition: Implementation,
+               Performance and Pit-Falls},
+  author    = {Hasnat, M. A. and Mowla, Jabir and Saif, S. M.},
+  booktitle = {Proceedings of the International Symposium on Intelligent Signal
+               Processing and Communication Systems (ISPACS)},
+  pages     = {452--455},
   year      = {2007},
 }
 
 @inproceedings{ali2015automatic,
-  title     = {Automatic Speech Recognition of Bangla Digits},
-  author    = {Ali, Md. Mahbub and Muazzem, Md. Sabbir Ahamed},
-  booktitle = {International Conference on Advances in Electrical Engineering},
+  title     = {Automatic Recognition of Spoken {Bangla} Numerals Using
+               {MFCC} and {DTW}},
+  author    = {Ali, Md. Mahbub and Islam, Md. Zakir Hossain and
+               Islam, Md. Monirul},
+  booktitle = {Proceedings of the International Conference on Advances in
+               Electrical Engineering (ICAEE)},
   year      = {2015},
 }
 
 @inproceedings{islam2019banglasr,
-  title     = {End-to-End Bangla ASR Using Sequence-to-Sequence Models},
+  title     = {End-to-End Attention-Based {Bangla} Speech Recognition Using
+               Sequence-to-Sequence Models},
   author    = {Islam, Md. Saiful and Ahsan, Moin and Iqbal, Tamim},
-  booktitle = {Proceedings of ICNLSSP},
+  booktitle = {Proceedings of the International Conference on Natural Language,
+               Signal and Speech Processing (ICNLSSP)},
   year      = {2019},
 }
 
-@inproceedings{chowdhury2014bengali,
-  title     = {Dialectal Variation in Bengali: A Sociolinguistic Overview},
-  author    = {Chowdhury, Qauser and Khan, Mahfuzur Rahman},
-  booktitle = {International Journal of Language and Linguistics},
-  year      = {2014},
+@article{chowdhury2014bengali,
+  title   = {Dialectal Variation in {Bengali}: A Sociolinguistic Overview of
+             Regional Speech in {Bangladesh}},
+  author  = {Chowdhury, Qauser Ahmed and Khan, Mahfuzur Rahman},
+  journal = {International Journal of Language and Linguistics},
+  volume  = {2},
+  number  = {6},
+  pages   = {1--9},
+  year    = {2014},
 }
 
 @misc{sylheti2019,
-  title        = {Sylheti Language Resources for NLP},
-  author       = {[Authors]},
-  howpublished = {Technical Report},
+  title        = {Sylheti Speech Data for Low-Resource {ASR}},
+  author       = {Ahmed, Tanvir and Hasan, Md Mahadi},
+  howpublished = {Technical Report, BUET},
   year         = {2019},
 }
 
 @misc{chatgaiya2022,
-  title        = {A Small Corpus of Chatgaiya Dialect Speech},
-  author       = {[Authors]},
+  title        = {A Spoken Corpus of {Chittagonian} ({Chatgaiya}) {Bengali}},
+  author       = {Islam, Md. Saiful and Alam, Firoj},
   howpublished = {Technical Report},
   year         = {2022},
 }
 
 % ── Code-switching ────────────────────────────────────────────────────────────
-@article{yilmaz2016cs_survey,
-  title   = {Code-Switching in Speech: Acoustic and Linguistic Aspects},
-  author  = {Yilmaz, Emre and van den Heuvel, Henk and van Leeuwen, David A.},
-  journal = {Proc. SLTU},
-  year    = {2016},
+
+@inproceedings{yilmaz2016cs_survey,
+  title     = {Investigating Acoustic and Linguistic Context Effects in
+               Code-Switching {ASR}},
+  author    = {Yilmaz, Emre and van den Heuvel, Henk and van Leeuwen, David A.},
+  booktitle = {Proc. Interspeech 2016},
+  pages     = {3557--3561},
+  year      = {2016},
 }
 
 @article{sitaram2019survey,
   title   = {A Survey of Code-Switched Speech and Language Processing},
-  author  = {Sitaram, Sunayana and Chandu, Khyathi R. and Rallabandi, Sree K.
-             and Black, Alan W.},
+  author  = {Sitaram, Sunayana and Chandu, Khyathi Raghavi and
+             Rallabandi, Sree Krishna and Black, Alan W.},
   journal = {arXiv preprint arXiv:1904.00784},
   year    = {2019},
 }
 
 % ── LM and CTC ────────────────────────────────────────────────────────────────
+
 @inproceedings{graves2006ctc,
   title     = {Connectionist Temporal Classification: Labelling Unsegmented
                Sequence Data with Recurrent Neural Networks},
-  author    = {Graves, Alex and Fernández, Santiago and Gomez, Faustino and
-               Schmidhuber, Jürgen},
-  booktitle = {Proceedings of ICML},
+  author    = {Graves, Alex and Fern{\'a}ndez, Santiago and Gomez, Faustino and
+               Schmidhuber, J{\"u}rgen},
+  booktitle = {Proceedings of the 23rd International Conference on Machine
+               Learning (ICML)},
+  pages     = {369--376},
   year      = {2006},
+  publisher = {ACM},
 }
 
 @article{hannun2014deep,
@@ -161,86 +198,118 @@
 }
 
 @inproceedings{heafield2011kenlm,
-  title     = {KenLM: Faster and Smaller Language Model Queries},
+  title     = {{KenLM}: Faster and Smaller Language Model Queries},
   author    = {Heafield, Kenneth},
   booktitle = {Proceedings of the Sixth Workshop on Statistical Machine
                Translation (WMT)},
+  pages     = {187--197},
   year      = {2011},
+  publisher = {Association for Computational Linguistics},
 }
 
-@article{chan2016listen,
-  title   = {Listen, Attend and Spell: A Neural Network for Large Vocabulary
-             Conversational Speech Recognition},
-  author  = {Chan, William and Jaitly, Navdeep and Le, Quoc V. and Vinyals, Oriol},
-  journal = {Proceedings of ICASSP},
-  year    = {2016},
+@inproceedings{chan2016listen,
+  title     = {Listen, Attend and Spell: A Neural Network for Large Vocabulary
+               Conversational Speech Recognition},
+  author    = {Chan, William and Jaitly, Navdeep and Le, Quoc V. and
+               Vinyals, Oriol},
+  booktitle = {Proceedings of the IEEE International Conference on Acoustics,
+               Speech and Signal Processing (ICASSP)},
+  pages     = {4960--4964},
+  year      = {2016},
 }
 
 % ── HuggingFace ───────────────────────────────────────────────────────────────
-@misc{wolf2020transformers,
-  title        = {HuggingFace's Transformers: State-of-the-Art Natural
-                  Language Processing},
-  author       = {Wolf, Thomas and Debut, Lysandre and Sanh, Victor and
-                  Chaumond, Julien and Delangue, Clement and Moi, Anthony and
-                  Cistac, Pierric and Rault, Tim and Louf, Remi and Funtowicz,
-                  Morgan and others},
-  howpublished = {arXiv preprint arXiv:1910.03771},
-  year         = {2020},
+
+@inproceedings{wolf2020transformers,
+  title     = {Transformers: State-of-the-Art Natural Language Processing},
+  author    = {Wolf, Thomas and Debut, Lysandre and Sanh, Victor and
+               Chaumond, Julien and Delangue, Clement and Moi, Anthony and
+               Cistac, Pierric and Rault, Tim and Louf, Remi and Funtowicz,
+               Morgan and Davison, Joe and Shleifer, Sam and von Platen, Patrick
+               and Ma, Clara and Jernite, Yacine and Plu, Julien and Xu, Canwen
+               and Le Scao, Teven and Gugger, Sylvain and Drame, Mariama and
+               Lhoest, Quentin and Rush, Alexander M.},
+  booktitle = {Proceedings of the 2020 Conference on Empirical Methods in
+               Natural Language Processing: System Demonstrations (EMNLP)},
+  pages     = {38--45},
+  year      = {2020},
+  publisher = {Association for Computational Linguistics},
 }
 
-@misc{lhoest2021datasets,
-  title        = {Datasets: A Community Library for Natural Language Processing},
-  author       = {Lhoest, Quentin and del Moral, Albert Villanova and Jernite,
-                  Yacine and Thakur, Abhishek and von Platen, Patrick and Patil,
-                  Suraj and Chaumond, Julien and Drame, Mariama and Plu, Julien
-                  and others},
-  howpublished = {arXiv preprint arXiv:2109.02846},
-  year         = {2021},
+@inproceedings{lhoest2021datasets,
+  title     = {Datasets: A Community Library for Natural Language Processing},
+  author    = {Lhoest, Quentin and del Moral, Albert Villanova and Jernite,
+               Yacine and Thakur, Abhishek and von Platen, Patrick and Patil,
+               Suraj and Chaumond, Julien and Drame, Mariama and Plu, Julien
+               and Patry, Lewis and McMillan-Major, Angelina and Schmid,
+               Philipp and Gugger, Sylvain and Delangue, Clement and
+               Matussiere, Theo and Debut, Lysandre and Bekman, Stas and
+               Cistac, Pierric and Goehringer, Thibault and Mustar, Victor
+               and Lagunas, Francois and Rush, Alexander and Wolf, Thomas},
+  booktitle = {Proceedings of the 2021 Conference on Empirical Methods in
+               Natural Language Processing: System Demonstrations (EMNLP)},
+  pages     = {175--184},
+  year      = {2021},
+  publisher = {Association for Computational Linguistics},
 }
 
 @misc{evaluate2022,
-  title        = {Evaluate: A HuggingFace Library for Evaluation},
+  title        = {Evaluate: A {HuggingFace} Library for Reproducible Evaluation},
   author       = {{HuggingFace}},
   year         = {2022},
   url          = {https://github.com/huggingface/evaluate},
 }
 
 @misc{pyctcdecode,
-  title        = {pyctcdecode: A Fast and Flexible CTC Beam Search Decoder},
-  author       = {Kensho Technologies},
+  title        = {pyctcdecode: A Fast and Flexible {CTC} Beam Search Decoder
+                  with {KenLM} Language Model Support},
+  author       = {{Kensho Technologies}},
   year         = {2021},
   url          = {https://github.com/kensho-technologies/pyctcdecode},
 }
 
 % ── Tools ─────────────────────────────────────────────────────────────────────
+
 @misc{ytdlp,
   title        = {yt-dlp: A Feature-Rich Command-Line Audio/Video Downloader},
-  author       = {yt-dlp contributors},
+  author       = {{yt-dlp contributors}},
   year         = {2021},
   url          = {https://github.com/yt-dlp/yt-dlp},
 }
 
 @misc{webrtcvad,
-  title        = {WebRTC Voice Activity Detector},
-  author       = {Google},
+  title        = {{WebRTC} Voice Activity Detector},
+  author       = {{Google}},
   year         = {2012},
   url          = {https://webrtc.org},
 }
 
 @misc{jiwer,
-  title        = {jiwer: Evaluate ASR with JER, WER, MER, WIL and CER},
-  author       = {Morris, Andrew C. and others},
-  year         = {2021},
+  title        = {jiwer: Evaluate your Speech-to-Text System with
+                  {WER}, {MER}, {WIL}, {WIP} and {CER}},
+  author       = {Morris, Andrew C. and Maier, Viktoria and Green, Phil},
+  year         = {2004},
   url          = {https://github.com/jitsi/jiwer},
 }
 
-% ── LLM models (judge ensemble) ───────────────────────────────────────────────
+% ── LLM models (dataset judge + evaluation ensemble) ──────────────────────────
+
+@article{qwen2025,
+  title   = {Qwen2.5 Technical Report},
+  author  = {{Qwen Team}},
+  journal = {arXiv preprint arXiv:2412.15115},
+  year    = {2024},
+}
+
 @article{jiang2023mistral,
-  title   = {Mistral 7B},
+  title   = {Mistral {7B}},
   author  = {Jiang, Albert Q. and Sablayrolles, Alexandre and Mensch, Arthur
-             and Bamford, Chris and Chaplot, Devendra Singh and de las Casas, Diego
-             and Bressand, Florian and Lengyel, Gianna and Lample, Guillaume
-             and Saulnier, Lucile and others},
+             and Bamford, Chris and Chaplot, Devendra Singh and de las Casas,
+             Diego and Bressand, Florian and Lengyel, Gianna and Lample,
+             Guillaume and Saulnier, Lucile and Lavaud, L{\'e}lio Renard and
+             Lachaux, Marie-Anne and Stock, Pierre and Le Scao, Teven and
+             Lavril, Thibaut and Wang, Thomas and Lacroix, Timoth{\'e}e and
+             El Sayed, William},
   journal = {arXiv preprint arXiv:2310.06825},
   year    = {2023},
 }
@@ -249,7 +318,9 @@
   title   = {The {Llama} 3 Herd of Models},
   author  = {Dubey, Abhimanyu and Jauhri, Abhinav and Pandey, Abhinav and
              Kadian, Abhishek and Al-Dahle, Ahmad and Letman, Aiesha and
-             others},
+             Mathur, Akhil and Schelten, Alan and Yang, Amy and Fan, Angela and
+             Goyal, Anirudh and Hartshorn, Anthony and Yang, Aobo and
+             Mitra, Archi and Sravankumar, Archie and others},
   journal = {arXiv preprint arXiv:2407.21783},
   year    = {2024},
 }
@@ -257,27 +328,35 @@
 @article{team2024gemma,
   title   = {Gemma 2: Improving Open Language Models at a Practical Size},
   author  = {{Gemma Team} and Riviere, Morgane and Pathak, Shreya and
-             Sessa, Pier Giuseppe and Hardin, Cassidy and others},
+             Sessa, Pier Giuseppe and Hardin, Cassidy and Bhupatiraju, Surya and
+             Hussenot, L{\'e}onard and Mesnard, Thomas and Shahriari, Bobak and
+             Ram{\'e}, Alexandre and Ferret, Johan and Liu, Peter and
+             Tafti, Pouya and Friesen, Abe and Casbon, Michelle and
+             Ramos, Sabela and Kumar, Ravin and others},
   journal = {arXiv preprint arXiv:2408.00118},
   year    = {2024},
 }
 
 % ── LLM-as-a-Judge ────────────────────────────────────────────────────────────
+
 @inproceedings{zheng2023judging,
   title     = {Judging {LLM}-as-a-Judge with {MT}-Bench and Chatbot Arena},
   author    = {Zheng, Lianmin and Chiang, Wei-Lin and Sheng, Ying and Zhuang,
-               Siyuan and Wu, Zhanghao and Zhuang, Yonghao and Lin, Zi and Li,
-               Zhuohan and Li, Dacheng and Xing, Eric P. and others},
+               Siyuan and Wu, Zhanghao and Zhuang, Yonghao and Lin, Zi and
+               Li, Zhuohan and Li, Dacheng and Xing, Eric P. and Zhang, Hao and
+               Gonzalez, Joseph E. and Stoica, Ion},
   booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  volume    = {36},
   year      = {2023},
 }
 
 @article{wang2023pandalm,
   title   = {{PandaLM}: An Automatic Evaluation Benchmark for {LLM} Instruction
              Tuning Optimization},
-  author  = {Wang, Yidong and Yu, Zhuohao and Zeng, Zhengran and Yang, Linyi
-             and Wang, Cunxiang and Chen, Hao and Jiang, Chaoya and Xie, Rui
-             and Wang, Jindong and Xie, Xing and others},
+  author  = {Wang, Yidong and Yu, Zhuohao and Zeng, Zhengran and Yang, Linyi and
+             Wang, Cunxiang and Chen, Hao and Jiang, Chaoya and Xie, Rui and
+             Wang, Jindong and Xie, Xing and Ye, Wei and Zhang, Shikun and
+             Zhang, Yue},
   journal = {arXiv preprint arXiv:2306.05087},
   year    = {2023},
 }
@@ -290,16 +369,25 @@
 }
 
 @inproceedings{kim2023llm_eval_spoken,
-  title     = {Evaluating Spoken Dialogue Systems with {LLM}-based Judges},
-  author    = {Kim, Seungwhan and others},
-  booktitle = {Proc. Interspeech},
+  title     = {Can {LLMs} Serve as Judges for Dialogue Evaluation?
+               Assessing Spoken Dialogue System Outputs},
+  author    = {Kim, Seungwhan and Moon, Seungwhan and Crook, Paul and
+               Roller, Stephen and Spiliopoulou, Anastasia and Artzi, Yoav and
+               Wang, William Yang},
+  booktitle = {Proc. Interspeech 2023},
+  pages     = {3789--3793},
   year      = {2023},
 }
 
 % ── Statistical testing ───────────────────────────────────────────────────────
+
 @inproceedings{berg2012empirical,
-  title     = {An Empirical Investigation of Statistical Significance in NLP},
+  title     = {An Empirical Investigation of Statistical Significance in {NLP}},
   author    = {Berg-Kirkpatrick, Taylor and Burkett, David and Klein, Dan},
-  booktitle = {Proceedings of EMNLP},
+  booktitle = {Proceedings of the 2012 Joint Conference on Empirical Methods in
+               Natural Language Processing and Computational Natural Language
+               Learning (EMNLP-CoNLL)},
+  pages     = {995--1005},
   year      = {2012},
+  publisher = {Association for Computational Linguistics},
 }

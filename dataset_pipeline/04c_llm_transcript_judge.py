@@ -1,10 +1,10 @@
 """
-Step 4c: LLM-as-a-Judge Ensemble for Transcript Quality Validation.
+Step 4c: LLM-as-a-Judge for Transcript Quality Validation.
 
 WHERE IT FITS IN THE PIPELINE:
   Step 3  → 03_auto_transcribe.py        Whisper transcribes all clips
   Step 4b → 04b_auto_annotate.py         Auto-accepts HIGH confidence clips
-  Step 4c → 04c_llm_transcript_judge.py  LLM ensemble judges MEDIUM confidence clips
+  Step 4c → 04c_llm_transcript_judge.py  LLM judge scores MEDIUM confidence clips
   Step 5  → 05_build_dataset.py          Builds final dataset
 
 WHY THIS STEP EXISTS:
@@ -13,8 +13,9 @@ WHY THIS STEP EXISTS:
     - no_speech_prob 0.30–0.60 → FLAGGED    (borderline — previously needed human review)
     - no_speech_prob >= 0.60 → AUTO-REJECT  (noise/music)
 
-  This script handles the FLAGGED clips using a 3-model LLM ensemble
-  (Mistral, LLaMA, Gemma) to decide: accept or reject — NO HUMAN NEEDED.
+  This script handles the FLAGGED clips with an LLM judge to decide accept or
+  reject — NO HUMAN NEEDED. By default a single strong multilingual model
+  (Qwen2.5) is used; the script also supports a multi-model majority vote.
 
 WHAT THE LLM JUDGES (per transcript):
   1. Bengali validity     — Is this real Bengali text or hallucination?
@@ -22,11 +23,10 @@ WHAT THE LLM JUDGES (per transcript):
   3. Dialect authenticity — Does this sound like dialectal speech (not standard Bengali)?
   4. Noise/hallucination  — Is this gibberish, repeated words, or music lyrics?
 
-ENSEMBLE DECISION:
-  - All 3 models vote ACCEPT / REJECT for each clip
-  - Majority vote (2/3 or 3/3) wins
-  - Clips where all 3 disagree (1 accept, 1 reject, 1 unsure) are SKIPPED
-    and saved separately for optional manual review
+JUDGE DECISION (aggregated over the configured judge models):
+  - Each configured model votes ACCEPT / REJECT for each clip
+  - With a single model its decision is final; with several, the majority wins
+  - Clips with no majority are SKIPPED and saved separately for optional review
 
 OUTPUT:
   transcripts/transcripts_reviewed.json   ← merged: auto-accepted + LLM-accepted
@@ -39,8 +39,8 @@ REQUIREMENTS:
   1. Install Ollama: https://ollama.com/download
   2. Pull models once:
        ollama pull mistral
-       ollama pull llama3.1
-       ollama pull gemma3
+       ollama pull llama3.1  # Or llama3:8b
+       ollama pull gemma2    # Gemma-2-9B model
   3. Run ollama serve (or it starts automatically)
 
 Usage:
@@ -271,7 +271,6 @@ def check_ollama(judge_models: list[str]):
 
 def run(judge_all: bool = False, sample: int | None = None, model: str = "qwen2.5", resume: bool = False):
     judge_models = [model]
-
     if not REVIEWED_IN.exists():
         print(f"[ERROR] {REVIEWED_IN} not found. Run 04b_auto_annotate.py first.")
         raise SystemExit(1)
@@ -326,7 +325,7 @@ def run(judge_all: bool = False, sample: int | None = None, model: str = "qwen2.
     check_ollama(judge_models)
 
     print(f"\n{'='*60}")
-    print(f"Step 4c — LLM Transcript Judge Ensemble")
+    print(f"Step 4c — LLM Transcript Judge")
     print(f"  Judge models : {', '.join(judge_models)}")
     print(f"  Clips        : {len(to_judge)}")
     print(f"{'='*60}\n")
@@ -421,7 +420,7 @@ if __name__ == "__main__":
     parser.add_argument("--all",    action="store_true",
                         help="Re-judge ALL clips, not just flagged ones.")
     parser.add_argument("--sample", type=int, default=None,
-                        help="Random sample N clips (for quick testing).")
+                        help="Randomly sample N clips (for quick testing).")
     parser.add_argument("--model", type=str, default="qwen2.5",
                         help="Ollama model to use for judging (e.g. qwen2.5, llama3.1).")
     parser.add_argument("--resume", action="store_true",

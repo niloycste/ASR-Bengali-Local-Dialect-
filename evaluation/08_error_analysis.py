@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import textwrap
 from collections import Counter
 from pathlib import Path
 
@@ -29,6 +30,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from fine_tuning.config import BASELINES, FINETUNED, RESULTS_DIR, TABLE_ORDER
 from dataset_pipeline.code_mixing_utils import classify_code_mixing, detect_word_tags
+from dataset_pipeline.text_normalization import normalize_transcript
 
 ERROR_DIR = RESULTS_DIR / "error_analysis"
 
@@ -44,50 +46,28 @@ def is_english_word(w: str) -> bool:
 
 def per_clip_edits(ref: str, hyp: str) -> dict:
     """
-    Compute word-level edit operations for a single clip.
-    Returns counts of substitutions, deletions, insertions.
+    Compute word-level edit operations for a single clip using a true
+    edit-distance alignment (jiwer), so substitution / deletion / insertion
+    counts are exact rather than positionally approximated.
     """
     ref_words = ref.strip().split()
     hyp_words = hyp.strip().split()
-    n, m = len(ref_words), len(hyp_words)
 
     if not ref_words:
         return {"sub": 0, "del": 0, "ins": len(hyp_words), "ref_len": 0}
 
-    # DP edit distance with backtrace
-    dp = [[(0, "")] * (m + 1) for _ in range(n + 1)]
-    for i in range(n + 1):
-        dp[i][0] = (i, "D" * i)
-    for j in range(m + 1):
-        dp[0][j] = (j, "I" * j)
+    try:
+        from jiwer import process_words
+    except ImportError:
+        print("[ERROR] pip install jiwer")
+        raise SystemExit(1)
 
-    for i in range(1, n + 1):
-        for j in range(1, m + 1):
-            if ref_words[i - 1] == hyp_words[j - 1]:
-                dp[i][j] = dp[i - 1][j - 1]
-            else:
-                candidates = [
-                    (dp[i - 1][j][0] + 1,     "D"),   # deletion
-                    (dp[i][j - 1][0] + 1,     "I"),   # insertion
-                    (dp[i - 1][j - 1][0] + 1, "S"),   # substitution
-                ]
-                best = min(candidates, key=lambda x: x[0])
-                dp[i][j] = best
-
-    # Count operations from the alignment (approximate from DP)
-    # Faster approximation: use edit distance decomposition
-    edit_dist = dp[n][m][0]
-    # Approximate breakdown (exact backtrace is expensive at scale)
-    matched    = sum(1 for rw, hw in zip(ref_words, hyp_words) if rw == hw)
-    subs       = min(n, m) - matched
-    deletions  = max(0, n - m)
-    insertions = max(0, m - n)
-
+    out = process_words([ref.strip()], [hyp.strip()])
     return {
-        "sub":     max(0, subs),
-        "del":     deletions,
-        "ins":     insertions,
-        "ref_len": n,
+        "sub":     out.substitutions,
+        "del":     out.deletions,
+        "ins":     out.insertions,
+        "ref_len": len(ref_words),
     }
 
 
@@ -133,15 +113,32 @@ def english_word_analysis(predictions: list[dict]) -> dict:
 
 
 def most_common_substitutions(predictions: list[dict], top_n: int = 20) -> list[tuple]:
-    """Find the most common (reference_word → hypothesis_word) substitution pairs."""
+    """Find the most common (reference_word → hypothesis_word) substitution pairs.
+
+    Uses the real edit-distance alignment from jiwer so substitutions are paired
+    correctly even when insertions/deletions shift the sequences.
+    """
+    try:
+        from jiwer import process_words
+    except ImportError:
+        print("[ERROR] pip install jiwer")
+        raise SystemExit(1)
+
     sub_counter = Counter()
     for p in predictions:
-        ref_words = p["reference"].split()
-        hyp_words = p["hypothesis"].split()
-        # Align by position (approximate — exact alignment needs edit backtrace)
-        for rw, hw in zip(ref_words, hyp_words):
-            if rw != hw and rw.strip() and hw.strip():
-                sub_counter[(rw, hw)] += 1
+        ref = p["reference"].strip()
+        hyp = p["hypothesis"].strip()
+        if not ref:
+            continue
+        ref_words = ref.split()
+        hyp_words = hyp.split()
+        out = process_words([ref], [hyp])
+        for chunk in out.alignments[0]:
+            if chunk.type == "substitute":
+                ref_seg = ref_words[chunk.ref_start_idx:chunk.ref_end_idx]
+                hyp_seg = hyp_words[chunk.hyp_start_idx:chunk.hyp_end_idx]
+                for rw, hw in zip(ref_seg, hyp_seg):
+                    sub_counter[(rw, hw)] += 1
     return sub_counter.most_common(top_n)
 
 
@@ -178,6 +175,16 @@ def run_error_analysis(model_key: str):
 
     with open(pred_path, encoding="utf-8") as f:
         predictions = json.load(f)
+
+    # Surface-clean ref/hyp so error counts match the WER reported by 03.
+    predictions = [
+        {
+            **p,
+            "reference": normalize_transcript(p.get("reference", "")),
+            "hypothesis": normalize_transcript(p.get("hypothesis", "")),
+        }
+        for p in predictions
+    ]
 
     print(f"\n{'='*60}")
     print(f"Error analysis: {model_key}  ({len(predictions)} clips)")
@@ -263,6 +270,7 @@ def plot_error_comparison(all_results: dict):
 
     models = [k for k in TABLE_ORDER if k in all_results]
     labels = [k.replace("ft_whisper_", "ours_").replace("whisper_large_v3", "whisper_zeroshot") for k in models]
+    labels = ["\n".join(textwrap.wrap(label.replace("_", " "), width=14)) for label in labels]
 
     subs = [all_results[k]["error_breakdown"].get("substitution_rate", 0) * 100 for k in models]
     dels = [all_results[k]["error_breakdown"].get("deletion_rate",     0) * 100 for k in models]
@@ -275,14 +283,14 @@ def plot_error_comparison(all_results: dict):
     x     = np.arange(len(models))
     width = 0.2
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 5))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 7))
 
     # Error breakdown
     ax1.bar(x - width, subs, width, label="Substitutions", color="#EF5350")
     ax1.bar(x,         dels, width, label="Deletions",     color="#FF7043")
     ax1.bar(x + width, ins,  width, label="Insertions",    color="#FFA726")
     ax1.set_xticks(x)
-    ax1.set_xticklabels(labels, rotation=30, ha="right", fontsize=9)
+    ax1.set_xticklabels(labels, rotation=0, ha="center", fontsize=9)
     ax1.set_ylabel("Rate (% of reference words)")
     ax1.set_title("Error Type Breakdown per Model")
     ax1.legend()
@@ -292,14 +300,14 @@ def plot_error_comparison(all_results: dict):
     colors = ["#9E9E9E" if "ft" not in m else "#2E7D32" for m in models]
     ax2.bar(x, surv, color=colors, alpha=0.85)
     ax2.set_xticks(x)
-    ax2.set_xticklabels(labels, rotation=30, ha="right", fontsize=9)
+    ax2.set_xticklabels(labels, rotation=0, ha="center", fontsize=9)
     ax2.set_ylabel("English word survival rate (%)")
     ax2.set_title("English CS Word Survival Rate\n(higher = model preserves English words better)")
     ax2.set_ylim(0, 105)
     ax2.axhline(100, color="grey", linestyle="--", alpha=0.4)
     ax2.grid(axis="y", alpha=0.3)
 
-    plt.tight_layout()
+    fig.subplots_adjust(left=0.06, right=0.98, bottom=0.20, top=0.84, wspace=0.12)
     plots_dir = Path(__file__).resolve().parent / "plots"
     plots_dir.mkdir(exist_ok=True)
     plt.savefig(str(plots_dir / "error_analysis.pdf"), bbox_inches="tight", dpi=300)

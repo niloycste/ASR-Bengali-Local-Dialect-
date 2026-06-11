@@ -30,20 +30,15 @@ from fine_tuning.config import (
     BASELINES, BOOTSTRAP_ITERS, CONFIDENCE_LEVEL,
     FINETUNED, RESULTS_DIR, TABLE_ORDER, MODEL_LABELS,
 )
+from dataset_pipeline.text_normalization import normalize_transcript
 
 
 # ── WER per clip ──────────────────────────────────────────────────────────────
 
-def per_clip_wer(ref: str, hyp: str) -> float:
-    """Compute WER for a single clip using edit distance."""
-    ref_words = ref.strip().split()
-    hyp_words = hyp.strip().split()
-    if not ref_words:
-        return 0.0
-
-    # Dynamic programming edit distance
+def _edit_distance(ref_words: list[str], hyp_words: list[str]) -> int:
+    """Levenshtein word edit distance."""
     n, m = len(ref_words), len(hyp_words)
-    dp   = list(range(m + 1))
+    dp = list(range(m + 1))
     for i in range(1, n + 1):
         new_dp = [i] + [0] * m
         for j in range(1, m + 1):
@@ -52,8 +47,34 @@ def per_clip_wer(ref: str, hyp: str) -> float:
             else:
                 new_dp[j] = 1 + min(dp[j], new_dp[j - 1], dp[j - 1])
         dp = new_dp
+    return dp[m]
 
-    return dp[m] / len(ref_words)
+
+def clip_edits(ref: str, hyp: str) -> tuple[int, int]:
+    """Return (word_edit_distance, ref_word_count) for corpus-WER aggregation."""
+    ref_words = ref.strip().split()
+    hyp_words = hyp.strip().split()
+    if not ref_words:
+        return 0, 0
+    return _edit_distance(ref_words, hyp_words), len(ref_words)
+
+
+def _corpus_wer(edits: list[tuple[int, int]]) -> float:
+    """Corpus (micro-averaged) WER: total edits / total reference words.
+
+    This matches 03_compute_metrics.py. The previous macro-average (mean of
+    per-clip WER ratios) was dominated by short dialectal clips and inflated
+    the reported WER well above the corpus value.
+    """
+    total_e = sum(e for e, _ in edits)
+    total_n = sum(n for _, n in edits)
+    return total_e / total_n if total_n else 0.0
+
+
+def per_clip_wer(ref: str, hyp: str) -> float:
+    """Per-clip WER ratio. Used only for the Cohen's d effect size."""
+    edits, n = clip_edits(ref, hyp)
+    return edits / n if n else 0.0
 
 
 def load_predictions(model_key: str) -> list[dict]:
@@ -61,7 +82,13 @@ def load_predictions(model_key: str) -> list[dict]:
     if not path.exists():
         return []
     with open(path, encoding="utf-8") as f:
-        return json.load(f)
+        preds = json.load(f)
+    # Surface-clean ref/hyp so significance tests run on the same basis as the
+    # WER reported by 03_compute_metrics.py.
+    for p in preds:
+        p["reference"] = normalize_transcript(p.get("reference", ""))
+        p["hypothesis"] = normalize_transcript(p.get("hypothesis", ""))
+    return preds
 
 
 # ── Bootstrap CI ─────────────────────────────────────────────────────────────
@@ -76,21 +103,24 @@ def bootstrap_wer_ci(
     """
     Returns (observed_wer, lower_bound, upper_bound) via bootstrap resampling.
     """
-    rng      = random.Random(seed)
-    n        = len(refs)
-    clip_wers = [per_clip_wer(r, h) for r, h in zip(refs, hyps)]
+    rng   = random.Random(seed)
+    edits = [clip_edits(r, h) for r, h in zip(refs, hyps)]
+    edits = [e for e in edits if e[1] > 0]          # drop empty references
+    n     = len(edits)
+    if n == 0:
+        return 0.0, 0.0, 0.0
 
-    observed = sum(clip_wers) / n if n else 0.0
+    observed = _corpus_wer(edits)                    # corpus (micro) WER
 
-    boot_means = []
+    boot = []
     for _ in range(n_iters):
-        sample = [clip_wers[rng.randrange(n)] for _ in range(n)]
-        boot_means.append(sum(sample) / n)
+        sample = [edits[rng.randrange(n)] for _ in range(n)]
+        boot.append(_corpus_wer(sample))
 
-    boot_means.sort()
+    boot.sort()
     alpha = (1 - ci) / 2
-    lo    = boot_means[int(alpha * n_iters)]
-    hi    = boot_means[int((1 - alpha) * n_iters)]
+    lo    = boot[int(alpha * n_iters)]
+    hi    = boot[int((1 - alpha) * n_iters)]
     return round(observed, 4), round(lo, 4), round(hi, 4)
 
 
@@ -111,29 +141,33 @@ def paired_bootstrap_test(
     Standard approach: Berg-Kirkpatrick et al. (2012).
     """
     rng = random.Random(seed)
-    n   = len(refs)
+    ea = [clip_edits(r, h) for r, h in zip(refs, hyps_a)]
+    eb = [clip_edits(r, h) for r, h in zip(refs, hyps_b)]
+    keep = [i for i in range(len(refs)) if ea[i][1] > 0]
+    ea = [ea[i] for i in keep]
+    eb = [eb[i] for i in keep]
+    n  = len(ea)
 
-    wers_a = [per_clip_wer(r, h) for r, h in zip(refs, hyps_a)]
-    wers_b = [per_clip_wer(r, h) for r, h in zip(refs, hyps_b)]
+    wer_a = _corpus_wer(ea)
+    wer_b = _corpus_wer(eb)
+    observed_diff = wer_a - wer_b                       # positive = B is better
 
-    observed_diff = sum(wers_a) / n - sum(wers_b) / n  # positive = B is better
-
-    count_greater = 0
+    # One-sided p-value: fraction of resamples where B's improvement over A
+    # vanishes or reverses (corpus WER_B >= corpus WER_A).
+    count_no_improve = 0
     for _ in range(n_iters):
-        idxs    = [rng.randrange(n) for _ in range(n)]
-        boot_a  = sum(wers_a[i] for i in idxs) / n
-        boot_b  = sum(wers_b[i] for i in idxs) / n
-        if (boot_a - boot_b) >= observed_diff:
-            count_greater += 1
+        idxs   = [rng.randrange(n) for _ in range(n)]
+        boot_a = _corpus_wer([ea[i] for i in idxs])
+        boot_b = _corpus_wer([eb[i] for i in idxs])
+        if (boot_a - boot_b) <= 0:
+            count_no_improve += 1
 
-    p_value = count_greater / n_iters
+    p_value = count_no_improve / n_iters
     return {
-        "wer_a":          round(sum(wers_a) / n, 4),
-        "wer_b":          round(sum(wers_b) / n, 4),
+        "wer_a":          round(wer_a, 4),
+        "wer_b":          round(wer_b, 4),
         "wer_reduction":  round(observed_diff, 4),
-        "wer_reduction_pct": round(
-            observed_diff / (sum(wers_a) / n) * 100 if sum(wers_a) else 0.0, 2
-        ),
+        "wer_reduction_pct": round(observed_diff / wer_a * 100 if wer_a else 0.0, 2),
         "p_value":        round(p_value, 4),
         "significant_at_005": p_value < 0.05,
         "significant_at_001": p_value < 0.01,
@@ -284,13 +318,19 @@ def main():
     ]
 
     report_text = "\n".join(lines)
-    print("\n" + report_text)
 
+    # Save first so the report is never lost to a console encoding error.
     txt_path  = RESULTS_DIR / "statistical_report.txt"
     json_path = RESULTS_DIR / "statistical_report.json"
     txt_path.write_text(report_text, encoding="utf-8")
     with open(json_path, "w", encoding="utf-8") as f:
         json.dump(report, f, ensure_ascii=False, indent=2)
+
+    # Print, surviving consoles that cannot encode Unicode (e.g. Windows cp1252).
+    try:
+        print("\n" + report_text)
+    except UnicodeEncodeError:
+        print("\n" + report_text.encode("ascii", "replace").decode("ascii"))
 
     print(f"\nSaved: {txt_path}")
     print(f"Saved: {json_path}")

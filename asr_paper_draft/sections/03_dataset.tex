@@ -91,7 +91,57 @@ Noakhali     & Southeast Bangladesh               & 1{,}235 &  3.93 \\
 \end{tabular}
 \end{table}
 
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.92\linewidth]{../evaluation/plots/dialect_distribution.pdf}
+\caption{Clip distribution across the 15 dialects. Coverage is intentionally
+broad but naturally imbalanced, mirroring online content availability: Sylhet is
+the largest (reflecting its prominence in vlog/diaspora content) and a long tail
+covers low-resource varieties such as Noakhali and Tangail.}
+\label{fig:dialect_dist}
+\end{figure}
+
 \subsection{Audio Processing Pipeline}
+
+Algorithm~\ref{alg:pipeline} summarises the end-to-end construction pipeline,
+from raw dialect-name search queries to the leakage-safe, quality-filtered
+benchmark. Each step is detailed in the paragraphs that follow.
+
+\begin{algorithm}[t]
+\caption{BanglaMix: From Raw Dialectal Audio to a Curated CS-ASR Benchmark}
+\label{alg:pipeline}
+\begin{algorithmic}[1]
+\Require dialect-name queries $\mathcal{Q}$; VAD aggressiveness $a$;
+no-speech thresholds $\tau_{\text{lo}}{=}0.30,\ \tau_{\text{hi}}{=}0.60$; split ratio $80/10/10$
+\Ensure curated dataset $\mathcal{D}=(\mathcal{D}_{\text{tr}},\mathcal{D}_{\text{dev}},\mathcal{D}_{\text{te}})$
+\Statex \textit{Step 1: Acquire and segment}
+\State $\mathcal{A} \gets \textsc{Download16k}(\mathcal{Q})$ \Comment{yt-dlp + ffmpeg; shared dedup archive}
+\State $\mathcal{C} \gets \textsc{VADSegment}(\mathcal{A}, a)$ \Comment{WebRTC VAD; 5--15\,s clips $\Rightarrow$ 51{,}857}
+\Statex \textit{Step 2: Transcribe and detect code-switching}
+\For{each clip $c \in \mathcal{C}$}
+    \State $t_c \gets \textsc{WhisperLargeV3}(c,\ \text{lang}{=}\text{bn})$
+    \State $c.\textsc{cs} \gets \textsc{ScriptCSDetect}(t_c)$ \Comment{Bengali vs.\ Latin Unicode ranges}
+\EndFor
+\Statex \textit{Step 3: Silver-standard annotation (no human transcribers)}
+\State $\mathcal{A} \gets \{c : \textsc{nsp}(c) < \tau_{\text{lo}}\}$ \Comment{auto-accept $\Rightarrow$ 39{,}772}
+\State $\mathcal{B} \gets \{c : \tau_{\text{lo}} \le \textsc{nsp}(c) < \tau_{\text{hi}}\}$ \Comment{borderline $\Rightarrow$ 8{,}712}
+\For{each $c \in \mathcal{B}$}
+    \State $d \gets \textsc{Qwen2.5Judge}(t_c)$ \Comment{4 dimensions; \textsc{accept}/\textsc{reject}/\textsc{uncertain}}
+    \If{$d = \textsc{accept}$}
+        \State $\mathcal{A} \gets \mathcal{A} \cup \{c\}$ \Comment{$+1{,}727$; reviewed pool $\Rightarrow$ 41{,}499}
+    \EndIf
+\EndFor
+\Statex \textit{Step 4: Normalise transcripts}
+\State $\forall c \in \mathcal{A}:\ t_c \gets \textsc{Normalise}(t_c)$ \Comment{surface clean + 271-entry variant lexicon}
+\Statex \textit{Step 5: Augment (training pool only)}
+\State $\mathcal{G} \gets \textsc{Augment}(\mathcal{A})$ \Comment{speed $\times0.9/\times1.1$, $+$noise (20\,dB), pitch $\pm2$}
+\Statex \textit{Step 6: Quality filter and leakage-safe split}
+\State $\mathcal{A} \gets \textsc{DropLowQuality}(\mathcal{A} \cup \mathcal{G})$ \Comment{drop corrupted/foreign-script $\Rightarrow$ 75{,}742}
+\State $(\mathcal{D}_{\text{tr}},\mathcal{D}_{\text{dev}},\mathcal{D}_{\text{te}}) \gets \textsc{SourceStratSplit}(\mathcal{A},\ 80/10/10)$ \Comment{1{,}002 source groups}
+\State $\mathcal{D}_{\text{tr}} \gets \mathcal{D}_{\text{tr}} \cup \textsc{PinAugToTrain}(\mathcal{G})$ \Comment{leakage guard drops 7{,}912 cross-split aug.}
+\State \Return $\mathcal{D}$ \Comment{60{,}936 / 2{,}806 / 4{,}088 (train/dev/test)}
+\end{algorithmic}
+\end{algorithm}
 
 \paragraph{Step 1 --- Download.}
 Audio is extracted at 16~kHz mono WAV using \texttt{yt-dlp} with
@@ -130,7 +180,7 @@ dedicated LID model.
 We validate the CS labels by manually verifying a random sample of 200 clips
 (see Section~\ref{sec:analysis}).
 
-\paragraph{Step 4 --- Silver-standard annotation with LLM ensemble validation.}
+\paragraph{Step 4 --- Silver-standard annotation with LLM judge validation.}
 We apply a two-stage annotation strategy that eliminates the need for human
 transcribers entirely.
 
@@ -140,25 +190,26 @@ $\geq 3$ Bengali characters in output) are accepted directly as silver-standard
 labels~\citep{gandhi2023whisper}.
 Clips with \texttt{no\_speech\_prob} $\geq 0.60$ are rejected as noise.
 
-\textit{Stage 4b --- LLM ensemble judgment for borderline clips.}
+\textit{Stage 4b --- LLM judge for borderline clips.}
 The remaining clips ($0.30 \leq$ \texttt{no\_speech\_prob} $< 0.60$),
-which Whisper is uncertain about, are evaluated by a three-model LLM ensemble
-using Mistral-7B \citep{jiang2023mistral}, LLaMA-3.1-8B \citep{dubey2024llama},
-and Gemma-2-9B \citep{team2024gemma}, all running locally via Ollama.
-Each model independently scores the transcript on four dimensions:
+which Whisper is uncertain about, are evaluated by a single strong
+multilingual LLM judge (Qwen2.5~\citep{qwen2025}) running locally via Ollama.
+The judge scores each transcript on four dimensions:
 (1) Bengali script validity,
 (2) code-switching naturalness,
 (3) dialect authenticity, and
-(4) absence of noise or hallucination.
-A clip is \textbf{accepted} if $\geq 2$ of the 3 models vote ACCEPT,
-\textbf{rejected} if $\geq 2$ vote REJECT, and flagged as \textbf{uncertain}
-otherwise.
-Uncertain clips are excluded from training data (conservative approach).
+(4) absence of noise or hallucination,
+and returns a single ACCEPT / REJECT / UNCERTAIN decision.
+Accepted clips are merged into the silver-standard training pool, rejected
+clips are discarded, and uncertain clips are excluded (conservative approach).
 
-This ensemble design mitigates individual LLM biases: a single model may
-be inconsistent in judging dialectal Bengali, but the majority vote across
-three architecturally distinct models is substantially more reliable.
-Running models locally preserves data privacy and incurs no API costs.
+We deliberately use a single high-capacity judge at this stage rather than a
+multi-model ensemble: the borderline set is large, and one multilingual model
+with strong Bengali coverage offers a favourable quality/throughput trade-off
+for binary accept/reject decisions. Running the model locally preserves data
+privacy and incurs no API costs. A multi-model LLM ensemble is instead used as
+an \emph{evaluation} metric (Section~\ref{sec:analysis}), where rating
+reliability matters most.
 
 \paragraph{Step 5 --- Transcript normalisation.}
 Before building the final dataset, all transcripts are processed through a
@@ -173,7 +224,8 @@ two-level normalisation pipeline implemented in \texttt{text\_normalization.py}:
         punctuation stripping and whitespace normalisation.
   \item \textbf{Pronunciation variant mapping} (applied during evaluation
         only): maps phonetic and script variants of borrowed English words to
-        a single canonical form using a curated lexicon of \TODO{200+} entries
+        a single canonical form using a curated lexicon of 271 canonical entries
+        (649 spelling variants)
         (e.g., \textit{miting} $\to$ \textit{meeting},
         \textit{মিটিং} $\to$ \textit{meeting},
         \textit{ofis} $\to$ \textit{office}).
@@ -190,21 +242,34 @@ Clips are split at the \emph{source level}: all clips from the same original
 video are kept in the same split to prevent speaker leakage across train/dev/test.
 An 80/10/10 ratio with dialect-stratified source-level sampling ensures every
 dialect appears in all three splits proportionally.
+Augmented clips (Section~\ref{sec:dataset}, Data Augmentation) inherit the
+source of the clip they are derived from and are added to \emph{train only}
+when that source is assigned to train; if the source falls in dev/test the
+augmented copy is dropped, so augmentation never leaks a source across splits.
+Of the 51{,}857 segmented clips, 41{,}499 pass silver-standard annotation
+(Algorithm~\ref{alg:pipeline}); after transcript quality filtering, 36{,}376
+clips form the curated benchmark. Table~\ref{tab:splits} reports the final
+split statistics used in all experiments. The training set additionally
+includes the audio-augmented clips it was trained on; the dev and test sets
+remain unaugmented. The unaugmented core comprises 36{,}376 clips:
+29{,}482 train, 2{,}806 dev, 4{,}088 test.
 
 \begin{table}[h]
 \centering
-\caption{BanglaMix train/dev/test split statistics.}
+\caption{BanglaMix train/dev/test split statistics, after leakage-safe
+source-level splitting and transcript quality filtering. The training set
+includes audio augmentation; dev/test are unaugmented.}
 \label{tab:splits}
 \small
 \begin{tabular}{lrrrr}
 \toprule
 \textbf{Split} & \textbf{Clips} & \textbf{Hours} & \textbf{CS clips} & \textbf{CS\%} \\
 \midrule
-Train & 33{,}568 & 105.15 & 1{,}940 & 5.8\% \\
-Dev   & 2{,}768  & 8.89   & 185    & 6.7\% \\
-Test  & 5{,}163  & 17.18  & 236    & 4.6\% \\
+Train & 60{,}936 & 188.4 & 4{,}485 & 7.4\% \\
+Dev   & 2{,}806  & 9.1   & 166     & 5.9\% \\
+Test  & 4{,}088  & 13.2  & 176     & 4.3\% \\
 \midrule
-Total & 41{,}499 & 131.23 & 2{,}361 & 5.7\% \\
+Total & 67{,}830 & 210.8 & 4{,}827 & 7.1\% \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -212,17 +277,22 @@ Total & 41{,}499 & 131.23 & 2{,}361 & 5.7\% \\
 
 \subsection{Data Augmentation}
 
-With \TODO{XX,XXX} CS clips in the training set, our corpus is already
-substantially larger than prior CS-ASR benchmarks (MUCS~2021: $\sim$5~hours
-of CS speech; SEAME: 60~hours).
-We therefore do not apply synthetic data generation in our primary experiments.
-However, to study robustness to data scarcity we conduct an auxiliary
-experiment in which audio augmentation is applied to the CS training subset:
-speed perturbation (factors $\times 0.9$ and $\times 1.1$), additive white
-noise (20~dB SNR), and pitch shift ($\pm2$ semitones).
-Results of this ablation are reported in Appendix~A.
-Augmented clips are added to the training set only; the dev and test sets
-remain unaugmented.
+The training set contains 4{,}485 code-switched clips (approximately 14~hours
+of CS speech). This is larger than the Bengali--English portion of
+MUCS~2021 ($\sim$5~hours) though smaller than the 60~hours of SEAME; the
+distinguishing contribution of BanglaMix is not raw CS volume but the
+combination of natural code-switching with 15-dialect coverage at 210~hours
+total --- a setting no prior corpus addresses. We therefore do not rely on
+synthetic data generation in our primary experiments.
+
+To improve robustness to acoustic variation across dialects and recording
+conditions, we apply audio augmentation to the training pool: speed
+perturbation (factors $\times 0.9$ and $\times 1.1$), additive white noise
+(20~dB SNR), and pitch shift ($\pm 2$ semitones), yielding 31{,}454 augmented
+training clips. Each augmented clip inherits the source of the recording it is
+derived from and is pinned to the training split (Step~6), so augmentation
+never leaks a source across splits. Augmentation is applied to training clips
+only; the dev and test sets remain unaugmented.
 
 \subsection{Dataset Quality}
 

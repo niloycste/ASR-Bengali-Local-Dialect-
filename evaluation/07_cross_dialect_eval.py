@@ -97,6 +97,7 @@ def eval_per_dialect_fast(model_key: str = "ft_whisper_all"):
         from jiwer import wer as jiwer_wer, cer as jiwer_cer
     except ImportError:
         print("[ERROR] pip install jiwer"); raise SystemExit(1)
+    from dataset_pipeline.text_normalization import full_normalize
 
     from collections import defaultdict
     by_dialect = defaultdict(list)
@@ -111,12 +112,20 @@ def eval_per_dialect_fast(model_key: str = "ft_whisper_all"):
     print("-" * 60)
 
     for dialect in sorted(by_dialect.keys()):
-        preds    = by_dialect[dialect]
-        refs     = [p["reference"]  for p in preds if p["reference"].strip()]
-        hyps     = [p["hypothesis"] for p in preds if p["reference"].strip()]
+        preds = by_dialect[dialect]
+        # Normalise ref/hyp like 03_compute_metrics (incl. repetition collapse)
+        # so per-dialect WER is consistent with the main results table.
+        pairs = [(full_normalize(p["reference"]), full_normalize(p["hypothesis"]))
+                 for p in preds]
+        pairs = [(r, h) for r, h in pairs if r.strip()]
+        refs  = [r for r, _ in pairs]
+        hyps  = [h for _, h in pairs]
         cs_preds = [p for p in preds if p.get("is_code_switched")]
-        refs_cs  = [p["reference"]  for p in cs_preds if p["reference"].strip()]
-        hyps_cs  = [p["hypothesis"] for p in cs_preds if p["reference"].strip()]
+        cs_pairs = [(full_normalize(p["reference"]), full_normalize(p["hypothesis"]))
+                    for p in cs_preds]
+        cs_pairs = [(r, h) for r, h in cs_pairs if r.strip()]
+        refs_cs  = [r for r, _ in cs_pairs]
+        hyps_cs  = [h for _, h in cs_pairs]
 
         if not refs:
             continue

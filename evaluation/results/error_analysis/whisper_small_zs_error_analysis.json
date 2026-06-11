@@ -1,0 +1,362 @@
+{
+  "model": "whisper_small_zs",
+  "n_clips": 4088,
+  "error_breakdown": {
+    "substitution_rate": 0.2528,
+    "deletion_rate": 0.7458,
+    "insertion_rate": 0.067
+  },
+  "en_word_analysis": {
+    "total_en_words_in_ref": 715,
+    "en_words_preserved": 88,
+    "en_words_deleted": 627,
+    "en_word_survival_rate": 0.1231,
+    "en_deletion_rate": 0.8769,
+    "top_deleted_en_words": [
+      [
+        "the",
+        19
+      ],
+      [
+        "you",
+        18
+      ],
+      [
+        "in",
+        12
+      ],
+      [
+        "are",
+        9
+      ],
+      [
+        "to",
+        8
+      ],
+      [
+        "your",
+        8
+      ],
+      [
+        "day",
+        8
+      ],
+      [
+        "after",
+        8
+      ],
+      [
+        "for",
+        7
+      ],
+      [
+        "that",
+        7
+      ],
+      [
+        "language",
+        7
+      ],
+      [
+        "shanta",
+        7
+      ],
+      [
+        "of",
+        6
+      ],
+      [
+        "every",
+        6
+      ],
+      [
+        "not",
+        5
+      ],
+      [
+        "it",
+        5
+      ],
+      [
+        "shadow",
+        5
+      ],
+      [
+        "night",
+        5
+      ],
+      [
+        "morning",
+        5
+      ],
+      [
+        "and",
+        4
+      ]
+    ]
+  },
+  "top_substitutions": [
+    [
+      "তো→तो",
+      33
+    ],
+    [
+      "এই→आप",
+      20
+    ],
+    [
+      "আর→నినినినినినినినినినినినినినినినినినినినినినినినినినినినినినినిన",
+      20
+    ],
+    [
+      "কি→की",
+      19
+    ],
+    [
+      "এই→ḍḍ",
+      18
+    ],
+    [
+      "এই→ಸಿರಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿ",
+      16
+    ],
+    [
+      "আমি→ḍḍ",
+      15
+    ],
+    [
+      "আপ→आप",
+      14
+    ],
+    [
+      "এই→నినినినినినినినినినినినినినినినినినినినినినినినినినినినినినినిన",
+      14
+    ],
+    [
+      "কে→నినినినినినినినినినినినినినినినినినినినినినినినినినినినినినినిన",
+      11
+    ],
+    [
+      "এক→आप",
+      10
+    ],
+    [
+      "আমি→ḍᵃᵃ",
+      10
+    ],
+    [
+      "এই→ḍᵃᵃ",
+      10
+    ],
+    [
+      "না→ना",
+      9
+    ],
+    [
+      "এই→ये",
+      9
+    ]
+  ],
+  "worst_clips": [
+    {
+      "clip_id": "-JGXMwpNeIQ_0244",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 12.0,
+      "reference": "আনিত্রতে এই",
+      "hypothesis": "My question is really whether the cover in the head was to protect her from the attention of men or for a religious reason"
+    },
+    {
+      "clip_id": "Sylhet_UK_CS__JI3CKPGzx9g_0083",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 12.0,
+      "reference": "স্লাম্যালিকুম",
+      "hypothesis": "सلامualaikum He wants to have tea He wants to have quick tea"
+    },
+    {
+      "clip_id": "RXp9ycL_7Sg_0054",
+      "dialect": "Barishal",
+      "is_cs": false,
+      "wer": 10.5,
+      "reference": "আমি যোদে বলি দিমন",
+      "hypothesis": "यह आप यह तो यह तो यह तो यह तो यह तो यह तो यह तो यह तो यह तो यह तो यह तो यह तो यह तो यह तो यह तो यह तो यह तो यह तो यह तो यह तो"
+    },
+    {
+      "clip_id": "RXp9ycL_7Sg_0174",
+      "dialect": "Barishal",
+      "is_cs": false,
+      "wer": 9.7692,
+      "reference": "সেবন ডেজ অত্তার সাথ দিন 24 আওর আপনি নিজেদের সাথে প্রাক্টিস করতে পারেমে",
+      "hypothesis": "7 days 7 days 7 days 24 hours 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days 7 days"
+    },
+    {
+      "clip_id": "Sylhet_UK_CS__7cQH3yF9JmY_0084",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 9.0,
+      "reference": "পুছিত কোন্তে আমাত্যাকান",
+      "hypothesis": "but not a bad room for such a good price What a crazy few days we ve had exploring the north of Bangladesh going to much more"
+    },
+    {
+      "clip_id": "gXRfpQYGy3U_0023",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 8.9231,
+      "reference": "আমদেলা আ কুবি হাট ঵েকিং আহায়াতের জন্য আপার সেল দোযাক করেন আপনার সবাই",
+      "hypothesis": "and we can do many things with this work And we can do many things with this work And we can do many things with this work And we can do many things with this work And we can do many things with this work And we can do many things with this work And we can do many things with this work And we can do many things with this work And we can do many things with this work And we can do many things with this work And we can do many things with this work And we can do many things with this work And we can do many things with this"
+    },
+    {
+      "clip_id": "WZTks_8AtCs_0465",
+      "dialect": "Kishoreganj",
+      "is_cs": false,
+      "wer": 8.0,
+      "reference": "কালকি ভঙ্যল তনে নিনি",
+      "hypothesis": "अप याँ ता नहीं ता नहीं ता नहीं ता नहीं ता नहीं ता नहीं ता नहीं ता नहीं ता नहीं ता नहीं ता नहीं ता नहीं ता नहीं ता नहीं ता नही"
+    },
+    {
+      "clip_id": "P3l0zFqCSIc_0037",
+      "dialect": "Sandwip",
+      "is_cs": false,
+      "wer": 7.5,
+      "reference": "এমারে আয়বে দুন্যব কর্যাবে সুষ্টামাগে সুজু আমারে একথনতা",
+      "hypothesis": "in the description below if you want to click on it and go straight to that resource If you have decided that the person you are interviewing is a good fit for the job if they have answered the questions really well then you can move on to selling the job and selling the company to them So this is"
+    },
+    {
+      "clip_id": "FVq2lnRBHFQ_0000",
+      "dialect": "Old_Dhaka",
+      "is_cs": false,
+      "wer": 7.5,
+      "reference": "এস্টালো বালাইকুম",
+      "hypothesis": "अस्दा बालाएको अम्मडेका च्या औनेके प्रुष्ना कराईजे भईगे किवड़े बुच्छे शुन्दोभे कष्टबलो आश्टे विष्टाव च्या"
+    },
+    {
+      "clip_id": "5gHYGu6FPyY_0064",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 7.4,
+      "reference": "বত্যান্তে তাকায় কোজনে কোন্ত পারে",
+      "hypothesis": "He told the guy on the side of the street he s going the wrong way take him to this bridge he didn t seem to understand Keen Bridge so he showed him a picture on Google"
+    },
+    {
+      "clip_id": "5gHYGu6FPyY_0077",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 7.2,
+      "reference": "স্বাইয়ো বায়ে েহব্যান টু ভেন্ন",
+      "hypothesis": "and also grab a chai which i remember doing with a few friends back in 2018 here it s kind of a good meeting spot in that sense i got talking to a nice guy here"
+    },
+    {
+      "clip_id": "WZTks_8AtCs_0041",
+      "dialect": "Kishoreganj",
+      "is_cs": false,
+      "wer": 7.0,
+      "reference": "সকলি পুরায় যায় মাত",
+      "hypothesis": "अगर तर पावडा दे बाई तर पावडा दे थूँ तर पावडा जा मिथ खड़ा मुशी कराम तु भी जे सु लेगे आप आप पावडा दे बाई तर पा"
+    },
+    {
+      "clip_id": "Td9AAsG18Yc_0027",
+      "dialect": "Chittagong",
+      "is_cs": false,
+      "wer": 6.6667,
+      "reference": "আমনে নারাযন পুর্বাজার",
+      "hypothesis": "अगर प्रोचुर तोलर रहा है अगर थे के खिल प्रोचुर माच इलिश माच भिस्ष करे तर अगर प्रोचुर प्रोचुर प्रो"
+    },
+    {
+      "clip_id": "5gHYGu6FPyY_0091",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 6.5882,
+      "reference": "কেনারয়া প্রভিভ্য় সম্মাল কারণে সিলেট না আজ নপরেশ্রযব চ্যবে মরা একটিকিরেনি একটিকির কেনা সম্মালা একটিকির কে কে",
+      "hypothesis": "I m going to end things here from the silhouette I hope you enjoyed the video I m going to end things here from the silhouette I hope you enjoyed the video I m going to end things here from the silhouette I hope you enjoyed the video I hope you enjoyed the video I hope you enjoyed the video I hope you enjoyed the video I hope you enjoyed the video I hope you enjoyed the video I hope you enjoyed the video I hope you enjoyed the video I hope you enjoyed the video I hope you enjoyed the video I hope you enjoyed the video I hope you enjoyed"
+    },
+    {
+      "clip_id": "Sylhet_UK_CS__JI3CKPGzx9g_0183",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 6.4,
+      "reference": "সেখাই একি বলন দালশাখ লালশাখ ও এই শোটল এই ব্রাত স্পিনেতে ইদি ফিশ এই এবং ফিশ ভলা এই ফিতুনে ফিতুনে",
+      "hypothesis": "this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish this is like fish"
+    },
+    {
+      "clip_id": "RXp9ycL_7Sg_0078",
+      "dialect": "Barishal",
+      "is_cs": false,
+      "wer": 6.0,
+      "reference": "একটি জারপার কমিন্ডে জানান",
+      "hypothesis": "बज़े येज्चे थे दो दिवल आपनके आप दशुभ पास दशुभ पर पर एगर आप तर फाइद देखेज तेः बज़े येज्चे एच तो ज़ब प"
+    },
+    {
+      "clip_id": "5gHYGu6FPyY_0067",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 6.0,
+      "reference": "করতেরানে শিলিকে কানে",
+      "hypothesis": "going home when i was in silit last time i stayed on the south bank a bit further"
+    },
+    {
+      "clip_id": "5gHYGu6FPyY_0082",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 6.0,
+      "reference": "ক্যান্লে হলো সালামালিকুম হলো সালামালিকুম",
+      "hypothesis": "one person hello hello salaamalekum it s called dal vada and it s a shukti vada and this one sim vada and this one is called surisha okay so that"
+    },
+    {
+      "clip_id": "Sylhet_UK_CS__JI3CKPGzx9g_0220",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 5.875,
+      "reference": "এই এই এবং যেন্ত্রোয দিনারা দ্বিক্ষমেন হয় ভিত্যায",
+      "hypothesis": "the last two days have been food poisoned has not been fun so my favorite out of everything is definitely the eggplant the crispy batter and the soft bit in the middle made it like absolutely delicious and then i probably say the tomato mash or tomato"
+    },
+    {
+      "clip_id": "Sylhet_UK_CS__JI3CKPGzx9g_0156",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 5.5714,
+      "reference": "নিক্ষেন সুত্তুলেরারেপের সেলেঠে প্রান্ষেপে এর সেলেট বয়ন্লের",
+      "hypothesis": "the most famous restaurant here in Salat which is called Harnshbaat so this is the whole area it s so busy everybody comes in here to have their food and we have thousands and thousands of five star reviews"
+    },
+    {
+      "clip_id": "Sylhet_UK_CS__7cQH3yF9JmY_0068",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 5.25,
+      "reference": "ক্রিকেট স্তেডিয়ন ভিয় হয়",
+      "hypothesis": "International Cricket Stadium This is so cool You re not normally allowed in here but they ve given me special permission"
+    },
+    {
+      "clip_id": "P3l0zFqCSIc_0001",
+      "dialect": "Sandwip",
+      "is_cs": false,
+      "wer": 5.2,
+      "reference": "বাহয়় পরিকান্সনে একটিওটনার শ্বারেষির আমায় বালে এই অন্যাড়ারের অশববাহ অন্যায়া",
+      "hypothesis": "to ask Well in this video I have got you covered with some practical advice on how to conduct a job interview so let s get straight into it The first thing I want to talk about is the interview structure so what stages or structure should the interview follow and ideally"
+    },
+    {
+      "clip_id": "Sylhet_UK_CS__JI3CKPGzx9g_0127",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 5.1667,
+      "reference": "হ্যাতি এইজে তুনে শ্যেসে ময়ে আমারে",
+      "hypothesis": "okay that was worth the 500 Dakar nice performance here by the river compared to Dakar here in Salat like i ve noticed the kind of like the beggars and the"
+    },
+    {
+      "clip_id": "7aUf1jXQy44_0009",
+      "dialect": "Narsingdi",
+      "is_cs": false,
+      "wer": 5.0,
+      "reference": "আস্যু আশ্ আস্ আশ্ টিক হে ইছে",
+      "hypothesis": "आश रे की बोलो आश रे की बोलो आश रे की बोलो आश रे की बोलो आश रे की बोलो आश रे की बोलो आश रे की बोलो आश रे की बोलो आश रे क"
+    },
+    {
+      "clip_id": "gXRfpQYGy3U_0008",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 5.0,
+      "reference": "ক্ষেলি ক্ষেলি",
+      "hypothesis": "अगर लगा शेए येजीश्टी अगर लगा वाईजीश्टीः वाईशीः वाईशीः वाई"
+    }
+  ]
+}

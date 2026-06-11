@@ -2,44 +2,47 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-We presented \textbf{BanglaMix}, the first large-scale dataset and benchmark
-for dialectal Bengali--English code-switching ASR.
+This work presented \textbf{BanglaMix}, the first large-scale dataset and
+benchmark for dialectal Bengali--English code-switching ASR.
 The dataset comprises 51,857 clips totalling 164.74~hours across 15 regional
 dialects of Bangladesh, collected from YouTube and Facebook using
 dialect-name search queries targeting content genres where natural CS is
 most prevalent.
 An automated pipeline based on WebRTC VAD segmentation, Whisper
-silver-standard transcription, and a three-model LLM ensemble judge
-(Mistral-7B, LLaMA-3.1-8B, Gemma-2-9B) for borderline clip validation
-enables large-scale annotation without any human transcribers.
+silver-standard transcription, and a single-model LLM judge
+(Qwen2.5) for borderline clip validation enables large-scale annotation
+without any human transcribers. For evaluation, a separate three-model LLM
+ensemble (Mistral-7B, LLaMA-3.1-8B, Gemma) rates hypotheses beyond surface WER.
 
-We benchmarked five ASR architectures---Whisper (five sizes), the Ben-10
-dialect-tuned Tugstugi model, Meta MMS, wav2vec2-XLS-R, and WavLM---under
-zero-shot and fine-tuned conditions.
+This work benchmarked three ASR architectures---Whisper, Meta MMS, and
+wav2vec2-XLS-R---under zero-shot and fine-tuned conditions.
 Key findings are:
 
 \begin{enumerate}[leftmargin=2em, itemsep=2pt]
   \item Zero-shot multilingual models substantially underperform on dialectal CS
-        speech, even state-of-the-art Whisper large-v3.
-  \item Dialect-only fine-tuning (Ben-10 / Ablation A) improves WER-BN but
-        increases WER-EN; CS-only fine-tuning (Ablation B) does the opposite.
-        The combination (BanglaMix ALL) achieves the best performance across all
-        metrics, confirming that both data types are necessary.
-  \item LM shallow fusion with a 5-gram KenLM model reduces CTC model WER by
-        a relative \TODO{XX.X}\% for wav2vec2 and \TODO{XX.X}\% for WavLM.
-  \item The proposed Whisper FT ALL model achieves \TODO{XX.X}\% WER overall
-        and \TODO{XX.X}\% WER on CS clips, representing a \TODO{XX.X}\%
-        relative improvement over the strongest baseline.
-  \item Per-dialect analysis reveals that phonologically distant dialects
-        (Chittagong, Sandwip, Sylhet) remain the most challenging, suggesting
-        future work should prioritise targeted data collection for these dialects.
+        speech ($\geq 0.91$~WER), even state-of-the-art Whisper large-v3.
+  \item Dialect-only fine-tuning (Ablation A) and code-switch-only fine-tuning
+        (Ablation B) trade off Bengali vs.\ English recognition: BN\_ONLY barely
+        reproduces English (EN survival 0.18), while CS\_ONLY best preserves it
+        (0.47) at the cost of overall accuracy. Training on \emph{all} data gives
+        the best balance.
+  \item The proposed Whisper FT ALL model achieves \textbf{0.80~WER /
+        0.49~CER} overall (0.82~WER on CS clips), a 25\% relative improvement
+        over its zero-shot counterpart and a statistically significant gain over
+        every baseline ($p<0.001$).
+  \item Absolute error remains high: dialectal Bengali has no standardised
+        orthography and labels are silver-standard, so BanglaMix is best viewed
+        as a challenging open benchmark rather than a solved task.
+  \item Per-dialect analysis reveals that the most phonologically distinct
+        dialect, Sylhet, is the hardest across all models, suggesting future
+        work should prioritise targeted data collection for such varieties.
 \end{enumerate}
 
 \paragraph{Limitations.}
 BanglaMix relies on silver-standard transcripts from Whisper, which may
 contain systematic errors---particularly for words spoken in strong dialect
 with no standard Bengali equivalent.
-CS clip proportion (\TODO{$\sim$29\%}) reflects the natural prevalence of
+The code-switched proportion ($\sim$7\%) reflects the natural prevalence of
 CS in our collected content; more aggressive query targeting or domain
 selection could increase this.
 The dataset is limited to audio from social media, which may not generalise

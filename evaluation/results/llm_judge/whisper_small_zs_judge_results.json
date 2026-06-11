@@ -1,0 +1,2972 @@
+[
+  {
+    "clip_id": "Zp4ZvP4uQak_0000",
+    "dialect": "Chittagong",
+    "is_cs": false,
+    "reference": "ইযেনারা সোহর উন্দু ইযোতারার ভারি আযোতারি গুরোইদে হাই মানুষ্র হোমারি",
+    "hypothesis": "ឍ្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្�",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not contain any recognizable words or phrases from the reference."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely unrelated to the reference, suggesting a complete failure of ASR"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and conveys no meaning, preserves no code-switched words, and is not Bengali."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "Zp4ZvP4uQak_0001",
+    "dialect": "Chittagong",
+    "is_cs": false,
+    "reference": "পারির সাদাছ সো ভুস্঵াহার উডান সাগোর ফারত হতো কিছে মাতা মাতি ফাইস লেকোর দারত মিলা সল্জাই সাই তারিবে মেগোর সোরাসো",
+    "hypothesis": "ḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍ�",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey any meaningful semantics and contains no English code-switched words or natural dialectal Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely wrong and does not convey any meaning from the reference"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and conveys no meaning, preserving neither the code-switched words nor the dialect."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "Zp4ZvP4uQak_0002",
+    "dialect": "Chittagong",
+    "is_cs": false,
+    "reference": "সোপ নোরামো তাকা আরার পন্তোর নোরি পন্তো আরাজান আরার গোরে",
+    "hypothesis": "वूँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँँ",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and contains no English code-switched words. The output appears to be random characters and does not resemble natural dialectal Bengali"
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely unrelated to the reference, suggesting a complete failure of semantic understanding and dialect preservation."
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and conveys no meaning, preserves no code-switched words, and is not recognizable as Bengali."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "Zp4ZvP4uQak_0005",
+    "dialect": "Chittagong",
+    "is_cs": false,
+    "reference": "সালে রারা সান্ধ গারি শুভা লঙার মানিক সোরি শাংগুর রিবার হক্ষো পাদা",
+    "hypothesis": "अच्छेरा बूंदूर नेट्वर नाइन यो अबार असम नेशो गेरा सोले रादा संदगारी जुवो लंगर मानिक सोरी शंगुरी बार धाप्शो बाधा",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 4,
+        "dialect_naturalness": 2,
+        "brief_reason": "The core meaning is preserved but some words are incorrect. English code-switched words are mostly present except for 'ribaar' and 'dhapsho'. The dialect sounds partially naturalized to standard Benga"
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 3,
+        "dialect_naturalness": 2,
+        "brief_reason": "Hypothesis conveys a different meaning, some English code-switched words are preserved but not all, and the dialectal naturalness is partially lost"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is largely unintelligible and bears almost no resemblance to the reference in terms of meaning or code-switching."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 1.67,
+        "std": 1.155,
+        "confidence": 0.769,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 2.33,
+        "std": 2.082,
+        "confidence": 0.584,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 1.33,
+        "std": 1.155,
+        "confidence": 0.769,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 1.78,
+    "agreement_rate": 0.333,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "Zp4ZvP4uQak_0006",
+    "dialect": "Chittagong",
+    "is_cs": false,
+    "reference": "ভুকুরু মাদে শপ্ন হাজা তারু গরি বইডে দুরি দিল্দুরি আছাম্পা থারি সলে নারার সাংদোর গারি শুবলাঙার ভানিক সোরি সলে রানা সন্দর কারি লক্কর সক্কর সুবো লঙ্গের মানি সেরি বক্কর সক্কর বন্দুর নেট্লোর আসে ও আরে",
+    "hypothesis": "ន្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្�",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and contains no English code-switched words or natural dialectal Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely unrelated to the reference, suggesting a complete failure of ASR"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and conveys no meaning, preserves no code-switched words, and is not recognizable as Bengali."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "Zp4ZvP4uQak_0007",
+    "dialect": "Chittagong",
+    "is_cs": false,
+    "reference": "যে তোন্যো সেয়ারে, সেনে সাইবে এন্ডারে আণকি লাগের ভাই পোন্ধু আরার সান আরার গোয়ে পনি সটোরার পোন্ধু আরার সান",
+    "hypothesis": ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "No words are present in the hypothesis"
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is empty, indicating complete failure to preserve meaning and dialect"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is entirely composed of commas and does not convey any meaning or preserve any code-switched elements."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "Zp4ZvP4uQak_0008",
+    "dialect": "Chittagong",
+    "is_cs": false,
+    "reference": "আর আর জান আর আর গোর্ভো সন্তো ভ্যাম এই আটেলে দাত্তি বাই সনি ভুমেজান",
+    "hypothesis": "आदा अगा आदा आदा आदा आदा आदा आदा आदा आदा आदा आदा आदा आदा आदा आदा आदा आदा आदा आदा आदा आदा आदा आदा आदा आ�",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and contains no English code-switched words or natural dialectal Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis has no relation to the reference, and is not even in Bengali"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is completely unintelligible and bears no resemblance to the reference transcript."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "Zp4ZvP4uQak_0010",
+    "dialect": "Chittagong",
+    "is_cs": false,
+    "reference": "দিফাইস লেকোর দারত প্রিলা সল্সাই সাই তারিবে মেগোর সোরা সোরি সোপো নোরা হোতা কারার",
+    "hypothesis": "ḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍ�",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and contains no English code-switched words or natural dialectal Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely wrong and does not convey any meaning from the reference"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and conveys no meaning, preserving neither code-switched words nor natural dialect."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "Zp4ZvP4uQak_0011",
+    "dialect": "Chittagong",
+    "is_cs": false,
+    "reference": "মন্দোর নোভোরি মন্দু আরার সান আরার গোর্ভোর সক্ত উরাম মন্দু আরার সান",
+    "hypothesis": "ḍṭo Ṭo Ṭo Ṭo Ṭi ḍṭu Ṭa Ṭa Ṭa Ṭa Ṭa Ṭa Ṭa Ṭa Ṭa Ṭa Ṭa Ṭa Ṭa Ṭa Ṭa Ṭa Ṭa Ṭa Ṭa Ṭa Ṭa Ṭa Ṭa Ṭa Ṭa",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and lacks English code-switched words. It also fails to capture the natural dialectal Bangladeshi speech."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely unrelated to the reference, suggesting a complete failure of semantic understanding and dialect preservation."
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is unintelligible and bears no resemblance to the reference, indicating a complete failure in recognizing the speech."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.67,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.22,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "Zp4ZvP4uQak_0012",
+    "dialect": "Chittagong",
+    "is_cs": false,
+    "reference": "আনার গোর পোসন নোব্রাম হেযা টেলে দাওতি পাই সোনি মুমেজান",
+    "hypothesis": "आरार गोर पो सो भ्राम आरी आप टेले दोस दीः भाई सोणी भूम आजान",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 2,
+        "dialect_naturalness": 1,
+        "brief_reason": "The hypothesis conveys the core meaning but contains errors in some words. English code-switched words are preserved but with significant phonetic variations. The dialect is heavily over-corrected to "
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 2,
+        "dialect_naturalness": 1,
+        "brief_reason": "Hypothesis conveys core meaning but some words are wrong, English CS words are partially preserved, and dialectal Bengali is heavily over-corrected to standard Bengali"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 1,
+        "dialect_naturalness": 1,
+        "brief_reason": "The hypothesis contains numerous errors, rendering the meaning almost incomprehensible and failing to preserve any code-switched elements or natural dialect."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 2.33,
+        "std": 1.155,
+        "confidence": 0.769,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 1.67,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 1,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 1.67,
+    "agreement_rate": 0.778,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "Zp4ZvP4uQak_0013",
+    "dialect": "Chittagong",
+    "is_cs": false,
+    "reference": "আসি রাম্জান আইসু আসি এই শাহর আছেরা ভন্দুর নেট্যোর সাইন্যো আবার",
+    "hypothesis": "វ្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្�",
+    "per_model": {
+      "mistral:7b": null,
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely unrelated to the reference, suggesting a complete failure of ASR"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and conveys no meaning, preserving neither code-switched words nor natural dialect."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.5,
+        "std": 0.707,
+        "confidence": 0.859,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.17,
+    "agreement_rate": 1.0,
+    "valid_judges": 2
+  },
+  {
+    "clip_id": "Zp4ZvP4uQak_0014",
+    "dialect": "Chittagong",
+    "is_cs": false,
+    "reference": "ওসম নে সল ঘেরা সলে না রারা সন্তো গারি শুবল লঙ্যার মানিক সোরি শাংকুর লিবার হক্ষো পাজা ভুকুর মাঝে শপ্ন হাজা তোর গুডি ভোডে দুরি দিল দুরি যে ছম্পা থারি সোলে না রারা সংতুর কারি",
+    "hypothesis": "अज़ने सोगेरा सोले रारा संदो गारी शुवो लंगर मानिक सोरी शंगुर लिबर हषो बाजा बूकुर माजे सपनो हाजा तरगोरी भोड़े दोरी दिल",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 2,
+        "dialect_naturalness": 1,
+        "brief_reason": "The hypothesis conveys the core meaning but contains errors in some words. English code-switched words are not preserved exactly and the dialect is heavily over-corrected."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 2,
+        "dialect_naturalness": 4,
+        "brief_reason": "Hypothesis conveys core meaning but some words are wrong, English CS words are partially preserved, and dialectal Bengali features are mostly maintained."
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 3,
+        "dialect_naturalness": 3,
+        "brief_reason": "The hypothesis captures the general meaning but contains several word substitutions and transliterations, impacting both accuracy and naturalness."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 3,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "PASS"
+      },
+      "cs_preservation": {
+        "mean": 2.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 2.67,
+        "std": 1.528,
+        "confidence": 0.694,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 2.67,
+    "agreement_rate": 0.778,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "Zp4ZvP4uQak_0015",
+    "dialect": "Chittagong",
+    "is_cs": false,
+    "reference": "শুবলাংগার বানিক সোরি সলে রানা সান্দর কারি লক্কর যোক্কর শুবলাংগার মানি সোরি বক্কর যোক্কর বন্দুর নেট্যোক আসে ওহারে বন্দুর নেট্যোক আসে ওহারে সেনে সাইবে অন্দে দোরে আণকি লাগের বাই বন্দুর",
+    "hypothesis": "शूबो लंगर भानिक सोरी शोले राना संदर करी लखकर रखकर शूबो लंगर भानिक सोरी वखकर शूखकर बंदूर नेट्वर आसे वारे बंदूर ने�",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 2,
+        "dialect_naturalness": 1,
+        "brief_reason": "The hypothesis conveys the core meaning but misspells some words. It preserves some English code-switched words but replaces others with Bengali. The dialect is heavily over-corrected to standard Beng"
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 2,
+        "dialect_naturalness": 4,
+        "brief_reason": "Hypothesis conveys core meaning but some words are wrong, English CS words are partially preserved, and dialectal Bengali is mostly natural"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 2,
+        "dialect_naturalness": 3,
+        "brief_reason": "The hypothesis captures the general meaning but contains several word substitutions and misinterpretations, while some English code-switched words are present but not all."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 3,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "PASS"
+      },
+      "cs_preservation": {
+        "mean": 2,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 2.67,
+        "std": 1.528,
+        "confidence": 0.694,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 2.56,
+    "agreement_rate": 0.778,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "Zp4ZvP4uQak_0016",
+    "dialect": "Chittagong",
+    "is_cs": false,
+    "reference": "ভন্ধু আরারজান আরার গর্ভো সটো প্রাম",
+    "hypothesis": "वो वो आरार सान आरार गर बो सोट गर बो वो आरार सान आरार गर बो सोट गर",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 1,
+        "dialect_naturalness": 2,
+        "brief_reason": "The hypothesis preserves the core meaning but misinterprets some words. English code-switched words are replaced with Bengali, and the dialect is not natural."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 3,
+        "dialect_naturalness": 2,
+        "brief_reason": "Hypothesis conveys a different meaning, some English code-switched words are preserved but not all, and the dialectal naturalness is partially lost"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 3,
+        "dialect_naturalness": 3,
+        "brief_reason": "The hypothesis captures the general meaning but contains phonetic substitutions and some word errors, while retaining some code-switched elements."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 2.33,
+        "std": 1.155,
+        "confidence": 0.769,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 2.33,
+        "std": 1.155,
+        "confidence": 0.769,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 2.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 2.33,
+    "agreement_rate": 0.556,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "HS0Y-xaMbw4_0000",
+    "dialect": "Mymensingh",
+    "is_cs": false,
+    "reference": "মলছিলাম লালন সোঙ্গিতের কথা",
+    "hypothesis": "mĀqķilam lalon chongi del gatha.",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 3,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference. The English word 'song' is replaced with a Bengali phonetic approximation 'chongi'. No English code-switched words are preserved in th"
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 1,
+        "dialect_naturalness": 2,
+        "brief_reason": "Hypothesis conveys a similar meaning but with some word errors, drops most English code-switched words, and sounds somewhat natural but not perfectly like Bangladeshi dialect."
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 5,
+        "dialect_naturalness": 3,
+        "brief_reason": "The hypothesis captures the core meaning but contains some phonetic errors and a slight shift towards standard Bengali pronunciation."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 2.33,
+        "std": 1.155,
+        "confidence": 0.769,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 2,
+        "std": 2.646,
+        "confidence": 0.471,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 2.67,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 2.33,
+    "agreement_rate": 0.556,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "HS0Y-xaMbw4_0001",
+    "dialect": "Mymensingh",
+    "is_cs": false,
+    "reference": "লাসক আমার মনে হায় আপনারা আমার সাথে অনুভাক করতে পারছেন ধাকা সহরে এটি ছোট্ট কাতো ভুমি কম্প হত্ছে",
+    "hypothesis": "लश्व् क्या आपने आपने आपने औनुवभख कोटे पाच्चन दाखा सहरे इती चोटो का तो भूमी कुमपो होट्चे",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 2,
+        "dialect_naturalness": 1,
+        "brief_reason": "The hypothesis conveys the core meaning but contains errors in some words. English code-switched words are not preserved exactly and the dialect is heavily over-corrected."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 2,
+        "dialect_naturalness": 1,
+        "brief_reason": "Hypothesis deviates from reference in meaning, drops some English code-switched words, and sounds overly corrected to standard Bengali"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 1,
+        "dialect_naturalness": 1,
+        "brief_reason": "The hypothesis contains numerous errors, rendering the meaning almost unintelligible and failing to preserve any code-switched elements or natural dialect."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 1.67,
+        "std": 1.155,
+        "confidence": 0.769,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 1.67,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 1,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 1.45,
+    "agreement_rate": 0.778,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "HS0Y-xaMbw4_0002",
+    "dialect": "Mymensingh",
+    "is_cs": false,
+    "reference": "এই মহর্তে ভুমি কমপ্পটি হচ্ছে আমরা সেটে বশে অনুফাপ করছি",
+    "hypothesis": "आँ आँ आँ आँ आँ आँ आँ आँ आँ आँ आँ आँ आँ आँ आँ आँ आँ आँ आँ आँ आँ आँ आँ आँ आँ आँ आँ आँ आँ आँ आँ आँ",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and contains no English code-switched words or natural dialectal Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely unrelated to the reference, suggesting a complete failure of ASR"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and conveys no meaning, preserving neither code-switched words nor natural dialect."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "HS0Y-xaMbw4_0003",
+    "dialect": "Mymensingh",
+    "is_cs": false,
+    "reference": "দাশোক এই মহুর্তে অনুষ্ঠানটি শেশ করতে হোছে",
+    "hypothesis": "तो बुक भी बहालागते से दश्षोक ये महोरते उनुश्ठान्टी शेष्परते होचे",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 1,
+        "dialect_naturalness": 3,
+        "brief_reason": "The hypothesis conveys the core meaning but contains errors in word usage. English code-switched words are not preserved and the dialect is partially naturalized."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 3,
+        "dialect_naturalness": 2,
+        "brief_reason": "Hypothesis conveys a different meaning, some English CS words preserved but others dropped or replaced"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 1,
+        "brief_reason": "The hypothesis contains mostly gibberish and does not convey the meaning of the reference, and has no code-switched words."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 1.67,
+        "std": 1.155,
+        "confidence": 0.769,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 1.33,
+        "std": 1.528,
+        "confidence": 0.694,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 2,
+        "std": 1.0,
+        "confidence": 0.8,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 1.67,
+    "agreement_rate": 0.444,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "pkLj1zPl8O4_0002",
+    "dialect": "Tangail",
+    "is_cs": false,
+    "reference": "আমাদে এই ডিনো কি স্যুযব করা হ্য়াত তেছু",
+    "hypothesis": "आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and contains no English code-switched words or natural dialectal Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely unrelated to the reference, with no English code-switched words preserved and no dialectal Bengali features."
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is entirely gibberish and bears no resemblance to the reference, failing on all aspects."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "pkLj1zPl8O4_0003",
+    "dialect": "Tangail",
+    "is_cs": false,
+    "reference": "আশেয়েনে আপনা সর্তির একটিকথন সেঁডিওরে একটিন কাটে যারক্ষ্যাকারে কানপ বিক্ষেল যারকে তিক আলেছে",
+    "hypothesis": "if you enjoy this video don't forget to hit the like button and subscribe button so that you can have fun and hang in there love you all so much for that kappa hai this time so that you can check out our other vlog",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 3,
+        "dialect_naturalness": 1,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference. Some English code-switched words are preserved but many are replaced or dropped. The dialect is heavily over-corrected to standard Ben"
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 4,
+        "dialect_naturalness": 2,
+        "brief_reason": "Hypothesis conveys core meaning but with some word errors, preserves most English code-switched words, and has partially naturalised Bengali dialect"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 1,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis completely misses the meaning and code-switched elements of the reference, producing a nonsensical English-dominant output."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 1.67,
+        "std": 1.155,
+        "confidence": 0.769,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 2.67,
+        "std": 1.528,
+        "confidence": 0.694,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 1,
+        "std": 1.0,
+        "confidence": 0.8,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 1.78,
+    "agreement_rate": 0.444,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "pkLj1zPl8O4_0001",
+    "dialect": "Tangail",
+    "is_cs": true,
+    "reference": "পেন সুভুভে ক্ষেন মা কে কেভোড়ার সুভুভে biomedical কর্বন্ত করে।",
+    "hypothesis": "अगर अगर अगर अगर अगर अगर अगर अगर अगर अगर अगर अगर अगर अगर अगर अगर अगर अगर अगर अगर अगर अगर अगर अगर अगर अ�",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and contains no English code-switched words or natural dialectal Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely unrelated to the reference, suggesting a complete failure of ASR"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and bears no resemblance to the reference transcript in meaning or language."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "pkLj1zPl8O4_0005",
+    "dialect": "Tangail",
+    "is_cs": false,
+    "reference": "পাছা঵ী মাছেলে মাছেলে মাছেলে",
+    "hypothesis": "ស្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្�",
+    "per_model": {
+      "mistral:7b": null,
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely unrelated to the reference, suggesting a complete failure of semantic understanding and dialect preservation."
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and conveys no meaning, preserving neither code-switched words nor natural dialect."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.5,
+        "std": 0.707,
+        "confidence": 0.859,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.17,
+    "agreement_rate": 1.0,
+    "valid_judges": 2
+  },
+  {
+    "clip_id": "nWXAM515_aY_0001",
+    "dialect": "Narsingdi",
+    "is_cs": false,
+    "reference": "আসালোম মালেখুম, ইমুর্তে আমাদে সাথে আছে আমাদের মেধাবিন ছাত্রো মহমাদ হামিন মিযা",
+    "hypothesis": "ḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍ�",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and contains no English code-switched words or natural dialectal Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely wrong and does not convey any meaning from the reference"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and conveys no meaning, preserving neither code-switched words nor natural dialect."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "nWXAM515_aY_0003",
+    "dialect": "Narsingdi",
+    "is_cs": false,
+    "reference": "আহামদুলাস কে আমি জাপানের ভিষা পেয়েছি আসলে উনোপোতিটা প্রকাশ করার মতোনা ভাষে বলেপোছের তে বাগনা কেমন উনোপ করসে",
+    "hypothesis": "ḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍ�",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and contains no English code-switched words or natural dialectal Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely garbled and does not convey any meaning from the reference"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and conveys no meaning from the reference transcript."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "nWXAM515_aY_0006",
+    "dialect": "Narsingdi",
+    "is_cs": false,
+    "reference": "সান্যপানের সেডিংগ সেন্ডের আপার কি ভাবে আশাপ হয়েছিলো? আমার পন্ধুরমে আপতে মেলাস্তি ও সান্তা পানে সেখা একতুম প্রসনে তিকদিয়ে কেছিলো তো আপনকে এটা পেপারে বলসে পরে আমি এক",
+    "hypothesis": "ಸಿರಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿ",
+    "per_model": {
+      "mistral:7b": null,
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely unrelated to the reference, suggesting a complete failure of ASR"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and conveys no meaning, preserves no code-switched words, and is not Bengali."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.5,
+        "std": 0.707,
+        "confidence": 0.859,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.17,
+    "agreement_rate": 1.0,
+    "valid_judges": 2
+  },
+  {
+    "clip_id": "nWXAM515_aY_0008",
+    "dialect": "Narsingdi",
+    "is_cs": false,
+    "reference": "সান্যাপানি দেখতে পারেন হানান সারে সাথে কথা পলে যদি মানে হয় একান্তিক এপলিকেশন করেছে একান্তে এই সারে সাথে কথা বলকে দেখতে পারে আপনাকে অনে কনেক্ত হন্য বাদ আপতার পলো করতিছে",
+    "hypothesis": "ಸಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿಲಿ",
+    "per_model": {
+      "mistral:7b": null,
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely wrong and contains only gibberish, no Bengali or English words preserved"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and conveys no meaning, preserves no code-switched words, and is not Bengali speech."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.5,
+        "std": 0.707,
+        "confidence": 0.859,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.17,
+    "agreement_rate": 1.0,
+    "valid_judges": 2
+  },
+  {
+    "clip_id": "xI_lFn3SQbQ_0000",
+    "dialect": "Noakhali",
+    "is_cs": false,
+    "reference": "মাইন্সের কতা হুনি, আজ জিবন পুরে হতানত আইসে মাইন্সের কতা সুনে হমার জিবন পুরে তেনা তেনা হয়েগাসে আজ গান্নে গরে আমরা বগুরের ভাসা না আখালে ভাসা শিকেয়ম আজ গে আপনে গরো খামরা বগুরের ভাসা",
+    "hypothesis": "ಸಾರಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿ",
+    "per_model": {
+      "mistral:7b": null,
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely unrelated to the reference, suggesting a complete failure of ASR system"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and conveys no meaning from the reference transcript."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.5,
+        "std": 0.707,
+        "confidence": 0.859,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.17,
+    "agreement_rate": 1.0,
+    "valid_judges": 2
+  },
+  {
+    "clip_id": "xI_lFn3SQbQ_0001",
+    "dialect": "Noakhali",
+    "is_cs": false,
+    "reference": "আমার পাসান নুযাকেলীর ভাজা সিগেম ও বারে ভাই কাল গাইন রাস্তর বে হাস্টেয়া হাইসিলম আয় কাল কেমি রাস্তের পো আর পাস্টে কো পাস্নো এসিস্থের রেজাল হুনি আর বাহারে কি হিডা না হিশে এসেস্থি রেজার শুনে হমিলাকে",
+    "hypothesis": ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and contains no English code-switched words. It also lacks natural dialectal Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is empty, indicating complete failure to transcribe the reference"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is entirely composed of commas, indicating a complete failure to transcribe any meaningful content."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "xI_lFn3SQbQ_0002",
+    "dialect": "Noakhali",
+    "is_cs": false,
+    "reference": "আমার বাপ হমা কি পিটনে না দিসে কাল গে রাস্তদে জাবা সুমায় ডেনে ভিতে ঠেঙ হান্দাই গসে কাল রাস্তদে সাবা সুমায় টেনেন মধে পাউ ধুকে গাসে মানশের কতা হুনি আজ জিবন পুরে হাতানা তইইস মান্সের কতা সুনে হমার জিবন্ডা পুরেন",
+    "hypothesis": ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and lacks English code-switched words. The dialect is not natural."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is empty, indicating a complete failure to transcribe the reference speech."
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is entirely composed of commas, indicating a complete failure to transcribe any meaningful content."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.67,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.22,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "xI_lFn3SQbQ_0003",
+    "dialect": "Noakhali",
+    "is_cs": false,
+    "reference": "এত যানা যানা ভেগাসে ভাই তুয়েন দেকানা খাডায়ান একানা মুতি আই ভাই তুয়েন এটি দারারে হামেনা মুতি আইশে ইদে বাই কাল গাই হাস্পাতাল গেছিলেম জাই সাই দেন বেশনের রূপে লাদা হলাইকের মুপের ইরে ভাই কাল কাল",
+    "hypothesis": ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and lacks English code-switched words. It also fails to capture the natural dialectal Bangladeshi speech."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is empty, indicating complete failure to transcribe the reference speech."
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is entirely empty, indicating a complete failure to transcribe any meaningful content."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.67,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.22,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "xI_lFn3SQbQ_0004",
+    "dialect": "Noakhali",
+    "is_cs": false,
+    "reference": "আমি হাস্পতাল দ গেস্ন হো জায়ে দেখি বেশিনের পর সোটো সল্পে লগরক মতাত ছে",
+    "hypothesis": "ស្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្�",
+    "per_model": {
+      "mistral:7b": null,
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely unrelated to the reference, suggesting a complete failure of ASR"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and conveys no meaning, preserves no code-switched words, and is not Bengali."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.5,
+        "std": 0.707,
+        "confidence": 0.859,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.17,
+    "agreement_rate": 1.0,
+    "valid_judges": 2
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0000",
+    "dialect": "Rangpur",
+    "is_cs": false,
+    "reference": "প্রিশ্মায় কোনেয় প্রিশ্মায় প্রিশ্মায়",
+    "hypothesis": "ಸಾರಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿಕಿ",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and contains no English code-switched words. It also does not sound like natural dialectal Bangladeshi speech."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis has completely different words and does not preserve any English code-switched words, sounding unnatural"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and bears no resemblance to the reference, demonstrating no semantic correctness, code-switching preservation, or dialectal naturalness."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0002",
+    "dialect": "Rangpur",
+    "is_cs": false,
+    "reference": "মুলত মাঁলাদেশের স্কুল পরজে শিখাতিদের মাঝে আমেরিকান ইংগ্লিশের চর্চা এবং ব্যাবহার বারান ওই আমাদের মুল উদ্দেশো এছারা কুইজের মাধ্যমে মেধাপিদের মেধা ছালায় সুজক্ত থাকছে ইংগ্লিষ পরি উনুষ্টানে",
+    "hypothesis": "mĀla to, Ṭāla to, Ṭāla to, Ṭāla to, Ṭāla to, Ṭāla to, Ṭāla to, Ṭāla to, Ṭāla to, Ṭāla to, Ṭāla to, Ṭāla to, Ṭāla to, Ṭāla to, Ṭāla to, Ṭāla to, Ṭāla to, Ṭāla to, Ṭ",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and lacks English code-switched words. It also does not sound like natural dialectal Bangladeshi speech."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely wrong and empty, with no English CS words preserved"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 1,
+        "brief_reason": "The hypothesis is largely unintelligible and conveys almost no meaning from the reference, failing to preserve any code-switched elements or natural dialect."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.67,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.33,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0004",
+    "dialect": "Rangpur",
+    "is_cs": false,
+    "reference": "যে ক্লাস্রুমে আমেরিকান ইংগ্লিস সম্পর্কে বিশদ আলচনা করে এবং আমেরিকান ইংগ্লিসের চর্চা এবং ব্যাভাস সেখাবে",
+    "hypothesis": "jai klasrumme, amerikan engli shamparke, bhi shodalachunakorbe, bong amerikan engli se cha chaye, bong beabhash chekabhe.",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 4,
+        "dialect_naturalness": 2,
+        "brief_reason": "The core meaning is preserved but some English code-switched words are incorrect and the dialect is not natural."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 2,
+        "dialect_naturalness": 4,
+        "brief_reason": "Hypothesis conveys core meaning but some words are wrong, English CS words are partially preserved, and dialectal Bengali is mostly natural"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 4,
+        "dialect_naturalness": 4,
+        "brief_reason": "The hypothesis captures the core meaning and preserves most English code-switched words, though some word choices are slightly off and the phrasing is a bit awkward."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 3,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "PASS"
+      },
+      "cs_preservation": {
+        "mean": 3.33,
+        "std": 1.155,
+        "confidence": 0.769,
+        "verdict": "PASS"
+      },
+      "dialect_naturalness": {
+        "mean": 3.33,
+        "std": 1.155,
+        "confidence": 0.769,
+        "verdict": "PASS"
+      }
+    },
+    "overall_score": 3.22,
+    "agreement_rate": 0.556,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0005",
+    "dialect": "Rangpur",
+    "is_cs": true,
+    "reference": "আমরা ছলে যেবা কলাস্রুমে কিন্তু তার আগে আমরা জেনে নেবো এই কামপার সম্পরকে বিস্তারিত প্রধান শিখকের মুক থেকে Let's take a look আরহারসো বত্তিশালে",
+    "hypothesis": "आम्रा चोले जबो खलास्र में कि तो तार आगे आम्रा जेने ने बो एक आमपाश्वंपर के भीस्टारी तो प्रदान्शीखोकर मुखते के. लेर्च्टे",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 2,
+        "dialect_naturalness": 1,
+        "brief_reason": "The hypothesis conveys the core meaning but contains errors in some words. English code-switched words are not preserved exactly and the dialect is heavily over-corrected."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 2,
+        "dialect_naturalness": 3,
+        "brief_reason": "Hypothesis conveys a different meaning, some English code-switched words are preserved but not all, and it sounds partially naturalised to standard Bengali"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 1,
+        "dialect_naturalness": 1,
+        "brief_reason": "The hypothesis contains numerous errors, rendering the meaning largely incomprehensible and failing to preserve code-switched elements or natural dialect."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 1.67,
+        "std": 1.155,
+        "confidence": 0.769,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 1.67,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 1.67,
+        "std": 1.155,
+        "confidence": 0.769,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 1.67,
+    "agreement_rate": 0.556,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0006",
+    "dialect": "Rangpur",
+    "is_cs": false,
+    "reference": "এই রঙ্পুর জিলে এসক্যলের প্রতিষ্ঠা, আনস্ঠানিক প্রতিষ্ঠা আমাদের স্কুলে শিখারতি সংখা ১০০ একস্টিজন দুই শিফ্টে পরিচালিত হয় সকালের শিফ্ট স্বার সাত্যাতেকে শুরু হয় এবং দুপরের শিফ্ট সারে বারোরাতেকে শুরু হয় একটা না স্বারশাত্য থিকে",
+    "hypothesis": "अगर नासो एक सोटी जों तो तो तो तो तो तो तो तो तो तो तो तो तो तो तो तो तो तो तो तो तो तो तो तो तो तो तो तो तो तो तो तो तो तो तो �",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and contains no English code-switched words or natural dialectal Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely unrelated to the reference, suggesting a complete failure of ASR"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is completely unintelligible and bears no resemblance to the reference transcript."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0007",
+    "dialect": "Rangpur",
+    "is_cs": false,
+    "reference": "এই দুই শিট মিলে চলদে থাকে পাছটা বিশ পরচন্তো দুই শিটটে শিখক অর্গনগ্রাম আলাদা করে রয়েছে পাছিস করে পন্ছার জন এমন দুই শিপ্টে দুই জন সহাকারি প্রধান্শি কোপ্রাছেন বাচাদের এইজ এবলিটিম এপ্টিচিট অনুযেই তাদের মেধা",
+    "hypothesis": "ḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍ�",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and contains no English code-switched words or natural dialectal Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely garbled and does not convey any meaning from the reference"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and conveys no meaning, preserving neither code-switched words nor natural dialect."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0008",
+    "dialect": "Rangpur",
+    "is_cs": false,
+    "reference": "সেনি পার্দান সে পার্দানের মধে শিকার্থিরা নিজেদেরকে গণ্ডি বদ্ধ রাখুক তাই আমাদের",
+    "hypothesis": ", నినినినినినినినినినినినినినినినినినినినినినినినినినినినినినినిన",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and contains no English code-switched words or natural dialectal Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely unrelated to the reference, suggesting a complete failure of ASR"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and conveys no meaning from the reference transcript."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0009",
+    "dialect": "Rangpur",
+    "is_cs": false,
+    "reference": "চেষ্টা থাকে প্রসেনি পার্দনের পাসাবাসি জিলাই স্কুলের মাথে এবং সমাজের বিভিন্ন যায়গায় তাদের কে নিয়ে",
+    "hypothesis": "ज़ाश्टा ता के प्रटन प्शवःषी ज़े ले स्कुलर माथे वों समजर भिखिन नो जाएगाई तादर के निये रवागागागागागागागागाग",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 1,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and lacks English code-switched words. The Bengali dialect is heavily over-corrected."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis has significantly changed meaning, lost all English code-switched words, and sounds unnatural"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 1,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is largely unintelligible and bears little resemblance to the reference in terms of meaning or language."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 1,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.55,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0010",
+    "dialect": "Rangpur",
+    "is_cs": true,
+    "reference": "নিরবে ছিন প্রযাশ আমাদের থাকে কোকারিকোরের একটি বিডিজে সম্ভাধন যোমন BNCC, Scouts, Red Crescent এগুলো সহো আমাদের",
+    "hypothesis": "अगर निरोगे चिनो प्रःाष आमादे थाके खो करिको लेक्टिवी रीजे समफर्चन जो वन भी न्चेची शकाऊर्ष लेज्ग्रिष्ट एक लो सब हो",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 1,
+        "dialect_naturalness": 3,
+        "brief_reason": "The core meaning is preserved but some English code-switched words are replaced with Bengali. The dialectal naturalness is partially maintained."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 2,
+        "dialect_naturalness": 4,
+        "brief_reason": "Hypothesis conveys a different meaning, some English code-switched words are preserved but not all, and it sounds somewhat natural like Bangladeshi dialect"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is largely unintelligible and conveys a completely different meaning than the reference, with no preservation of code-switched elements or natural dialect."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 1.67,
+        "std": 1.155,
+        "confidence": 0.769,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 1,
+        "std": 1.0,
+        "confidence": 0.8,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 2.33,
+        "std": 2.082,
+        "confidence": 0.584,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 1.67,
+    "agreement_rate": 0.444,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0011",
+    "dialect": "Rangpur",
+    "is_cs": false,
+    "reference": "বিতরকো সংগ্যাঠন রয়েছে এখারে নিয়মিতো বিতরকোর চার্চা হয় সেই সাথে বিগ্যান ক্লাব রয়েছে একছে এছারাও যে বিভিনো ধরণের রাজাতিয় পরচ্যায়, রাস্যিয় পরচ্যায় ওলিমপিয়ট গুলো হয় বিভিনো সংকোঠণের মাধ্যমে",
+    "hypothesis": "ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស ស �",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and contains no English code-switched words. The output appears to be random characters and does not resemble natural dialectal Bengali"
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely unrelated to the reference, suggesting a failure in both semantic understanding and code-switching preservation"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is entirely gibberish and conveys no meaning from the reference transcript."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0013",
+    "dialect": "Rangpur",
+    "is_cs": true,
+    "reference": "নুম্মেনে অনুষ্ঠিত হয়। স্কুলের ফলাফলের কেত্রে যোদি আমি বলি সেষ্ট ফলাফল যে দুযে চাটটি হয়ে তার মধে রঙ্পর জিলাই স্কুল",
+    "hypothesis": ", నినినినినినినినినినినినినినినినినినినినినినినినినినినినినినినిన",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and contains no English code-switched words or natural dialectal Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely unrelated to the reference, suggesting a complete failure of semantic understanding and dialect preservation."
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and conveys no meaning from the reference transcript."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0014",
+    "dialect": "Rangpur",
+    "is_cs": false,
+    "reference": "সেষ্টত্ত বজায়ে লেখি চল্বার চেস্টা করে এখানে আমাদের চাটি ভবন রেছে চাটি ভবনে একটি ভবন আমারা সম্পুণ্যই লেয়ে ভিষেবে বেভার করে একটি ভাবন একাটিমিক",
+    "hypothesis": "अगर नादे चाट्टी बवाबन रहे चाट्टी बवाबने अगर शम्पुन नहीं लेएविशे पेप पर पर पर पर पर पर पर पर पर पर पर पर पर पर �",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 1,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and lacks English code-switched words. The dialect is heavily over-corrected to standard Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis conveys a completely different meaning, drops all English code-switched words, and does not resemble natural Bengali dialect"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is largely unintelligible and bears no resemblance to the reference transcript in terms of meaning or language."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.67,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.33,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0015",
+    "dialect": "Rangpur",
+    "is_cs": false,
+    "reference": "আর বাকি দুটি ভোবন তিন তলা এগ্লা আমাদে ক্লাস্ট্রম হেশে বেহার করি এগ্লা আমাদে মটামটি আমাদের কাস চোলে যে আর আমাদে দুইটি আইসেটি লাপ রাছে আইসেটি লাপ প্রতিনি ও",
+    "hypothesis": "आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and contains no English code-switched words or natural dialectal Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely unrelated to the reference, suggesting a complete failure of semantic understanding and preservation of code-switched words"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is entirely gibberish and bears no resemblance to the reference transcript in terms of meaning or language."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0016",
+    "dialect": "Rangpur",
+    "is_cs": false,
+    "reference": "নিয়ামিত এই লেপ গুলোতে চর্চা হয়। এখানে মরস্যীদ্র এছে, এখানে শুরম্যার অরিটোরি আমরা এছে। আমাদের শিখার্তিদেরকে চেস্টা কোছি সবার যোথ উদ্ধগে",
+    "hypothesis": ", నినినినినినినినినినినినినినినినినినినినినినినినినినినినినినినిన",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and contains no English code-switched words or natural dialectal Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely wrong and empty, with no Bengali or English words preserved"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and conveys no meaning from the reference transcript."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0017",
+    "dialect": "Rangpur",
+    "is_cs": true,
+    "reference": "সবার সহাজুগিতায় স্কুলটিকে যতো হানে একিনিয়া সম্বভ হয় RTV এবং Voice of America আজকের জিস আমার সাথে সম্প্রিক্ত তায় আমার কে আমার কে জি আপনো লাই",
+    "hypothesis": ", నినినినినినినినినినినినినినినినినినినినినినినినినినినినినినినిన",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and contains no English code-switched words. It also lacks natural dialectal Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely unrelated to the reference, suggesting a complete failure of ASR"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and conveys no meaning from the reference transcript."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0018",
+    "dialect": "Rangpur",
+    "is_cs": false,
+    "reference": "অনেক সুবেছা এমন ধন্যানে জনেয়ে ধন্যানে বত্তে আগেই কথা দেখিছিনা মান্না চলে আসবো ক্লাস্রুমে চলে শেছি",
+    "hypothesis": "अगे कोथा दे थी ना मान्वाचोले आश्बो ख्लास्रूने चोले शे ची",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 2,
+        "dialect_naturalness": 1,
+        "brief_reason": "The core meaning is preserved but some English code-switched words are missing and the dialect is heavily over-corrected."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 3,
+        "dialect_naturalness": 2,
+        "brief_reason": "Hypothesis conveys a different meaning, some English code-switched words are preserved but not all, and the dialectal Bengali is partially naturalised to standard Bengali"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 1,
+        "dialect_naturalness": 1,
+        "brief_reason": "The hypothesis contains numerous errors, rendering the meaning almost unintelligible and failing to preserve any code-switched elements or natural dialect."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 1.67,
+        "std": 1.155,
+        "confidence": 0.769,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 2,
+        "std": 1.0,
+        "confidence": 0.8,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 1.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 1.67,
+    "agreement_rate": 0.667,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0019",
+    "dialect": "Rangpur",
+    "is_cs": true,
+    "reference": "Hello students, how are you all? How are you? সবাকে দেখে আমারো অনিক ভালো লাগ্ছে আজকে খুব ভালো একটা interesting session হোতে জাছে তোমাদের জনো Voice of America এটি রায়জন করেছে মং আর্টিবি রয়েছে পাটনাশিপে",
+    "hypothesis": "HALLO STUDENTS! HALLO STUDENTS! HALLO STUDENTS! HALLO STUDENTS! HALLO STUDENTS! HALLO STUDENTS! HALLO STUDENTS! HALLO STUDENTS! HALLO STUDENTS! HALLO STUDENTS! HALLO STUDENTS! HALLO STUDENTS! HALLO STUDENTS! HALLO STUDENTS! HALLO STUDENTS! HALLO STUDENTS! HALLO STUDENTS! HALLO STUDENTS! HALLO STUDENTS! HALLO STUDENTS! HALLO STUDENTS! HALL",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and lacks English code-switched words. It also fails to capture the natural dialectal Bangladeshi speech."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely wrong and lacks any Bengali dialectal features"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 3,
+        "dialect_naturalness": 1,
+        "brief_reason": "The hypothesis repeats 'HALLO STUDENTS' excessively and fails to capture the Bengali portion of the reference, demonstrating a significant loss of meaning and naturalness."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.67,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 1,
+        "std": 1.732,
+        "confidence": 0.654,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.67,
+    "agreement_rate": 0.778,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0020",
+    "dialect": "Rangpur",
+    "is_cs": false,
+    "reference": "স্টুডেন্ট্স, ভয়স অমেরিকা এটু জেট ওয়াট্বুক বই নামে তমাদের কেকটি বই দিগেছে তমানাকি সাবাই পেয়ে ছো? যেছে আমার যদি পেয় থাকো তুলে দাখাও",
+    "hypothesis": "Student, voice of America A2Z, what book boy nam, నినినినినినినినినినినినినినినినినినినినినినినినినినినిని�",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and lacks English code-switched words. The dialect is not natural."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 3,
+        "dialect_naturalness": 2,
+        "brief_reason": "Hypothesis conveys a different meaning, preserves some English code-switched words but drops others, and sounds partially naturalised to standard Bengali"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 3,
+        "dialect_naturalness": 1,
+        "brief_reason": "The hypothesis contains mostly gibberish and fails to convey the reference's meaning, while preserving some English code-switched words but sounding unnatural."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 1,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 2,
+        "std": 1.732,
+        "confidence": 0.654,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 1,
+        "std": 1.0,
+        "confidence": 0.8,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 1.33,
+    "agreement_rate": 0.667,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0024",
+    "dialect": "Rangpur",
+    "is_cs": false,
+    "reference": "এখটারা এই একটি কানেরা একটি একটি নারায়ের ইক্ষণের পাছে.",
+    "hypothesis": "आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप आप",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and contains no English code-switched words or natural dialectal Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely unrelated to the reference, with no preservation of English code-switched words or natural dialectal Bengali"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is entirely in a language other than Bengali or English and conveys no meaning from the reference."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0025",
+    "dialect": "Rangpur",
+    "is_cs": true,
+    "reference": "এবারে পরিচে হবার পালা তমাদে সকলের প্রিয় শিখ্য মসমাদ ইশ্রাত জাযান মেমে সাথে মেম Today we are going to enjoy a beautiful program, English for you.",
+    "hypothesis": "एब रे परचय हबर पाला तो मदे सबको ले पीजो शिखख़ मोसमः इश्रा जहन मैंमे साथे. मैंम.",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 2,
+        "dialect_naturalness": 1,
+        "brief_reason": "The hypothesis conveys the core meaning but some English code-switched words are missing and the dialect is heavily over-corrected."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 2,
+        "dialect_naturalness": 4,
+        "brief_reason": "Hypothesis conveys core meaning but some words are wrong, English CS words are partially preserved, and dialectal Bengali is mostly natural"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 1,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis contains mostly unrecognizable characters and fails to convey the original meaning, preserve code-switched words, or resemble natural Bengali speech."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 2.33,
+        "std": 1.155,
+        "confidence": 0.769,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 1.67,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 1.67,
+        "std": 2.082,
+        "confidence": 0.584,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 1.89,
+    "agreement_rate": 0.556,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0026",
+    "dialect": "Rangpur",
+    "is_cs": false,
+    "reference": "এটিই এলেন্স্বাই রত্঵ী এন্ড ভাইজ প্মাল প্যাবালে কেছে",
+    "hypothesis": "It is arranged by RTV and a voice of",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 3,
+        "dialect_naturalness": 1,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and misses several English code-switched words. The dialect is heavily over-corrected to standard Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 2,
+        "dialect_naturalness": 4,
+        "brief_reason": "Hypothesis conveys core meaning but some words are wrong, English CS words 'rtrvii' and 'pmmal pbybl' are partially preserved, and dialect naturalness is mostly preserved with minor standardization"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 2,
+        "cs_preservation": 3,
+        "dialect_naturalness": 3,
+        "brief_reason": "The hypothesis captures a partial meaning but misses key phrases and doesn't fully preserve the code-switched elements."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 2,
+        "std": 1.0,
+        "confidence": 0.8,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 2.67,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 2.67,
+        "std": 1.528,
+        "confidence": 0.694,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 2.45,
+    "agreement_rate": 0.667,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0027",
+    "dialect": "Rangpur",
+    "is_cs": false,
+    "reference": "সামিকি হল পারান, আমরীকং এঁযুগায় সুনুকায়ারেছিন ইকিদে একা তায়ার রাজ্ঞানানায়ার করতিরে পারেছিতে আমরীকং একটিনা একটির",
+    "hypothesis": "I believe it will help you to differentiate between the British English and American English.",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 3,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and lacks English code-switched words. The dialect is partially naturalized to standard Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 4,
+        "dialect_naturalness": 4,
+        "brief_reason": "Hypothesis conveys core meaning but some words are incorrect, English CS words are mostly preserved with minor variants"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 1,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis conveys a completely different meaning and lacks any code-switching or dialectal features from the reference."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 1.67,
+        "std": 1.155,
+        "confidence": 0.769,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 1.67,
+        "std": 2.082,
+        "confidence": 0.584,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 2.33,
+        "std": 2.082,
+        "confidence": 0.584,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 1.89,
+    "agreement_rate": 0.333,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0029",
+    "dialect": "Rangpur",
+    "is_cs": false,
+    "reference": "আমাদ আপনা যা হয়া কোলে না স্ক্ষেবে প্রগাম এই পারো যানা কোলো স্ক্ষেবে না হয়ে আমাদ",
+    "hypothesis": "आद आद आद आद आद आद आद आद आद आद आद आद आद आद आद आद आद आद आद आद आद आद आद आद आद आद आद आद आद आद आद आद",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and contains no English code-switched words or natural dialectal Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely unrelated to the reference, suggesting a complete failure of ASR"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is entirely repetitive and nonsensical, failing to convey any meaning from the reference."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0030",
+    "dialect": "Rangpur",
+    "is_cs": false,
+    "reference": "কিমনো হচে কামন হতে জাছে আমাদের আজকের সেশান তমরাকে একসাইটের আমি একিতো একসাইটের এবং একি সাথে আমাদের সাথে উপস্থির জারার ও এছে",
+    "hypothesis": "अम्मने अच्छाट अच्छाट अच्छाट अच्छाट अच्छाट अच्छाट अच्छाट अच्छाट अच्छाट अच्छाट अच्छाट अच्छाट �",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and contains no English code-switched words or natural dialectal Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely unrelated to the reference, suggesting a complete failure of semantic understanding and dialect preservation."
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and bears no resemblance to the reference transcript in terms of meaning, code-switching, or dialect."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0031",
+    "dialect": "Rangpur",
+    "is_cs": false,
+    "reference": "আমরা শুরুতে দেখেনেবো একটি ঵িডিও যেটি ঵াইস আপ আমেরিকার ইংগ্রেজি ভিভাক তমাদের জন্নো তোরি করেছে",
+    "hypothesis": "अम्रा शुरूते देखेने बो एक दिव वीडियो जे ती वायस आप आमेनी कर इंगरेजी भीबाक तोमादे जनो तोरी को लिए चे.",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 4,
+        "dialect_naturalness": 2,
+        "brief_reason": "The meaning is preserved but some words are incorrect. English code-switched words are mostly present but not all. The dialect is partially naturalized."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 3,
+        "dialect_naturalness": 2,
+        "brief_reason": "Hypothesis conveys a different meaning, some English CS words are preserved but not all, and the dialect is partially naturalised to standard Bengali."
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 2,
+        "dialect_naturalness": 2,
+        "brief_reason": "The hypothesis conveys the general meaning but contains several word substitutions and transliterations that distort the original message, while some English code-switched words are present but altere"
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 2.33,
+        "std": 1.155,
+        "confidence": 0.769,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 3,
+        "std": 1.0,
+        "confidence": 0.8,
+        "verdict": "PASS"
+      },
+      "dialect_naturalness": {
+        "mean": 2,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 2.44,
+    "agreement_rate": 0.667,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0032",
+    "dialect": "Rangpur",
+    "is_cs": true,
+    "reference": "সো কথানা বারি আমরা চোলে জাছি ঵িডিও দেখতে Let's jump into the video Welcome back! Anna and Penelope are taking a tour with",
+    "hypothesis": "So, कोठाना बरी आम्रा चोले जाची वीडियो देकते. Let's jump into the video.",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 0,
+        "dialect_naturalness": 1,
+        "brief_reason": "The hypothesis lacks English code-switched words and contains incorrect Bengali phonetic transcriptions."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 3,
+        "cs_preservation": 4,
+        "dialect_naturalness": 2,
+        "brief_reason": "Hypothesis conveys core meaning but some words are wrong, English CS words are mostly preserved with minor phonetic variants"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 4,
+        "cs_preservation": 5,
+        "dialect_naturalness": 3,
+        "brief_reason": "The hypothesis mostly conveys the correct meaning, preserves the English code-switched word 'Let's jump into the video', but slightly standardizes the Bengali phrasing."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 3.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "PASS"
+      },
+      "cs_preservation": {
+        "mean": 3,
+        "std": 2.646,
+        "confidence": 0.471,
+        "verdict": "PASS"
+      },
+      "dialect_naturalness": {
+        "mean": 2,
+        "std": 1.0,
+        "confidence": 0.8,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 2.78,
+    "agreement_rate": 0.667,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0034",
+    "dialect": "Rangpur",
+    "is_cs": false,
+    "reference": "প্লাস প্লাস প্লাস",
+    "hypothesis": "វ្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្�",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not contain any recognizable words or phrases from Bengali or English."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely unrelated to the reference, with no English code-switched words preserved and no dialectal naturalness."
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and conveys no meaning, preserving neither code-switched words nor natural dialect."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0035",
+    "dialect": "Rangpur",
+    "is_cs": true,
+    "reference": "মঝতার যুতকনি modern করাচি মা ভিক্ষক্ষ আ তাঁল তারি পাশ্তিতী এই, এইই, সমেল যাবেং মা না মাকা",
+    "hypothesis": "ḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍḍ�",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey any meaningful information and contains no English code-switched words or natural dialectal Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely wrong and does not convey any meaning from the reference"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and conveys no meaning, preserving neither code-switched words nor natural dialect."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  },
+  {
+    "clip_id": "9B4MlWB6_F0_0036",
+    "dialect": "Rangpur",
+    "is_cs": false,
+    "reference": "আমাড় আমাডিা আমাডিা আমাডিা আমাডবুন আমাড়ে কোনান কেটা ভিশ্তের উভব্য়াবিত মা ব্যব্যো কমার করাশিছুছুছুছু",
+    "hypothesis": "វ្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្្�",
+    "per_model": {
+      "mistral:7b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis does not convey the same meaning as the reference and contains no English code-switched words or natural dialectal Bengali."
+      },
+      "llama3.1:8b": {
+        "semantic_correctness": 1,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "Hypothesis is completely unrelated to the reference, suggesting a complete failure of ASR"
+      },
+      "gemma3:12b": {
+        "semantic_correctness": 0,
+        "cs_preservation": 0,
+        "dialect_naturalness": 0,
+        "brief_reason": "The hypothesis is gibberish and conveys no meaning, preserves no code-switched words, and is not Bengali."
+      }
+    },
+    "ensemble": {
+      "semantic_correctness": {
+        "mean": 0.33,
+        "std": 0.577,
+        "confidence": 0.885,
+        "verdict": "FAIL"
+      },
+      "cs_preservation": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      },
+      "dialect_naturalness": {
+        "mean": 0,
+        "std": 0.0,
+        "confidence": 1.0,
+        "verdict": "FAIL"
+      }
+    },
+    "overall_score": 0.11,
+    "agreement_rate": 1.0,
+    "valid_judges": 3
+  }
+]

@@ -70,9 +70,9 @@ JUDGE_DIR   = RESULTS_DIR / "llm_judge"
 
 # ── The 3 judge models ────────────────────────────────────────────────────────
 JUDGE_MODELS = [
-    "mistral",    # Mistral 7B
-    "llama3.1",   # LLaMA 3.1 8B
-    "gemma3",     # Gemma 3 12B
+    "mistral:7b",    # Mistral 7B
+    "llama3.1:8b",   # LLaMA 3.1 8B
+    "gemma3:12b",    # Gemma 3 12B
 ]
 
 # ── Scoring dimensions ────────────────────────────────────────────────────────

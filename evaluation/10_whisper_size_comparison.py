@@ -183,7 +183,7 @@ def finetune_whisper_size(size_key: str) -> Path:
 
     try:
         import torch
-        from datasets import load_from_disk
+        from datasets import load_from_disk, Audio
         from transformers import (
             WhisperProcessor, WhisperForConditionalGeneration,
             Seq2SeqTrainer, Seq2SeqTrainingArguments,
@@ -212,6 +212,8 @@ def finetune_whisper_size(size_key: str) -> Path:
 
     train_ds = load_from_disk(str(data_dir / "train"))
     dev_ds   = load_from_disk(str(data_dir / "dev"))
+    train_ds = train_ds.cast_column("audio", Audio(sampling_rate=SAMPLE_RATE))
+    dev_ds   = dev_ds.cast_column("audio", Audio(sampling_rate=SAMPLE_RATE))
     print(f"    Train: {len(train_ds)}  Dev: {len(dev_ds)}")
 
     wer_metric = evaluate.load("wer")
@@ -291,8 +293,10 @@ def run_finetuned_eval(size_key: str, model_dir: Path, clips: list[dict]) -> dic
     processor = WhisperProcessor.from_pretrained(str(model_dir))
     model     = WhisperForConditionalGeneration.from_pretrained(str(model_dir)).to(device)
     model.eval()
-    forced_ids = processor.get_decoder_prompt_ids(language=LANGUAGE, task=TASK)
-    model.config.forced_decoder_ids = forced_ids
+    # Force language via generation_config (forced_decoder_ids deprecated in v5)
+    model.generation_config.forced_decoder_ids = None
+    model.generation_config.language = LANGUAGE
+    model.generation_config.task = TASK
 
     predictions = []
     total_audio_sec = 0.0
@@ -404,8 +408,6 @@ def plot_size_comparison(summary: dict):
     ft_vals = [v * 100 if v else 0 for v in ft_wers]
     b1 = ax.bar(x - w/2, zs_vals, w, label="Zero-shot",   color="#9E9E9E", alpha=0.85)
     b2 = ax.bar(x + w/2, ft_vals, w, label="Fine-tuned",  color="#1565C0", alpha=0.85)
-    for bar, v in [(b for b in b1), (b for b in b2)]:
-        pass
     for bars in [b1, b2]:
         for bar in bars:
             h = bar.get_height()

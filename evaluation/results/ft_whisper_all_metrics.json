@@ -1,0 +1,96 @@
+{
+  "model": "ft_whisper_all",
+  "n_clips": 4088,
+  "n_cs_clips": 176,
+  "n_bn_clips": 3912,
+  "wer_overall": 0.8009,
+  "wer_cs_subset": 0.8154,
+  "wer_bn_subset": 0.8001,
+  "wer_bn_words": 0.8045,
+  "wer_en_words": 0.926,
+  "wer_overall_normalized": 0.8005,
+  "wer_cs_subset_normalized": 0.8116,
+  "wer_bn_subset_normalized": 0.8,
+  "wer_bn_words_normalized": 0.8058,
+  "wer_en_words_normalized": 0.775,
+  "cer_overall": 0.4903,
+  "cer_cs_subset": 0.5571,
+  "mix_er": 0.9075,
+  "error_breakdown": {
+    "substitution_rate": 0.4501,
+    "deletion_rate": 0.2075,
+    "insertion_rate": 0.1433,
+    "en_word_deletion_rate": 0.7508
+  },
+  "cs_detection": {
+    "cs_precision": 0.625,
+    "cs_recall": 0.1136,
+    "cs_f1": 0.1923,
+    "tp": 20,
+    "fp": 12,
+    "fn": 156,
+    "tn": 3900
+  },
+  "per_dialect_wer": {
+    "Barishal": {
+      "wer": 0.8656,
+      "n_clips": 282
+    },
+    "Chittagong": {
+      "wer": 0.79,
+      "n_clips": 198
+    },
+    "Comilla": {
+      "wer": 0.7763,
+      "n_clips": 157
+    },
+    "Habiganj": {
+      "wer": 0.8997,
+      "n_clips": 75
+    },
+    "Khulna": {
+      "wer": 0.6649,
+      "n_clips": 120
+    },
+    "Kishoreganj": {
+      "wer": 0.7453,
+      "n_clips": 743
+    },
+    "Mymensingh": {
+      "wer": 0.7014,
+      "n_clips": 56
+    },
+    "Narail": {
+      "wer": 0.6959,
+      "n_clips": 464
+    },
+    "Narsingdi": {
+      "wer": 0.7198,
+      "n_clips": 60
+    },
+    "Noakhali": {
+      "wer": 0.7002,
+      "n_clips": 70
+    },
+    "Old_Dhaka": {
+      "wer": 0.782,
+      "n_clips": 360
+    },
+    "Rangpur": {
+      "wer": 0.7911,
+      "n_clips": 165
+    },
+    "Sandwip": {
+      "wer": 0.9241,
+      "n_clips": 176
+    },
+    "Sylhet": {
+      "wer": 0.9274,
+      "n_clips": 1111
+    },
+    "Tangail": {
+      "wer": 0.74,
+      "n_clips": 51
+    }
+  }
+}

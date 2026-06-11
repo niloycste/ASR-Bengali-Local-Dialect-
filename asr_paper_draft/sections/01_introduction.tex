@@ -64,12 +64,17 @@ This paper makes the following contributions:
         YouTube and Facebook using dialect-name keyword queries.
   \item \textbf{Automated pipeline}: an end-to-end data collection pipeline
         using VAD segmentation, Whisper-based silver-standard transcription,
-        automatic CS detection via Unicode script analysis, and a three-model
-        LLM ensemble judge (Mistral, LLaMA~3.1, Gemma~2) for borderline
+        automatic CS detection via Unicode script analysis, and a single
+        strong multilingual LLM judge (Qwen2.5~\citep{qwen2025}) for borderline
         transcript validation---enabling large-scale annotation without any
         human transcribers.
-  \item \textbf{Comprehensive benchmark}: systematic evaluation of five ASR
-        architectures (Whisper, MMS, wav2vec2, WavLM, Tugstugi) under
+  \item \textbf{LLM-ensemble evaluation}: beyond surface WER, this work
+        introduces a three-model LLM-as-a-judge ensemble (Mistral-7B,
+        LLaMA-3.1-8B, and Gemma) that rates ASR hypotheses for semantic
+        correctness, code-switch preservation, and dialectal naturalness,
+        capturing errors that string-level metrics miss.
+  \item \textbf{Comprehensive benchmark}: systematic evaluation of four ASR
+        architectures (Whisper, MMS, wav2vec2-XLS-R, WavLM) under
         zero-shot and fine-tuned conditions, with metrics including WER, CER,
         MIX-ER, and CS-detection F1.
   \item \textbf{Ablation study}: we show that training on the combination of

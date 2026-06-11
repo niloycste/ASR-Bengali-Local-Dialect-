@@ -1,17 +1,31 @@
+% !TeX program = lualatex
 % ============================================================
 % Dialectal Bengali–English Code-Switching ASR
 % Target venue: INTERSPEECH 2026 / ACL 2026
-% Compiled with: pdflatex main.tex
+% Compiled with: lualatex main.tex   (NOT pdflatex — the paper contains
+%   inline Bengali Unicode, which needs a Unicode engine + a Bengali font.)
+% Requires the "Noto Serif Bengali" font installed (or change the name below).
 % ============================================================
 
 \documentclass[a4paper,12pt]{article}
 
-% ── Packages ──────────────────────────────────────────────
-\usepackage[margin=1in]{geometry}
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{times}
+% ── Fonts & languages (LuaLaTeX) ──────────────────────────
+% babel + luatex auto-switches to the Bengali font for Bengali Unicode runs,
+% so the inline Bengali in the section files renders without manual wrapping.
+\usepackage{fontspec}
+\usepackage[english,bengali]{babel}
+\IfFontExistsTF{TeX Gyre Termes}
+  {\babelfont{rm}{TeX Gyre Termes}}
+  {\babelfont{rm}{Latin Modern Roman}}
+\IfFontExistsTF{Noto Serif Bengali}
+  {\babelfont[bengali]{rm}{Noto Serif Bengali}}
+  {\IfFontExistsTF{Nirmala UI}
+    {\babelfont[bengali]{rm}{Nirmala UI}}
+    {\babelfont[bengali]{rm}{Vrinda}}}
 \usepackage{microtype}
+
+% ── Layout, math, graphics ────────────────────────────────
+\usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb}
 \usepackage{graphicx}
 \usepackage{booktabs}
@@ -20,12 +34,15 @@
 \usepackage{array}
 \usepackage{tabularx}
 \usepackage{xcolor}
+\usepackage{pifont}         % \ding{51}, \ding{55} in the gap table
+\usepackage{natbib}
 \usepackage{url}
 \usepackage{hyperref}
-\usepackage{natbib}
 \usepackage{subcaption}
 \usepackage{listings}
 \usepackage{enumitem}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 \usepackage{soul}           % for \hl{}
 \usepackage{setspace}
 \usepackage{fancyhdr}
@@ -87,8 +104,8 @@ Automatic Speech Recognition
 \vspace{0.5cm}
 
 {\normalsize
-$^{1}$[University Name], [Department]\\
-[City, Country]\\
+$^{1}$[University Name], [Department]\par
+[City, Country]\par
 \texttt{[author@email]}
 \par}
 

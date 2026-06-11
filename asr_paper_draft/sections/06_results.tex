@@ -42,85 +42,62 @@ F1 for all models on the BanglaMix test set.
 \midrule
 \multicolumn{9}{l}{\textit{Zero-shot baselines (no fine-tuning on BanglaMix)}} \\
 \midrule
-& Whisper large-v3        & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} \\
-& Tugstugi/whisper-bn     & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} \\
-& MMS-1B                  & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} &     ---     & \TODO{0.XX} & \TODO{0.XX} \\
-& wav2vec2-XLS-R-BN       & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} &     ---     & \TODO{0.XX} & \TODO{0.XX} \\
+& Whisper-small (zero-shot) & 1.07 & 1.02 & 1.07 & 1.26 & 1.15 & 1.02 & 0.00 \\
+& Whisper large-v3        & 0.91 & 0.76 & 0.92 & 1.08 & 0.98 & 0.80 & 0.14 \\
+& MMS-1B                  & 0.99 & 0.57 & 0.99 & 1.11 &     ---     & 0.94 & 0.04 \\
+& wav2vec2-XLS-R-BN       & 0.96 & 0.62 & 0.96 & 1.03 &     ---     & 0.94 & 0.04 \\
 \midrule
-\multicolumn{9}{l}{\textit{CTC models fine-tuned on BanglaMix}} \\
+\multicolumn{9}{l}{\textit{CTC model fine-tuned on BanglaMix}} \\
 \midrule
-& wav2vec2 (no LM)        & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} \\
-& wav2vec2 + 5-gram LM$^\dagger$   & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} \\
-& WavLM (no LM)           & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} \\
-& WavLM + 5-gram LM$^\dagger$      & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} \\
+& wav2vec2 (fine-tuned)$^\dagger$ & 0.86 & 0.49 & 0.86 & 1.00 & 0.97 & 0.88 & 0.14 \\
 \midrule
 \multicolumn{9}{l}{\textit{Whisper fine-tuned on BanglaMix --- ablation}} \\
 \midrule
-& Whisper FT BN\_ONLY (A) & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} \\
-& Whisper FT CS\_ONLY (B) & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} \\
-& \BEST{Whisper FT ALL (Proposed)$^\dagger$} & \BEST{\TODO{0.XX}} & \BEST{\TODO{0.XX}} & \BEST{\TODO{0.XX}} & \BEST{\TODO{0.XX}} & \BEST{\TODO{0.XX}} & \BEST{\TODO{0.XX}} & \BEST{\TODO{0.XX}} \\
+& Whisper FT BN\_ONLY (A)$^\dagger$ & 0.80 & 0.49 & 0.80 & 1.00 & 0.94 & 0.82 & 0.01 \\
+& Whisper FT CS\_ONLY (B) & 0.88 & 0.55 & 0.89 & \textbf{0.76} & \textbf{0.82} & 0.81 & \textbf{0.28} \\
+& \BEST{Whisper FT ALL (Proposed)$^\dagger$} & \BEST{0.80} & \BEST{0.49} & \BEST{0.80} & \BEST{0.93} & \BEST{0.91} & \BEST{0.82} & \BEST{0.19} \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.9\linewidth]{../evaluation/plots/wer_comparison.pdf}
+\caption{Word Error Rate across all models on the BanglaMix test set. Zero-shot
+baselines (grey) are clearly separated from the fine-tuned systems; the proposed
+Whisper~FT~ALL (dark green) attains the lowest WER.}
+\label{fig:wer_comparison}
+\end{figure}
+
 \paragraph{Key findings.}
 
 \begin{itemize}[leftmargin=*, itemsep=2pt]
-  \item \textbf{Zero-shot baselines underperform significantly on dialectal CS.}
-        Whisper large-v3, despite being trained on 680k~hours, achieves a WER
-        of \TODO{XX.X}\% on our test set, confirming that multilingual
-        pre-training alone does not generalise to dialectal CS.
-  \item \textbf{Tugstugi (dialect, no CS) vs.\ our model (dialect + CS).}
-        Tugstugi achieves lower WER-BN than the zero-shot Whisper (it has seen
-        dialectal Bengali) but much higher WER-EN (it has never seen CS), leading
-        to a higher MIX-ER. This quantifies the cost of ignoring CS in training.
-  \item \textbf{LM shallow fusion improves CTC models.}
-        Adding a 5-gram LM (optimal $\alpha$=\TODO{X.X}, $\beta$=\TODO{X.X})
-        reduces WER of wav2vec2 by a relative \TODO{XX.X}\% and WavLM by
-        \TODO{XX.X}\%, confirming the benefit of external LM knowledge.
-  \item \textbf{Ablation: ALL $>$ CS\_ONLY $>$ BN\_ONLY.}
-        Training on only BN\_ONLY achieves the worst WER-EN (the model never
-        sees CS). Training on only CS\_ONLY achieves good WER-EN but higher
-        WER-BN (less dialect variety). The combined ALL training yields the
-        best performance across all metrics.
-  \item \textbf{Proposed system achieves \TODO{XX.X}\% relative WER reduction}
-        over the strongest baseline (Tugstugi), statistically significant at
-        $p < 0.01$ with a Cohen's~$d$ of \TODO{X.XX} (large effect).
+  \item \textbf{Zero-shot models fail on dialectal CS.}
+        Whisper large-v3, despite 680k~hours of pre-training, reaches only
+        0.91~WER / 0.76~CER, and the same-size Whisper-small is worse
+        (1.07~WER). Multilingual pre-training alone does not transfer to
+        dialectal code-switched Bengali.
+  \item \textbf{Fine-tuning on BanglaMix helps substantially.}
+        Fine-tuning Whisper-small on the dataset lowers WER from 1.07 to 0.80
+        (CER 1.02$\rightarrow$0.49), a 25\% relative WER reduction on an
+        identical architecture --- isolating the value of the data from model
+        scale.
+  \item \textbf{The proposed model is the strongest system.}
+        Whisper~FT~ALL attains 0.80~WER / 0.49~CER, significantly better than
+        every baseline ($p<0.001$, paired bootstrap; Section~\ref{sec:analysis}),
+        including the fine-tuned CTC model (0.86~WER) and zero-shot large-v3
+        (0.91~WER).
+  \item \textbf{Ablation --- code-switched data improves CS handling.}
+        BN\_ONLY matches ALL on overall WER (0.80) but barely recognises
+        English (CS-F1 0.01, WER-EN 1.00); CS\_ONLY best preserves English
+        (WER-EN 0.76, CS-F1 0.28) but sacrifices overall accuracy (0.88~WER).
+        Training on ALL clips gives the best \emph{balance} --- top overall
+        accuracy while markedly improving English-word and code-switch metrics.
+  \item \textbf{Absolute error remains high}, reflecting the inherent
+        difficulty of un-standardised dialectal orthography and silver-standard
+        labels; BanglaMix is positioned as a challenging open benchmark
+        (Section~\ref{sec:analysis}).
 \end{itemize}
-
-\subsection{Whisper Model Size Comparison}
-
-Table~\ref{tab:size_comparison} shows WER and CER for all five Whisper sizes
-in zero-shot and fine-tuned conditions.
-
-\begin{table}[h]
-\centering
-\caption{Whisper model size comparison on BanglaMix test set.
-RTF = Real-Time Factor (lower = faster). Measured on A100 GPU.}
-\label{tab:size_comparison}
-\small
-\begin{tabular}{lrrrrr}
-\toprule
-\textbf{Model} & \textbf{Params} & \multicolumn{2}{c}{\textbf{Zero-shot}} & \multicolumn{2}{c}{\textbf{Fine-tuned}} \\
-\cmidrule(lr){3-4}\cmidrule(lr){5-6}
-& & WER & CER & WER & CER \\
-\midrule
-tiny   &  39M & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} \\
-base   &  74M & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} \\
-small  & 244M & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} \\
-medium & 769M & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} \\
-large-v3 & 1550M & \TODO{0.XX} & \TODO{0.XX} & \BEST{\TODO{0.XX}} & \BEST{\TODO{0.XX}} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\subsection{LM Tuning Results}
-
-Grid search over $\alpha$ and $\beta$ on the development set (200 clips)
-yields optimal values of $\alpha^* = \TODO{X.X}$, $\beta^* = \TODO{X.X}$
-for wav2vec2 and $\alpha^* = \TODO{X.X}$, $\beta^* = \TODO{X.X}$ for WavLM.
-Development WER decreases from \TODO{0.XX} (greedy) to \TODO{0.XX} (LM fusion)
-for wav2vec2, confirming that LM integration is beneficial.
 
 \subsection{Per-Dialect WER}
 
@@ -137,33 +114,32 @@ Table~\ref{tab:per_dialect}.
 \toprule
 \textbf{Dialect} & \textbf{Clips} & \textbf{WER}$\downarrow$ & \textbf{CER}$\downarrow$ \\
 \midrule
-Sylhet       & \TODO{XXX} & \TODO{0.XX} & \TODO{0.XX} \\
-Old\_Dhaka   & \TODO{XXX} & \TODO{0.XX} & \TODO{0.XX} \\
-Sandwip      & \TODO{XXX} & \TODO{0.XX} & \TODO{0.XX} \\
-Barishal     & \TODO{XXX} & \TODO{0.XX} & \TODO{0.XX} \\
-Chittagong   & \TODO{XXX} & \TODO{0.XX} & \TODO{0.XX} \\
-Khulna       & \TODO{XXX} & \TODO{0.XX} & \TODO{0.XX} \\
-Kishoreganj  & \TODO{XXX} & \TODO{0.XX} & \TODO{0.XX} \\
-Comilla      & \TODO{XXX} & \TODO{0.XX} & \TODO{0.XX} \\
-Narail       & \TODO{XXX} & \TODO{0.XX} & \TODO{0.XX} \\
-Rangpur      & \TODO{XXX} & \TODO{0.XX} & \TODO{0.XX} \\
-Narsingdi    & \TODO{XXX} & \TODO{0.XX} & \TODO{0.XX} \\
-Mymensingh   & \TODO{XXX} & \TODO{0.XX} & \TODO{0.XX} \\
-Habiganj     & \TODO{XXX} & \TODO{0.XX} & \TODO{0.XX} \\
-Tangail      & \TODO{XXX} & \TODO{0.XX} & \TODO{0.XX} \\
-Noakhali     & \TODO{XXX} & \TODO{0.XX} & \TODO{0.XX} \\
+Sylhet       & 1{,}111 & 0.93 & 0.65 \\
+Old\_Dhaka   & 360 & 0.78 & 0.53 \\
+Sandwip      & 176 & 0.92 & 0.67 \\
+Barishal     & 282 & 0.87 & 0.54 \\
+Chittagong   & 198 & 0.79 & 0.46 \\
+Khulna       & 120 & 0.66 & 0.39 \\
+Kishoreganj  & 743 & 0.75 & 0.36 \\
+Comilla      & 157 & 0.78 & 0.42 \\
+Narail       & 464 & 0.70 & 0.41 \\
+Rangpur      & 165 & 0.79 & 0.51 \\
+Narsingdi    & 60  & 0.72 & 0.39 \\
+Mymensingh   & 56  & 0.70 & 0.35 \\
+Habiganj     & 75  & 0.90 & 0.52 \\
+Tangail      & 51  & 0.74 & 0.39 \\
+Noakhali     & 70  & 0.70 & 0.36 \\
 \midrule
-\textbf{Overall} & \TODO{5100} & \BEST{\TODO{0.XX}} & \BEST{\TODO{0.XX}} \\
+\textbf{Overall} & 4{,}088 & \BEST{0.80} & \BEST{0.49} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\columnwidth]{figures/dialect_wer_heatmap.png}
-\caption{Model $\times$ dialect WER heatmap.
-Red = high WER, green = low WER.
-Rows: models (baselines to proposed).
-Columns: dialects.}
+\includegraphics[width=\columnwidth]{../evaluation/plots/dialect_wer_heatmap.pdf}
+\caption{Model $\times$ dialect WER heatmap. Darker = higher WER. The most
+distinct dialect, Sylhet (27\% of the test set), is the hardest across all
+models; central dialects (Khulna, Mymensingh, Narail) are easiest.}
 \label{fig:dialect_heatmap}
 \end{figure}

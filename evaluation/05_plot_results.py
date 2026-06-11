@@ -17,6 +17,7 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
+import textwrap
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent
@@ -26,6 +27,21 @@ from fine_tuning.config import PLOTS_DIR, RESULTS_DIR, TABLE_ORDER, MODEL_LABELS
 
 # Short multi-line labels for plot axes (derived from MODEL_LABELS)
 MODEL_SHORT = {k: v.replace(" (", "\n(").replace(", ", ",\n") for k, v in MODEL_LABELS.items()}
+
+
+def wrap_label(label: str, width: int = 16) -> str:
+    """Wrap long tick labels so adjacent categories do not collide."""
+    return "\n".join(textwrap.wrap(label.replace("\n", " "), width=width))
+
+
+def set_wrapped_xticklabels(ax, x, labels, width: int = 16, fontsize: int = 9):
+    ax.set_xticks(x)
+    ax.set_xticklabels(
+        [wrap_label(label, width=width) for label in labels],
+        rotation=0,
+        ha="center",
+        fontsize=fontsize,
+    )
 
 
 def load_summary() -> dict:
@@ -76,7 +92,6 @@ def plot_wer_comparison(summary: dict):
 
     keys    = [k for k in TABLE_ORDER if k in summary]
     labels  = [MODEL_SHORT[k] for k in keys]
-    colors  = [MODEL_COLORS[k] for k in keys]
 
     metrics_to_plot = [
         ("wer_overall",  "WER Overall"),
@@ -91,7 +106,8 @@ def plot_wer_comparison(summary: dict):
     offsets = np.linspace(-(n_bars - 1) * width / 2,
                            (n_bars - 1) * width / 2, n_bars)
 
-    fig, ax = plt.subplots(figsize=(14, 6))
+    fig, ax = plt.subplots(figsize=(18, 8))
+    max_bar_value = 0.0
 
     bar_colors = ["#1565C0", "#42A5F5", "#EF6C00", "#FFA726"]
     for i, (metric_key, metric_label) in enumerate(metrics_to_plot):
@@ -100,6 +116,7 @@ def plot_wer_comparison(summary: dict):
             for k in keys
         ]
         vals_pct = [v * 100 for v in vals]
+        max_bar_value = max(max_bar_value, max(vals_pct, default=0.0))
         bars = ax.bar(
             x + offsets[i], vals_pct, width,
             label=metric_label,
@@ -116,15 +133,15 @@ def plot_wer_comparison(summary: dict):
                 f"{v:.1f}",
                 ha="center", va="bottom",
                 fontsize=7, rotation=90,
+                clip_on=False,
             )
 
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels, fontsize=9)
+    set_wrapped_xticklabels(ax, x, labels, width=18, fontsize=9)
     ax.set_ylabel("Word Error Rate (%)")
     ax.set_title("ASR Performance: WER Comparison Across Models\n"
                  "(Bengali Dialect + Code-Switching Test Set)")
-    ax.legend(loc="upper right", fontsize=9)
-    ax.set_ylim(0, min(110, ax.get_ylim()[1] * 1.15))
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.02), ncol=4, fontsize=9)
+    ax.set_ylim(0, max(110, max_bar_value * 1.22))
     ax.grid(axis="y", alpha=0.3)
 
     # Shade the proposed system column
@@ -132,6 +149,7 @@ def plot_wer_comparison(summary: dict):
         idx = keys.index("ft_whisper_all")
         ax.axvspan(idx - 0.4, idx + 0.4, alpha=0.07, color="green")
 
+    fig.subplots_adjust(top=0.78, bottom=0.24)
     save_fig(plt, "wer_comparison")
 
 
@@ -160,24 +178,32 @@ def plot_dialect_heatmap(summary: dict):
         figsize=(max(10, len(dialects) * 0.9), max(5, len(keys) * 0.8))
     )
 
-    im = ax.imshow(data, cmap="RdYlGn_r", aspect="auto", vmin=0, vmax=100)
-    fig.colorbar(im, ax=ax, label="WER (%)")
+    im = ax.imshow(data, cmap="Blues", aspect="auto", vmin=0, vmax=100)
+    cbar = fig.colorbar(im, ax=ax, label="WER (%)", fraction=0.035, pad=0.035)
+    cbar.outline.set_linewidth(0.6)
 
     ax.set_xticks(range(len(dialects)))
-    ax.set_xticklabels(dialects, rotation=45, ha="right", fontsize=9)
+    ax.set_xticklabels(dialects, rotation=40, ha="right", fontsize=9)
     ax.set_yticks(range(len(keys)))
     ax.set_yticklabels([MODEL_SHORT[k].replace("\n", " ") for k in keys], fontsize=9)
+    ax.set_xticks(np.arange(-0.5, len(dialects), 1), minor=True)
+    ax.set_yticks(np.arange(-0.5, len(keys), 1), minor=True)
+    ax.grid(which="minor", color="black", linestyle="-", linewidth=0.6)
+    ax.tick_params(which="minor", bottom=False, left=False)
 
     # Annotate cells
     for i in range(len(keys)):
         for j in range(len(dialects)):
             v = data[i, j]
             if not np.isnan(v):
+                text_color = "white" if v >= 55 else "black"
                 ax.text(j, i, f"{v:.0f}", ha="center", va="center",
-                        fontsize=8, color="black")
+                        fontsize=8, color=text_color)
 
     ax.set_title("Per-Dialect WER (%) — Model × Dialect\n(lower = better)")
-    plt.tight_layout()
+    ax.set_xlabel("Dialect")
+    ax.set_ylabel("Model")
+    fig.subplots_adjust(left=0.20, right=0.93, bottom=0.23, top=0.86)
     save_fig(plt, "dialect_wer_heatmap")
 
 
@@ -189,7 +215,6 @@ def plot_cs_f1(summary: dict):
 
     keys   = [k for k in TABLE_ORDER if k in summary]
     labels = [MODEL_SHORT[k] for k in keys]
-    colors = [MODEL_COLORS[k] for k in keys]
 
     precision = [summary[k].get("cs_detection", {}).get("cs_precision", 0) for k in keys]
     recall    = [summary[k].get("cs_detection", {}).get("cs_recall",    0) for k in keys]
@@ -198,18 +223,18 @@ def plot_cs_f1(summary: dict):
     x     = np.arange(len(keys))
     width = 0.25
 
-    fig, ax = plt.subplots(figsize=(12, 5))
+    fig, ax = plt.subplots(figsize=(18, 7))
     b1 = ax.bar(x - width, [v * 100 for v in precision], width, label="Precision", color="#1565C0", alpha=0.85)
     b2 = ax.bar(x,          [v * 100 for v in recall],   width, label="Recall",    color="#42A5F5", alpha=0.85)
     b3 = ax.bar(x + width,  [v * 100 for v in f1],       width, label="F1",        color="#2E7D32", alpha=0.85)
 
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels, fontsize=9)
+    set_wrapped_xticklabels(ax, x, labels, width=18, fontsize=9)
     ax.set_ylabel("Score (%)")
     ax.set_title("Code-Switching Detection: Precision / Recall / F1 per Model")
-    ax.legend()
+    ax.legend(loc="upper right")
     ax.set_ylim(0, 110)
     ax.grid(axis="y", alpha=0.3)
+    fig.subplots_adjust(bottom=0.22, top=0.88)
     save_fig(plt, "cs_f1_comparison")
 
 
@@ -228,7 +253,8 @@ def plot_cs_vs_bn_wer(summary: dict):
     x     = np.arange(len(keys))
     width = 0.35
 
-    fig, ax = plt.subplots(figsize=(12, 5))
+    fig, ax = plt.subplots(figsize=(18, 7))
+    max_bar_value = 0.0
     b1 = ax.bar(x - width / 2, [v * 100 for v in wer_cs], width,
                 label="WER — CS clips (dialect+English)", color="#EF6C00", alpha=0.85)
     b2 = ax.bar(x + width / 2, [v * 100 for v in wer_bn], width,
@@ -237,16 +263,19 @@ def plot_cs_vs_bn_wer(summary: dict):
     for bars in [b1, b2]:
         for bar in bars:
             h = bar.get_height()
+            max_bar_value = max(max_bar_value, h)
             ax.text(bar.get_x() + bar.get_width() / 2, h + 0.5,
-                    f"{h:.1f}", ha="center", va="bottom", fontsize=8)
+                    f"{h:.1f}", ha="center", va="bottom", fontsize=8,
+                    clip_on=False)
 
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels, fontsize=9)
+    set_wrapped_xticklabels(ax, x, labels, width=18, fontsize=9)
     ax.set_ylabel("WER (%)")
     ax.set_title("WER on Code-Switched vs Bengali-Only Clips per Model\n"
                  "(Shows extra difficulty of code-switching on top of dialect)")
-    ax.legend()
+    ax.legend(loc="upper center", bbox_to_anchor=(0.5, 1.02), ncol=2)
+    ax.set_ylim(0, max(110, max_bar_value * 1.16))
     ax.grid(axis="y", alpha=0.3)
+    fig.subplots_adjust(bottom=0.22, top=0.78)
     save_fig(plt, "cs_vs_bn_wer")
 
 
@@ -278,34 +307,34 @@ def plot_dataset_distribution():
     counts   = [dialect_counts[d] for d in dialects]
     hours    = [dialect_hrs[d] for d in dialects]
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(18, 7))
 
     # Clip count bar chart
     bars = ax1.bar(range(len(dialects)), counts, color="#1565C0", alpha=0.85)
     ax1.set_xticks(range(len(dialects)))
-    ax1.set_xticklabels(dialects, rotation=45, ha="right")
+    ax1.set_xticklabels([wrap_label(d, width=11) for d in dialects], rotation=35, ha="right")
     ax1.set_ylabel("Number of clips")
     ax1.set_title("Clips per Dialect")
     for bar, v in zip(bars, counts):
         ax1.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 20,
-                 str(v), ha="center", fontsize=8)
+                 str(v), ha="center", fontsize=8, clip_on=False)
 
     # Hours bar chart
     bars2 = ax2.bar(range(len(dialects)), hours, color="#2E7D32", alpha=0.85)
     ax2.set_xticks(range(len(dialects)))
-    ax2.set_xticklabels(dialects, rotation=45, ha="right")
+    ax2.set_xticklabels([wrap_label(d, width=11) for d in dialects], rotation=35, ha="right")
     ax2.set_ylabel("Duration (hours)")
     ax2.set_title("Duration per Dialect (hours)")
     for bar, v in zip(bars2, hours):
         ax2.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.05,
-                 f"{v:.1f}h", ha="center", fontsize=8)
+                 f"{v:.1f}h", ha="center", fontsize=8, clip_on=False)
 
     fig.suptitle(
         f"Bengali Dialect CS Dataset — {sum(counts):,} clips / "
         f"{sum(hours):.1f} hrs across {len(dialects)} dialects",
         fontsize=13
     )
-    plt.tight_layout()
+    fig.subplots_adjust(left=0.06, right=0.98, bottom=0.24, top=0.84, wspace=0.14)
     save_fig(plt, "dialect_distribution")
 
 

@@ -19,102 +19,149 @@ EN-Surv = fraction of English reference words found in hypothesis.}
 \toprule
 \textbf{Model} & \textbf{S} & \textbf{D} & \textbf{I} & \textbf{EN-Surv}$\uparrow$ \\
 \midrule
-Whisper large-v3 (0-shot) & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} \\
-Tugstugi/whisper-bn       & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} \\
-MMS-1B                    & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} \\
-wav2vec2 (zero-shot)      & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} \\
+Whisper large-v3 (0-shot) & 0.31 & 0.48 & 0.12 & \textbf{0.65} \\
+Whisper-small (0-shot)    & 0.25 & 0.75 & 0.07 & 0.12 \\
+MMS-1B                    & 0.66 & 0.13 & 0.19 & 0.00 \\
+wav2vec2 (zero-shot)      & 0.52 & 0.36 & 0.08 & 0.00 \\
 \midrule
-wav2vec2 FT (no LM)       & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} \\
-wav2vec2 FT + LM          & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} \\
-WavLM FT (no LM)          & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} \\
-WavLM FT + LM             & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} \\
+wav2vec2 FT               & 0.52 & 0.23 & 0.10 & 0.00 \\
 \midrule
-Whisper FT BN\_ONLY (A)   & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} \\
-Whisper FT CS\_ONLY (B)   & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} & \TODO{0.XX} \\
-\BEST{Whisper FT ALL}     & \BEST{\TODO{0.XX}} & \BEST{\TODO{0.XX}} & \BEST{\TODO{0.XX}} & \BEST{\TODO{0.XX}} \\
+Whisper FT BN\_ONLY (A)   & 0.45 & 0.21 & 0.14 & 0.01 \\
+Whisper FT CS\_ONLY (B)   & 0.53 & 0.19 & 0.16 & 0.37 \\
+\textbf{Whisper FT ALL}   & 0.45 & 0.21 & 0.14 & 0.13 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\paragraph{English word deletion.}
-A key finding is that CTC models without LM fusion exhibit high English word
-\emph{deletion} rates (\TODO{XX.X}\%).
-This occurs because the acoustic model has learned to ignore acoustically
-ambiguous English words (which may sound like Bengali words to a model not
-trained on CS) and produces only Bengali output.
-LM shallow fusion substantially reduces this deletion rate by encouraging the
-model to output English words where the context suggests it.
-The proposed Whisper FT ALL model achieves the highest English word survival
-rate (\TODO{XX.X}\%), demonstrating that seq2seq models with a shared
-multilingual vocabulary handle CS words more faithfully.
+\paragraph{English word survival.}
+A clear pattern emerges on code-switched clips: monolingual CTC models (MMS,
+wav2vec2; EN survival 0.00) and the Bengali-only ablation (0.01) essentially
+\emph{never} reproduce English words, deleting them or mapping them to Bengali
+script. Code-switch training raises this sharply --- the CS\_ONLY ablation
+reaches 0.37 EN survival, the best among fine-tuned models, and the combined
+ALL model retains 0.13 while keeping the lowest overall WER. Zero-shot Whisper
+large-v3 preserves English words best of all (0.65) but at a far higher overall
+WER (0.91), since it captures neither dialect phonology nor a coherent
+transcript. This
+confirms that seq2seq models with a shared multilingual vocabulary, fine-tuned
+on code-switched data, handle CS words far more faithfully than monolingual
+CTC models.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=\linewidth]{../evaluation/plots/error_analysis.pdf}
+\caption{Substitution / deletion / insertion rates per model. Zero-shot
+Whisper-small is dominated by deletions (it omits most content); fine-tuned
+models shift errors toward substitutions, consistent with producing plausible
+but non-canonical dialectal spellings.}
+\label{fig:error_analysis}
+\end{figure}
+
+\begin{figure}[ht]
+\centering
+\begin{subfigure}{0.49\linewidth}
+  \includegraphics[width=\linewidth]{../evaluation/plots/cs_vs_bn_wer.pdf}
+  \caption{WER on code-switched vs.\ Bengali-only clips.}
+  \label{fig:cs_vs_bn}
+\end{subfigure}\hfill
+\begin{subfigure}{0.49\linewidth}
+  \includegraphics[width=\linewidth]{../evaluation/plots/cs_f1_comparison.pdf}
+  \caption{Code-switch detection F1.}
+  \label{fig:cs_f1}
+\end{subfigure}
+\caption{Code-switching analysis. Models that never see CS in training collapse
+to near-zero CS-F1 (Fig.~\ref{fig:cs_f1}); training on code-switched data
+(CS\_ONLY, ALL) is required to recover code-switch behaviour.}
+\label{fig:cs_analysis}
+\end{figure}
 
 \paragraph{Substitution patterns.}
 The most frequent substitution errors involve:
-(1)~dialect-specific phonemes being substituted with standard Bengali
-equivalents (e.g., Chittagong /\textipa{Ef}/ $\to$ /\textipa{E}/);
+(1)~dialect-specific vowels and consonants being substituted with their
+standard-Bengali equivalents;
 (2)~English technical terms being transcribed in Bengali script
 (transliteration rather than transcription); and
 (3)~short English function words (``is'', ``the'', ``in'') being deleted.
 
 \subsection{Cross-Dialect Generalisation}
 
-Figure~\ref{fig:cross_dialect} shows the leave-one-dialect-out (LODO) WER
-for selected dialects, comparing models trained with vs.\ without the
-target dialect.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.95\columnwidth]{figures/wer_comparison.png}
-\caption{WER comparison across all models on the full test set.
-Grouped bars show overall WER, WER on CS clips, WER-BN, and WER-EN.}
-\label{fig:cross_dialect}
-\end{figure}
-
-\paragraph{Per-dialect difficulty.}
-Dialects with the most phonological divergence from standard Bengali
-(Chittagong, Sandwip, Sylhet) consistently show the highest WER across all
-models, even after fine-tuning.
-Dialects with smaller phonological divergence (Rangpur, Tangail) see the
-greatest relative improvement from fine-tuning.
-
-\paragraph{LODO results.}
-When trained without any Sylhet clips, the proposed model achieves
-\TODO{XX.X}\% WER on the Sylhet test set, compared to \TODO{XX.X}\% when
-trained with Sylhet clips included---a \TODO{XX.X}\% absolute degradation.
-This shows that while cross-dialect transfer does occur (Sylhet WER without
-Sylhet training $\ll$ zero-shot Whisper WER), dialect-specific training
-data remains valuable.
-Similar trends hold for other dialects.
-
-\subsection{CS vs.\ BN\_ONLY Difficulty Gap}
-
-Table~\ref{tab:cs_gap} shows the WER gap between CS and BN\_ONLY clips,
-confirming that code-switching adds measurable difficulty on top of dialectal
-variation.
+Table~\ref{tab:cross_dialect} compares per-dialect WER for the strongest
+zero-shot baseline (Whisper large-v3), the fine-tuned CTC model, and the
+proposed system; Figure~\ref{fig:dialect_heatmap} visualises all models.
 
 \begin{table}[h]
 \centering
-\caption{WER on CS vs.\ BN\_ONLY clips, and the absolute difficulty gap.
-Gap = WER-CS $-$ WER-BN. Positive gap means CS is harder.}
+\caption{Per-dialect WER across representative models. \BEST{Bold green} = best
+per dialect. Fine-tuning helps almost every dialect, but the larger zero-shot
+model retains an edge on Barishal.}
+\label{tab:cross_dialect}
+\small
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Dialect} & \textbf{large-v3 (zs)} & \textbf{wav2vec2 (FT)} & \textbf{Whisper ALL} \\
+\midrule
+Sylhet       & 1.09 & 0.93 & \BEST{0.93} \\
+Old\_Dhaka   & 0.97 & 0.86 & \BEST{0.78} \\
+Sandwip      & 1.09 & 0.94 & \BEST{0.92} \\
+Barishal     & \BEST{0.82} & 0.87 & 0.87 \\
+Chittagong   & 0.80 & 0.87 & \BEST{0.79} \\
+Khulna       & 0.81 & 0.75 & \BEST{0.66} \\
+Kishoreganj  & 0.79 & 0.83 & \BEST{0.75} \\
+Comilla      & 0.88 & 0.87 & \BEST{0.78} \\
+Narail       & 0.82 & 0.79 & \BEST{0.70} \\
+Rangpur      & 1.00 & 0.85 & \BEST{0.79} \\
+Narsingdi    & 0.79 & 0.75 & \BEST{0.72} \\
+Mymensingh   & 0.86 & 0.83 & \BEST{0.70} \\
+Habiganj     & 0.93 & 0.95 & \BEST{0.90} \\
+Tangail      & 0.80 & 0.83 & \BEST{0.74} \\
+Noakhali     & 0.80 & 0.83 & \BEST{0.70} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Per-dialect difficulty.}
+The most phonologically distinct dialect, Sylhet (0.93 WER even after
+fine-tuning), is consistently the hardest across all models, followed by the
+coastal/island varieties Sandwip and Old~Dhaka. Central dialects (Khulna,
+Mymensingh, Narail, Noakhali) are the easiest, reaching 0.66--0.70 WER. The
+proposed model is best or tied on 14 of 15 dialects; only on Barishal does the
+larger zero-shot Whisper large-v3 win (0.82 vs.\ 0.87), indicating that model
+scale still matters for some dialects and motivating larger fine-tuned
+backbones as future work.
+
+\subsection{CS vs.\ BN\_ONLY Difficulty Gap}
+
+Table~\ref{tab:cs_gap} reports WER on CS vs.\ BN\_ONLY clips. The whole-clip gap
+is small (within $\pm0.12$): because code-switched clips are predominantly
+Bengali, code-switching does not substantially inflate overall clip WER.
+
+\begin{table}[h]
+\centering
+\caption{WER on CS vs.\ BN\_ONLY clips. Gap = WER-CS $-$ WER-BN.}
 \label{tab:cs_gap}
 \small
 \begin{tabular}{lrrr}
 \toprule
 \textbf{Model} & \textbf{WER-CS} & \textbf{WER-BN} & \textbf{Gap} \\
 \midrule
-Whisper large-v3 (0-shot)   & \TODO{0.XX} & \TODO{0.XX} & \TODO{+0.XX} \\
-Tugstugi/whisper-bn         & \TODO{0.XX} & \TODO{0.XX} & \TODO{+0.XX} \\
-MMS-1B                      & \TODO{0.XX} & \TODO{0.XX} & \TODO{+0.XX} \\
-wav2vec2 FT + LM            & \TODO{0.XX} & \TODO{0.XX} & \TODO{+0.XX} \\
-WavLM FT + LM               & \TODO{0.XX} & \TODO{0.XX} & \TODO{+0.XX} \\
-\BEST{Whisper FT ALL}       & \BEST{\TODO{0.XX}} & \BEST{\TODO{0.XX}} & \BEST{\TODO{+0.XX}} \\
+Whisper large-v3 (0-shot)   & 0.80 & 0.92 & $-$0.12 \\
+Whisper-small (0-shot)      & 1.02 & 1.07 & $-$0.05 \\
+MMS-1B                      & 0.94 & 0.99 & $-$0.05 \\
+wav2vec2 (fine-tuned)       & 0.88 & 0.86 & $+$0.02 \\
+Whisper FT CS\_ONLY (B)     & 0.81 & 0.89 & $-$0.08 \\
+\BEST{Whisper FT ALL}       & \BEST{0.82} & \BEST{0.80} & \BEST{$+$0.02} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-The CS difficulty gap is largest for models not trained on CS data
-(zero-shot baselines, BN\_ONLY ablation), confirming that CS training data
-directly reduces this gap.
+Rather, the difficulty of code-switching is concentrated in the \emph{English
+tokens} themselves. As Table~\ref{tab:error_types} shows, English-word survival
+is near zero for monolingual and BN\_ONLY models and English-word WER approaches
+1.0, even though overall clip WER barely changes. Code-switching difficulty is
+therefore real but \emph{localised}---it manifests as the systematic loss of
+English words, not as a higher overall clip WER. Fine-tuning on code-switched
+data is what recovers these English tokens (CS-F1 and EN-survival in
+Tables~\ref{tab:main_results} and~\ref{tab:error_types}).
 
 \subsection{Pronunciation Normalisation Impact}
 
@@ -134,7 +181,7 @@ to a canonical form before scoring.}
 \textbf{Model} & \textbf{WER\textsubscript{raw}} & \textbf{WER\textsubscript{norm}} & \textbf{Reduction} \\
 \midrule
 Whisper large-v3 (0-shot) & \TODO{0.XX} & \TODO{0.XX} & \TODO{$-$X.X\%} \\
-Tugstugi/whisper-bn       & \TODO{0.XX} & \TODO{0.XX} & \TODO{$-$X.X\%} \\
+Whisper-small (0-shot)       & \TODO{0.XX} & \TODO{0.XX} & \TODO{$-$X.X\%} \\
 wav2vec2 FT + LM          & \TODO{0.XX} & \TODO{0.XX} & \TODO{$-$X.X\%} \\
 \BEST{Whisper FT ALL}     & \BEST{\TODO{0.XX}} & \BEST{\TODO{0.XX}} & \BEST{\TODO{$-$X.X\%}} \\
 \bottomrule
@@ -146,53 +193,90 @@ The WER reduction from normalisation is larger for zero-shot models
 This suggests that fine-tuning on BanglaMix data helps models learn consistent
 handling of English loanword orthography, reducing dependency on post-hoc
 normalisation.
-The normalisation lexicon covers \TODO{200+} borrowing categories including
-technology, academic, finance, lifestyle, and high-frequency CS adverbs
+The normalisation lexicon covers 271 canonical forms (649 spelling variants)
+spanning technology, academic, finance, lifestyle, and high-frequency CS adverbs
 (\textit{seriously}, \textit{actually}, \textit{basically}), which are
 particularly common in the comedy and vlog domains of our dataset.
 
-\subsection{LLM Ensemble Judge Validation}
+\subsection{LLM Judge Validation (Dataset Quality Control)}
 
 \paragraph{Annotation pipeline statistics.}
-Table~\ref{tab:llm_judge} shows the outcome of the three-stage annotation
-pipeline across all 51,857 clips.
+Table~\ref{tab:llm_judge} shows the outcome of the annotation pipeline. The
+high-confidence clips are auto-accepted in Step~4b; the borderline clips that
+Whisper is uncertain about are adjudicated by the single-model Qwen2.5 judge in
+Step~4c.
 
 \begin{table}[h]
 \centering
-\caption{Annotation outcomes across three pipeline stages.}
+\caption{Annotation outcomes. Step 4c counts are from the Qwen2.5 judge over
+the borderline clip set. Counts are pre-augmentation and prior to the final
+transcript quality filtering applied at dataset-build time
+(Table~\ref{tab:splits}).}
 \label{tab:llm_judge}
 \small
-\begin{tabular}{lrr}
+\begin{tabular}{lrl}
 \toprule
-\textbf{Stage} & \textbf{Clips} & \textbf{Accept rate} \\
+\textbf{Stage} & \textbf{Clips} & \textbf{Note} \\
 \midrule
-Step 4b auto-accept (prob $<$ 0.30)        & \TODO{XX,XXX} & \TODO{XX.X\%} \\
-Step 4b auto-reject (prob $\geq$ 0.60)     & \TODO{XX,XXX} & 0\% \\
-Step 4c LLM ensemble — ACCEPT (2/3 vote)   & \TODO{XX,XXX} & \TODO{XX.X\%} \\
-Step 4c LLM ensemble — REJECT (2/3 vote)   & \TODO{XX,XXX} & 0\% \\
-Step 4c LLM ensemble — UNCERTAIN (no majority) & \TODO{XXX} & excluded \\
+Step 4b auto-accept (prob $<$ 0.30)        & 39{,}772 & auto-accepted \\
+Step 4b auto-reject (prob $\geq$ 0.60)     & \TODO{XX,XXX} & auto-rejected \\
+Step 4c Qwen2.5 judge --- ACCEPT           & 1{,}727  & 19.8\% of judged \\
+Step 4c Qwen2.5 judge --- REJECT           & 6{,}985  & 80.2\% of judged \\
+Step 4c Qwen2.5 judge --- UNCERTAIN        & 0        & excluded \\
 \midrule
-\textbf{Final training corpus}             & \TODO{XX,XXX} & — \\
+\textbf{Annotated pool (pre-filter)}       & 41{,}499 & input to Step 5 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\paragraph{Inter-model agreement.}
-Across the \TODO{XX,XXX} borderline clips judged by the ensemble, all three
-models agreed (unanimous vote) on \TODO{XX.X\%} of clips.
-Two models agreed (majority vote) on a further \TODO{XX.X\%}.
-Only \TODO{X.X\%} resulted in no majority and were excluded.
-This high agreement rate validates the reliability of the ensemble approach
-for Bengali CS transcript quality control.
+\paragraph{Judge decisions.}
+Of the 8{,}712 borderline clips, the Qwen2.5 judge accepted 1{,}727 (19.8\%)
+and rejected 6{,}985 (80.2\%); no clip was left undecided. The high rejection
+rate is expected: these are exactly the low-confidence clips Whisper flagged,
+and the judge serves as a stricter second gate that recovers a useful minority
+while discarding noise. The recovered 1{,}727 clips are added to the
+39{,}772 auto-accepted clips, yielding the pre-filter annotated pool that is
+passed to dataset construction.
 
-\paragraph{Dimension-level acceptance rates.}
-The LLM ensemble rejected clips primarily on the \textit{Bengali validity}
+\paragraph{Dimension-level rejection.}
+The judge rejected clips primarily on the \textit{Bengali validity}
 (\TODO{XX.X\%} rejection rate) and \textit{not-noise} (\TODO{XX.X\%})
 dimensions.
 \textit{CS naturalness} and \textit{dialect authenticity} had lower rejection
 rates (\TODO{XX.X\%} and \TODO{XX.X\%} respectively), indicating that
 borderline clips failing Whisper's confidence threshold are more often noise
 artefacts than content quality problems.
+
+\subsection{LLM-Ensemble Evaluation}
+
+Beyond string-level metrics, we evaluate ASR hypotheses with a three-model
+LLM-as-a-judge ensemble (Mistral-7B~\citep{jiang2023mistral},
+LLaMA-3.1-8B~\citep{dubey2024llama}, and Gemma~\citep{team2024gemma}), each run
+locally via Ollama. Every model scores the hypothesis against the reference on
+three 0--5 dimensions---semantic correctness, code-switch preservation, and
+dialectal naturalness---and the ensemble reports the mean score per dimension
+together with an inter-model agreement rate. This metric captures meaning-
+preserving variation (e.g.\ \textit{miting}/\textit{meeting}) and silent
+dropping of English code-switch words, which WER penalises or misses.
+Table~\ref{tab:llm_eval} reports ensemble scores for the proposed system and
+the strongest baselines.
+
+\begin{table}[h]
+\centering
+\caption{LLM-ensemble evaluation of ASR outputs (mean of three judges, 0--5;
+higher is better). Agr.\ = mean inter-model agreement.}
+\label{tab:llm_eval}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Model} & \textbf{Semantic} & \textbf{CS-Pres.} & \textbf{Dialect} & \textbf{Agr.} \\
+\midrule
+Whisper large-v3 (0-shot) & \TODO{X.X} & \TODO{X.X} & \TODO{X.X} & \TODO{0.XX} \\
+Whisper-small (0-shot)       & \TODO{X.X} & \TODO{X.X} & \TODO{X.X} & \TODO{0.XX} \\
+\BEST{Whisper FT ALL}     & \BEST{\TODO{X.X}} & \BEST{\TODO{X.X}} & \BEST{\TODO{X.X}} & \BEST{\TODO{0.XX}} \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \paragraph{Silver-standard quality.}
 To validate the quality of silver-standard transcripts, we manually
@@ -206,9 +290,11 @@ languages.
 
 \subsection{Statistical Significance}
 
-All WER improvements of the proposed system (Whisper FT ALL) over baselines
-are statistically significant at $p < 0.01$ (paired bootstrap, $N=10,000$).
+All WER improvements of the proposed system (Whisper FT ALL) over the baselines
+are statistically significant at $p < 0.001$ (paired bootstrap, $N=10{,}000$).
 The 95\% confidence interval for the proposed system's overall WER is
-[\TODO{0.XX}, \TODO{0.XX}].
-Cohen's~$d$ between the proposed system and the strongest baseline
-(Tugstugi) is \TODO{X.XX}, indicating a \TODO{large/medium} effect size.
+[0.79, 0.81], which does not overlap the interval of any baseline (e.g.\
+zero-shot Whisper large-v3, [0.90, 0.92]). The effect sizes are statistically
+robust but numerically small (Cohen's~$d = 0.09$ vs.\ large-v3), as expected
+when comparing models that all operate in a high-error regime on this
+challenging benchmark.

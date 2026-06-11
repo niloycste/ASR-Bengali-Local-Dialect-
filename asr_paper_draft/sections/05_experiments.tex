@@ -60,10 +60,11 @@ Effect sizes are reported as Cohen's~$d$.
 \subsection{Baseline Models}
 
 \begin{itemize}[leftmargin=*, itemsep=2pt]
-  \item \textbf{Whisper large-v3 (zero-shot)}: strongest publicly available
+  \item \textbf{Whisper-small (zero-shot)}: the same base model used for
+        fine-tuning, evaluated untuned --- isolating the effect of fine-tuning
+        on BanglaMix.
+  \item \textbf{Whisper large-v3 (zero-shot)}: the strongest publicly available
         multilingual ASR model, evaluated without any fine-tuning.
-  \item \textbf{Tugstugi/whisper-bn}: Ben-10 dialect-fine-tuned Whisper;
-        dialect-aware but CS-naive.
   \item \textbf{MMS-1B (zero-shot)}: Meta's massively multilingual CTC model.
   \item \textbf{wav2vec2-XLS-R-BN (zero-shot)}: Bengali-fine-tuned CTC model,
         trained on standard Bengali only.

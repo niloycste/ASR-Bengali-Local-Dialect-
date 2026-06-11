@@ -34,8 +34,8 @@ ASR corpus, covering 10 regional dialects with 78~hours of speech.
 They showed that even Whisper large-v3 achieves a WER of approximately 70\%
 on unseen dialects, and that fine-tuning on dialect data reduces this
 substantially.
-Their best model, Tugstugi, is fine-tuned on Ben-10 and serves as our
-dialect-aware baseline.
+Ben-10 covers dialectal Bengali but contains no code-switching, motivating a
+benchmark that combines both phenomena.
 
 Prior to Ben-10, dialectal Bengali was largely unstudied computationally,
 with the exception of small datasets for Sylheti \citep{sylheti2019} and
@@ -70,21 +70,6 @@ For CS specifically, Whisper's seq2seq decoder can generate mixed-script
 hypotheses in a single forward pass, making it particularly well-suited to
 our task.
 
-\subsection{Language Model Shallow Fusion}
-
-Shallow fusion integrates an external language model into CTC beam search:
-\begin{equation}
-\hat{y} = \arg\max_y \left[\log p_{\text{CTC}}(y|x)
-          + \alpha \log p_{\text{LM}}(y)
-          + \beta |y| \right]
-\label{eq:shallow_fusion}
-\end{equation}
-where $\alpha$ controls LM weight and $\beta$ is a word insertion bonus
-\citep{hannun2014deep}.
-We use a 5-gram KenLM model \citep{heafield2011kenlm} trained on our
-transcript corpus.
-The hyperparameters $\alpha$ and $\beta$ are tuned on the development set.
-
 \subsection{LLM-as-a-Judge for Data Quality}
 
 Using large language models as automatic evaluators has gained traction
@@ -98,18 +83,54 @@ spoken dialogue system responses~\citep{kim2023llm_eval_spoken}, but their
 use for \emph{dataset construction quality control}---specifically for
 code-switched low-resource ASR---has not been studied.
 
-We propose a novel application: using a three-model LLM ensemble
-(Mistral-7B, LLaMA-3.1-8B, Gemma-2-9B) as an automated judge to validate
-borderline Whisper transcripts during dataset construction.
-Each model evaluates four dimensions independently; majority vote (2/3)
-determines acceptance.
-This eliminates the need for human annotators for borderline clips while
-providing a more principled acceptance criterion than a simple confidence
-threshold alone.
+We apply LLM-as-a-judge at two distinct stages. During \emph{dataset
+construction}, a single strong multilingual judge (Qwen2.5~\citep{qwen2025})
+validates borderline Whisper transcripts along four dimensions---Bengali
+validity, code-switching naturalness, dialect authenticity, and absence of
+noise---eliminating the need for human annotators for borderline clips while
+providing a more principled acceptance criterion than a confidence threshold
+alone. A single high-capacity judge is preferred here for throughput over the
+large borderline set. For \emph{system evaluation}, we additionally employ a
+three-model ensemble (Mistral-7B~\citep{jiang2023mistral},
+LLaMA-3.1-8B~\citep{dubey2024llama}, and Gemma~\citep{team2024gemma}) that
+scores ASR hypotheses for semantic correctness, code-switch preservation, and
+dialectal naturalness; averaging across architecturally distinct models
+mitigates single-model bias in the metric. To our knowledge, LLM-as-a-judge
+has not previously been applied to either quality control or evaluation for
+code-switched low-resource ASR.
 
 \subsection{Summary and Positioning}
 
-Table~\ref{tab:gap} in Section~\ref{sec:intro} summarises the positioning of
-BanglaMix relative to existing work.
+Table~\ref{tab:relwork} gives a comparative summary of representative Bengali
+and code-switching ASR work, and Table~\ref{tab:gap} in
+Section~\ref{sec:intro} summarises the positioning of BanglaMix.
 To our knowledge, this is the first dataset and the first systematic benchmark
 for ASR on \emph{dialectal Bengali speech with English code-switching}.
+
+\begin{table*}[t]
+\centering
+\caption{Comparative summary of representative Bengali / code-switching ASR
+systems and datasets. BanglaMix is the first to combine \emph{multi-dialect}
+Bengali with English \emph{code-switching}. (CS = code-switching;
+\ding{51} present, \ding{55} absent; ``--'' not applicable.)}
+\label{tab:relwork}
+\footnotesize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{@{}l l l c c r X@{}}
+\toprule
+\textbf{Work} & \textbf{Method / Model} & \textbf{Variety} &
+\textbf{Dialects} & \textbf{CS} & \textbf{Hours} & \textbf{Key limitation} \\
+\midrule
+\citet{hasnat2007isolated}    & GMM-HMM                & Standard BN  & 1  & \ding{55} & --            & Lexicon-dependent; WER $>$50\%; no OOV \\
+\citet{ali2015automatic}      & DNN-HMM                & Standard BN  & 1  & \ding{55} & --            & Lexicon-dependent; standard BN only \\
+\citet{islam2019banglasr}     & End-to-end (CTC/attn.) & Standard BN  & 1  & \ding{55} & --            & Standard BN only; no dialect/CS \\
+\citet{kjartansson2018bengali}& Corpus (OpenSLR-37)    & Standard BN  & 1  & \ding{55} & 100           & Read speech; no dialect, no CS \\
+\citet{mucs2021}              & CS challenge corpus    & Standard BN  & 1  & \ding{51} & \TODO{$\sim$5}& Standard Dhaka BN; no dialect \\
+\citet{ben10_2025}            & Whisper FT (Ben-10)    & Dialectal BN & 10 & \ding{55} & 78            & No code-switching \\
+\citet{babu2022xlsr}          & wav2vec2-XLS-R (SSL)   & Multilingual & -- & \ding{55} & --            & Standard BN via transfer; no dialect/CS \\
+\citet{radford2023whisper}    & Whisper (weak sup.)    & Multilingual & -- & \ding{55} & --            & $\sim$70\% WER on unseen BN dialects \\
+\midrule
+\textbf{BanglaMix (ours)}     & Whisper/CTC FT + benchmark & \textbf{Dialectal BN} & \textbf{15} & \ding{51} & \TODO{$\sim$165} & First multi-dialect BN $+$ CS dataset \\
+\bottomrule
+\end{tabularx}
+\end{table*}

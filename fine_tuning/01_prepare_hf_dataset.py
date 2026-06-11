@@ -18,7 +18,8 @@ import sys
 from pathlib import Path
 
 # ── resolve imports regardless of working directory ────────────────────────────
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+# No sys.path manipulation needed; config.py is in the same directory.
+# The import below works because Python automatically searches the current script's folder.
 from config import DATASET_DIR, HF_DATA_DIR, SUBSETS, BASE_MODEL
 
 SAMPLE_RATE = 16_000
@@ -89,7 +90,11 @@ def build_hf_dataset(rows: list[dict]):
         print(f"  [WARNING] Skipped {missing} rows with missing audio or transcript.")
 
     ds = Dataset.from_list(records)
-    ds = ds.cast_column("audio", Audio(sampling_rate=SAMPLE_RATE))
+    # Keep "audio" as a plain file-path string. Casting to Audio() here would make
+    # save_to_disk() embed the raw waveforms into the Arrow shards, bloating the
+    # saved dataset to tens of GB (and duplicating audio across subsets). Instead
+    # we cast to Audio() lazily at training time, so the saved dataset stays tiny
+    # (just labels + paths) and audio is decoded on-the-fly from the file paths.
     return ds
 
 

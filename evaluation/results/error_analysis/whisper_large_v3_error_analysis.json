@@ -1,0 +1,362 @@
+{
+  "model": "whisper_large_v3",
+  "n_clips": 4088,
+  "error_breakdown": {
+    "substitution_rate": 0.3113,
+    "deletion_rate": 0.4797,
+    "insertion_rate": 0.1191
+  },
+  "en_word_analysis": {
+    "total_en_words_in_ref": 715,
+    "en_words_preserved": 467,
+    "en_words_deleted": 248,
+    "en_word_survival_rate": 0.6531,
+    "en_deletion_rate": 0.3469,
+    "top_deleted_en_words": [
+      [
+        "the",
+        6
+      ],
+      [
+        "every",
+        6
+      ],
+      [
+        "you",
+        5
+      ],
+      [
+        "of",
+        4
+      ],
+      [
+        "for",
+        4
+      ],
+      [
+        "after",
+        4
+      ],
+      [
+        "in",
+        4
+      ],
+      [
+        "interesting",
+        3
+      ],
+      [
+        "are",
+        3
+      ],
+      [
+        "english",
+        3
+      ],
+      [
+        "your",
+        3
+      ],
+      [
+        "cod",
+        3
+      ],
+      [
+        "going",
+        2
+      ],
+      [
+        "okay",
+        2
+      ],
+      [
+        "on",
+        2
+      ],
+      [
+        "introduce",
+        2
+      ],
+      [
+        "yourself",
+        2
+      ],
+      [
+        "life",
+        2
+      ],
+      [
+        "interview",
+        2
+      ],
+      [
+        "particular",
+        2
+      ]
+    ]
+  },
+  "top_substitutions": [
+    [
+      "জে→যে",
+      22
+    ],
+    [
+      "এই→the",
+      13
+    ],
+    [
+      "এই→I",
+      13
+    ],
+    [
+      "আমি→I",
+      13
+    ],
+    [
+      "হয়→হয়ে",
+      11
+    ],
+    [
+      "এই→a",
+      11
+    ],
+    [
+      "এই→করতে",
+      10
+    ],
+    [
+      "সো→So",
+      9
+    ],
+    [
+      "ইন→in",
+      9
+    ],
+    [
+      "তো→so",
+      9
+    ],
+    [
+      "দে→the",
+      9
+    ],
+    [
+      "এ→এই",
+      9
+    ],
+    [
+      "ভাই→বাই",
+      8
+    ],
+    [
+      "যে→you",
+      7
+    ],
+    [
+      "জন্ন→জন্য",
+      7
+    ]
+  ],
+  "worst_clips": [
+    {
+      "clip_id": "P3l0zFqCSIc_0017",
+      "dialect": "Sandwip",
+      "is_cs": false,
+      "wer": 18.3333,
+      "reference": "এটি ক্ষেন সুনে",
+      "hypothesis": "in to that new role These are the things that you need to think about when preparing for your job interview But the good news for you is most of this work has already been done when you crafted the job advertisement Whether it was you whether it was the HR department there has been"
+    },
+    {
+      "clip_id": "Sylhet_UK_CS__7cQH3yF9JmY_0049",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 18.0,
+      "reference": "ক্তে",
+      "hypothesis": "We are just waiting here at the side of the road to take one of these local buses"
+    },
+    {
+      "clip_id": "Sylhet_UK_CS__JI3CKPGzx9g_0198",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 13.0,
+      "reference": "আরেন আইটিম",
+      "hypothesis": "I can t eat spicy food for the next little while And that one was really spicy So let s move on to the next bit"
+    },
+    {
+      "clip_id": "-JGXMwpNeIQ_0244",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 12.0,
+      "reference": "আনিত্রতে এই",
+      "hypothesis": "My question is really whether the covering of the head was to protect her from the attention of men or for a religious reason"
+    },
+    {
+      "clip_id": "5gHYGu6FPyY_0022",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 12.0,
+      "reference": "এই এই",
+      "hypothesis": "Thank you thank you thank you So just finished my lunch there in the famous Pan Chi restaurant and so the quail biryani was"
+    },
+    {
+      "clip_id": "HjUZN7IAKwo_0042",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 11.0,
+      "reference": "ক্যানাতে ক্যানাতে",
+      "hypothesis": "like you know the pre books Quran and you know the life of Prophet Muhammad like biography of Prophet তিন্ছালবা এই এই"
+    },
+    {
+      "clip_id": "Sylhet_UK_CS__JI3CKPGzx9g_0083",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 11.0,
+      "reference": "স্লাম্যালিকুম",
+      "hypothesis": "Assalamu alaikum আপনাদে কোন্তা করানে আপনাদে কোন্তা করানে আমাদে কোন্তা করান"
+    },
+    {
+      "clip_id": "9B4MlWB6_F0_0112",
+      "dialect": "Rangpur",
+      "is_cs": false,
+      "wer": 10.4,
+      "reference": "প্রভেলন হাটেক প্রভেলারেষ্টানার ডেন সহারে",
+      "hypothesis": "and no facilities of modern life That may be true to you but not to me Village life is always better than city life Yeah you are right but I am in a different opinion Look in the village you can t get better facilities for better treatment better education better communication"
+    },
+    {
+      "clip_id": "KrwOzeDpKE0_0004",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 10.3333,
+      "reference": "কেশিতে যা পরমননে জাও যাদিকেকেন ভাকে",
+      "hypothesis": "Because it s the prominent dialect Dialect in London I may refer to it as Bengali I will try my best to remember to call it Sileti As many of you will be aware my husband is from Bangladesh Do you want to say a little bit about where you re from in Bangladesh I m from Silet a district in Bangladesh"
+    },
+    {
+      "clip_id": "-JGXMwpNeIQ_0258",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 10.0,
+      "reference": "অন্ভিকি এককা তিকেন্তিকা পন্মাতীছুন",
+      "hypothesis": "I don t think they did Because some of it was visible some of it wasn t But it wasn t very specified in the interview So it wasn t that much of an issue These events these particular events"
+    },
+    {
+      "clip_id": "WZTks_8AtCs_0164",
+      "dialect": "Kishoreganj",
+      "is_cs": false,
+      "wer": 9.0,
+      "reference": "জেলিস কা঵ালা",
+      "hypothesis": "J L E S C A W L A পানা পানা কুম আননো দুনা কুম ভালা লাকছে গ্রামেশে"
+    },
+    {
+      "clip_id": "Sylhet_UK_CS__7cQH3yF9JmY_0084",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 8.6667,
+      "reference": "পুছিত কোন্তে আমাত্যাকান",
+      "hypothesis": "but not a bad room for such a good price What a crazy few days we ve had exploring the north of Bangladesh going to much"
+    },
+    {
+      "clip_id": "KrwOzeDpKE0_0042",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 8.6667,
+      "reference": "মাটিসনা মতিসনা মতিসনা",
+      "hypothesis": "then you say মাতিস্না মাতিস্না what s that mean stop talking দুর মাতিস্না যে that s very sweet but you want to be like দুর মাতিস্না"
+    },
+    {
+      "clip_id": "-JGXMwpNeIQ_0161",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 8.25,
+      "reference": "আম্যাণ সনতির্কার প্রাতিতে প্যামারনা",
+      "hypothesis": "a notion that might have arisen through her own upbringing And this is reminiscent of another quote by again the second handist Suntir Kakar who argues that how a parent is brought up"
+    },
+    {
+      "clip_id": "P3l0zFqCSIc_0037",
+      "dialect": "Sandwip",
+      "is_cs": false,
+      "wer": 7.5,
+      "reference": "এমারে আয়বে দুন্যব কর্যাবে সুষ্টামাগে সুজু আমারে একথনতা",
+      "hypothesis": "in the description below if you want to click on it and go straight to that resource If you have decided that the person you are interviewing is a good fit for the job if they have answered the questions really well then you can move on to selling the job and selling the company to them So this is"
+    },
+    {
+      "clip_id": "5gHYGu6FPyY_0077",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 7.2,
+      "reference": "স্বাইয়ো বায়ে েহব্যান টু ভেন্ন",
+      "hypothesis": "and also grab a chai which i remember doing with a few friends back in 2018 here it s kind of a good meeting spot in that sense i got talking to a nice guy here"
+    },
+    {
+      "clip_id": "KrwOzeDpKE0_0026",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 7.0,
+      "reference": "আপনানা ইন নিস্তে তো আলা এই যেনের করতে করিন",
+      "hypothesis": "It would be good to test them next time you re out Okay So that would be a big challenge Okay if you guys want me to test this next time I m out probably embarrass myself Yeah Next time I m out I ll see if maybe maybe they ll be willing to let us film it Even if it s audio"
+    },
+    {
+      "clip_id": "Sylhet_UK_CS__JI3CKPGzx9g_0161",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 7.0,
+      "reference": "আপ একটিক্ট পেব্যা্য আর্মডিসে",
+      "hypothesis": "You love Australian cricket Yeah I m Australian so we love Australian cricket Yeah yeah I love Australian Who s your favorite player David Warner Smith Anderson and"
+    },
+    {
+      "clip_id": "WZTks_8AtCs_0029",
+      "dialect": "Kishoreganj",
+      "is_cs": false,
+      "wer": 6.8571,
+      "reference": "আমি একটিন করাম আমি একটিন করাম আমি শুটিং করাম আমি শুটিং করাম আমি শুটিং",
+      "hypothesis": "I will act I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot I will shoot"
+    },
+    {
+      "clip_id": "PsAaNUM0U7g_0047",
+      "dialect": "Comilla",
+      "is_cs": false,
+      "wer": 6.7778,
+      "reference": "এতো নেরো দিসে লিট্রল ইমপাসিবল মিস্টার সানে গিদি ফেষ্ট",
+      "hypothesis": "1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 22 23 24 25 26 27 28 29 30 30 31 32 33 34 35 36 37 38 39 40 40 41 42 43 44 45 46 47 48 49 50 50 51 52 53 54 56 57 58 59 59"
+    },
+    {
+      "clip_id": "Sylhet_UK_CS__7cQH3yF9JmY_0020",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 6.6,
+      "reference": "আমেলো বাধ সুত্তি পারেতিদ কোড়নে",
+      "hypothesis": "I m behind me we ve got all the guys with their little cart and they re taking all their products to the market So inside they ve got pineapples they ve got"
+    },
+    {
+      "clip_id": "FVq2lnRBHFQ_0000",
+      "dialect": "Old_Dhaka",
+      "is_cs": false,
+      "wer": 6.5,
+      "reference": "এস্টালো বালাইকুম",
+      "hypothesis": "As salamu alaikum আমরদেকাছে অনেকিকে প্রশ্ন করায় যে ভাইয়া কি ভাবে গুছে সুন্"
+    },
+    {
+      "clip_id": "WZTks_8AtCs_0322",
+      "dialect": "Kishoreganj",
+      "is_cs": false,
+      "wer": 6.5,
+      "reference": "টে টে",
+      "hypothesis": "T T ওকে বস্তে বেডিছে আপনি মনায় দেখতে চাত্ছে না তাহলে আমা আমা"
+    },
+    {
+      "clip_id": "5gHYGu6FPyY_0067",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 6.3333,
+      "reference": "করতেরানে শিলিকে কানে",
+      "hypothesis": "or going home When I was in Silic last time I stayed on the South Bank a bit further"
+    },
+    {
+      "clip_id": "RXp9ycL_7Sg_0089",
+      "dialect": "Barishal",
+      "is_cs": false,
+      "wer": 6.25,
+      "reference": "এইছে আমারা কিভাবে করবানে",
+      "hypothesis": "It s raining every after 2 hours It s raining every after 2 hours right Pretty easy Okay aap nাইকে কোমনেন দে জানিয়ে দানে আমারা কিভাবে কোলো"
+    }
+  ]
+}

@@ -7,12 +7,13 @@ from pathlib import Path
 
 # ── Paths ──────────────────────────────────────────────────────────────────────
 ROOT          = Path(__file__).resolve().parent.parent
-DATASET_DIR   = ROOT / "dataset_pipeline" / "final_dataset"
-HF_DATA_DIR   = ROOT / "fine_tuning"  / "hf_datasets"
-MODELS_DIR    = ROOT / "fine_tuning"  / "models"
-RESULTS_DIR   = ROOT / "evaluation"   / "results"
-PLOTS_DIR     = ROOT / "evaluation"   / "plots"
-LM_DIR        = ROOT / "fine_tuning"  / "language_models"
+DATASET_DIR           = ROOT / "dataset_pipeline" / "final_dataset"
+TRANSCRIPTS_MERGED_DIR = ROOT / "dataset_pipeline" / "Data ASR" / "transcripts_merged_all"
+HF_DATA_DIR           = ROOT / "fine_tuning"  / "hf_datasets"
+MODELS_DIR            = ROOT / "fine_tuning"  / "models"
+RESULTS_DIR           = ROOT / "evaluation"   / "results"
+PLOTS_DIR             = ROOT / "evaluation"   / "plots"
+LM_DIR                = ROOT / "fine_tuning"  / "language_models"
 
 # ── Training subsets ──────────────────────────────────────────────────────────
 SUBSETS = {
@@ -22,23 +23,25 @@ SUBSETS = {
 }
 
 # ── Whisper fine-tune base ────────────────────────────────────────────────────
-BASE_MODEL = "openai/whisper-small"
+BASE_MODEL = "openai/whisper-small"   # fast, feasible on free Colab. Use whisper-medium/large-v3 on an A100.
 LANGUAGE   = "bengali"
 TASK       = "transcribe"
 
 # ── Training hyperparameters ───────────────────────────────────────────────────
 TRAINING = {
-    "num_train_epochs":             3,      # Reduced from 10 for faster CPU training
-    "per_device_train_batch_size":  8,
-    "per_device_eval_batch_size":   8,
-    "gradient_accumulation_steps":  2,
+    "num_train_epochs":             3,
+    "per_device_train_batch_size":  16,    # A100/H100 have plenty of VRAM for these small models
+    "per_device_eval_batch_size":   16,
+    "gradient_accumulation_steps":  1,     # effective batch 16 (was 8x2); raise batch further on big GPUs
     "learning_rate":                1e-5,
     "warmup_steps":                 500,
-    "fp16":                         True,   # set False if CPU only
+    "fp16":                         True,   # auto-upgraded to bf16 on A100/H100 by the train scripts
+    "dataloader_num_workers":       2,      # parallel audio decode; keep low when reading from Google Drive
     "predict_with_generate":        True,
     "generation_max_length":        225,
     "save_steps":                   2000,   # Increased to avoid long CPU pauses
     "eval_steps":                   2000,   # Increased to avoid long CPU pauses
+    "save_total_limit":             3,      # keep only best + 2 recent checkpoints (saves disk)
     "logging_steps":                50,
     "load_best_model_at_end":       True,
     "metric_for_best_model":        "wer",
@@ -60,15 +63,15 @@ WHISPER_SIZES = {
 
 # ── Zero-shot baseline models ─────────────────────────────────────────────────
 BASELINES = {
+    "whisper_small_zs": {
+        "type":  "whisper_openai",
+        "model": "small",
+        "label": "Whisper small (zero-shot)",
+    },
     "whisper_large_v3": {
         "type":  "whisper_openai",
         "model": "large-v3",
         "label": "Whisper large-v3 (zero-shot)",
-    },
-    "tugstugi_whisper_bn": {
-        "type":  "whisper_hf",
-        "model": "Tugstugi/whisper-ct2-bn-large-v2",
-        "label": "Tugstugi/whisper-bn (Ben-10 dialect, no CS)",
     },
     "mms_bn": {
         "type":  "mms",
@@ -127,8 +130,8 @@ CONFIDENCE_LEVEL = 0.95
 
 # ── Display order for all tables and plots ────────────────────────────────────
 TABLE_ORDER = [
+    "whisper_small_zs",
     "whisper_large_v3",
-    "tugstugi_whisper_bn",
     "mms_bn",
     "wav2vec2_bn",
     "ft_wav2vec2_all",
@@ -141,8 +144,8 @@ TABLE_ORDER = [
 ]
 
 MODEL_LABELS = {
+    "whisper_small_zs":    "Whisper small (zero-shot)",
     "whisper_large_v3":    "Whisper large-v3 (zero-shot)",
-    "tugstugi_whisper_bn": "Tugstugi/whisper-bn (Ben-10)",
     "mms_bn":              "MMS-1B (zero-shot)",
     "wav2vec2_bn":         "wav2vec2-XLS-R-BN (zero-shot)",
     "ft_wav2vec2_all":     "wav2vec2 fine-tuned (no LM)",
@@ -160,8 +163,8 @@ MODEL_LABELS = {
 #   light green = Whisper ablations
 #   dark green  = proposed system
 MODEL_COLORS = {
+    "whisper_small_zs":    "#BDBDBD",
     "whisper_large_v3":    "#9E9E9E",
-    "tugstugi_whisper_bn": "#757575",
     "mms_bn":              "#BDBDBD",
     "wav2vec2_bn":         "#B0BEC5",
     "ft_wav2vec2_all":     "#90CAF9",

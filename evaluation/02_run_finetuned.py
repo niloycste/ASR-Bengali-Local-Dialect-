@@ -120,8 +120,12 @@ def run_whisper(model_dir: Path, clips: list[dict], device: str) -> list[dict]:
     model = WhisperForConditionalGeneration.from_pretrained(str(model_dir)).to(device)
     model.eval()
 
-    forced_ids = processor.get_decoder_prompt_ids(language="bengali", task="transcribe")
-    model.config.forced_decoder_ids = forced_ids
+    # Force Bengali transcription via generation_config. The older
+    # forced_decoder_ids API is deprecated in transformers v5 (it can be ignored
+    # or raise a mutual-exclusivity error with language/task).
+    model.generation_config.forced_decoder_ids = None
+    model.generation_config.language = "bengali"
+    model.generation_config.task = "transcribe"
 
     predictions = []
     for i, clip in enumerate(clips):
@@ -130,7 +134,7 @@ def run_whisper(model_dir: Path, clips: list[dict], device: str) -> list[dict]:
             audio_np,
             sampling_rate=SAMPLE_RATE,
             return_tensors="pt",
-        ).input_features.to(device)
+        ).input_features.to(device=device, dtype=model.dtype)
 
         with torch.no_grad():
             ids = model.generate(inputs)
@@ -165,7 +169,7 @@ def run_ctc(model_dir: Path, clips: list[dict], device: str) -> list[dict]:
             sampling_rate=SAMPLE_RATE,
             return_tensors="pt",
             padding=True,
-        ).input_values.to(device)
+        ).input_values.to(device=device, dtype=model.dtype)
 
         with torch.no_grad():
             logits = model(inputs).logits

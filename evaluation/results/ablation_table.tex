@@ -1,0 +1,20 @@
+\begin{table}[ht]
+\centering
+\caption{ASR Results on Bengali Dialect Code-Switching Test Set}
+\label{tab:asr_results}
+\begin{tabular}{lrrrrr}
+\toprule
+Model & WER$\downarrow$ & WER-CS$\downarrow$ & WER-BN$\downarrow$ & WER-EN$\downarrow$ & CS-F1$\uparrow$ \\
+\midrule
+Whisper small (zero-shot) & 106.6% & 102.3% & 100.0% & 126.2% & 0.0% \\
+Whisper large-v3 (zero-shot) & 91.0% & 79.5% & 81.1% & 108.2% & 14.5% \\
+MMS-1B (zero-shot) & 99.0% & 94.0% & 94.5% & 110.6% & 4.1% \\
+\midrule
+wav2vec2-XLS-R-BN (zero-shot) & 96.3% & 93.5% & 96.3% & 103.0% & 4.4% \\
+wav2vec2 fine-tuned (no LM) & 86.1% & 87.8% & 86.3% & 99.7% & 13.5% \\
+Whisper FT BN\_ONLY (ablation A) & 80.0% & 81.8% & 80.4% & 99.6% & 1.1% \\
+Whisper FT CS only (ablation B) & 88.3% & 81.2% & 87.7% & 75.6% & 27.9% \\
+\textbf{Whisper FT ALL (proposed)} & 80.1% & 81.5% & 80.5% & 92.6% & 19.2% \\
+\bottomrule
+\end{tabular}
+\end{table}

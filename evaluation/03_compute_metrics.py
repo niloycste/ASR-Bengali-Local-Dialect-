@@ -34,7 +34,10 @@ PROJECT_ROOT = SCRIPT_DIR.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from fine_tuning.config import BASELINES, FINETUNED, RESULTS_DIR
-from dataset_pipeline.text_normalization import normalize_pronunciation_variants
+from dataset_pipeline.text_normalization import (
+    normalize_pronunciation_variants,
+    normalize_transcript,
+)
 
 
 def is_bengali_word(word: str) -> bool:
@@ -178,12 +181,37 @@ def compute_wer_en(predictions: list[dict]) -> float | None:
     return compute_wer_from_lists(refs, hyps)
 
 
+def surface_normalize_predictions(predictions: list[dict]) -> list[dict]:
+    """
+    Build a surface-cleaned evaluation view.
+
+    Applies normalize_transcript() (strips punctuation, danda, emojis, ZWNJ and
+    normalizes Unicode/whitespace) to BOTH reference and hypothesis. This is the
+    standard pre-WER cleaning step — without it, trivial formatting differences
+    (e.g. "ভালো।" vs "ভালো") are wrongly counted as word errors and inflate WER.
+
+    The stored prediction files are not modified; this only creates a parallel
+    in-memory view used for metric computation.
+    """
+    cleaned = []
+    for prediction in predictions:
+        cleaned.append(
+            {
+                **prediction,
+                "reference": normalize_transcript(prediction.get("reference", "")),
+                "hypothesis": normalize_transcript(prediction.get("hypothesis", "")),
+            }
+        )
+    return cleaned
+
+
 def normalize_prediction_texts(predictions: list[dict]) -> list[dict]:
     """
     Build a pronunciation-normalized evaluation view.
 
     This does not modify stored transcripts. It only creates a parallel view
     where known borrowed-word variants map to a single canonical form.
+    Apply on top of surface-normalized predictions to get full normalization.
     """
     normalized_predictions = []
     for prediction in predictions:
@@ -261,6 +289,11 @@ def compute_per_dialect_wer(predictions: list[dict]) -> dict[str, dict]:
 
 def compute_all_metrics(predictions: list[dict]) -> dict:
     """Compute the full evaluation bundle for one model."""
+    # Surface-clean reference and hypothesis before any scoring. All base metrics
+    # are computed on this cleaned view; the *_normalized metrics additionally map
+    # pronunciation variants on top of it.
+    predictions = surface_normalize_predictions(predictions)
+
     cs_preds = [prediction for prediction in predictions if prediction.get("is_code_switched")]
     bn_preds = [prediction for prediction in predictions if not prediction.get("is_code_switched")]
 

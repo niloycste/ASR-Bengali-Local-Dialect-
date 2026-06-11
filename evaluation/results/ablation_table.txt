@@ -1,0 +1,13 @@
+------------------------------------------------------------------------------------
+Model                                             WER  WER-CS  WER-BN  WER-EN  CS-F1
+------------------------------------------------------------------------------------
+Whisper small (zero-shot)                      106.6%  102.3%  100.0%  126.2%   0.0%
+Whisper large-v3 (zero-shot)                    91.0%   79.5%   81.1%  108.2%  14.5%
+MMS-1B (zero-shot)                              99.0%   94.0%   94.5%  110.6%   4.1%
+wav2vec2-XLS-R-BN (zero-shot)                   96.3%   93.5%   96.3%  103.0%   4.4%
+wav2vec2 fine-tuned (no LM)                     86.1%   87.8%   86.3%   99.7%  13.5%
+Whisper FT BN_ONLY (ablation A)                 80.0%   81.8%   80.4%   99.6%   1.1%
+Whisper FT CS only (ablation B)                 88.3%   81.2%   87.7%   75.6%  27.9%
+Whisper FT ALL (proposed)                       80.1%   81.5%   80.5%   92.6%  19.2%
+------------------------------------------------------------------------------------
+WER = Word Error Rate (lower is better). WER-CS = WER on code-switched clips. WER-BN/EN = WER on Bengali/English words only. CS-F1 = F1 for detecting code-switched clips.

@@ -53,21 +53,49 @@ def clip_id_prefix(clip_id: str) -> str:
 
 
 def resolve_pipeline_path(path: str) -> str:
-    """Resolve paths stored relative to dataset_pipeline/."""
-    if os.path.isabs(path):
-        return path
+    """Resolve an audio path so it works on ANY machine.
 
-    direct_path = os.path.join(os.fspath(SCRIPT_DIR), path)
+    Transcripts may carry paths baked on a different machine — e.g. Windows
+    absolute paths (C:\\...\\segments\\augmented\\x.wav) or Colab paths
+    (/content/.../segments/Sylhet/x.wav). Rather than trust those, we re-root
+    every path onto the LOCAL segments/ tree, so the same transcripts_reviewed.json
+    works on Windows, Colab, or anywhere else.
+    """
+    raw = str(path)
+    norm = raw.replace("\\", "/")
+
+    # 1. Absolute path that actually exists on THIS machine — use as-is.
+    if os.path.isabs(raw) and os.path.exists(raw):
+        return raw
+
+    # 2. Re-root anything containing ".../segments/..." onto the local tree.
+    #    Handles foreign absolute paths (Windows C:\ or Colab /content) by
+    #    keeping only the part from "segments/" onward.
+    marker = "segments/"
+    idx = norm.rfind(marker)
+    if idx != -1:
+        tail = norm[idx + len(marker):]            # e.g. "augmented/x.wav", "Sylhet/x.wav"
+        candidate = os.path.join(os.fspath(SCRIPT_DIR), "segments", tail)
+        if os.path.exists(candidate):
+            return candidate
+
+    # 3. Plain relative path joined to the pipeline dir.
+    direct_path = os.path.join(os.fspath(SCRIPT_DIR), raw)
     if os.path.exists(direct_path):
         return direct_path
 
-    # Some Colab extraction layouts produce transcript paths like
-    # "Barishal/clip.wav" while the canonical project layout stores the same
-    # file under "segments/Barishal/clip.wav".
-    if not path.replace("\\", "/").startswith("segments/"):
-        segments_path = os.path.join(os.fspath(SCRIPT_DIR), "segments", path)
+    # 4. Relative path that omits the leading "segments/" (e.g. "Barishal/clip.wav").
+    if not norm.startswith("segments/"):
+        segments_path = os.path.join(os.fspath(SCRIPT_DIR), "segments", raw)
         if os.path.exists(segments_path):
             return segments_path
+
+    # 5. Last resort: locate by basename under segments/{,augmented,synthetic}.
+    base = os.path.basename(norm)
+    for sub in ("", "augmented", "synthetic"):
+        cand = os.path.join(os.fspath(SCRIPT_DIR), "segments", sub, base)
+        if os.path.exists(cand):
+            return cand
 
     return direct_path
 
@@ -123,6 +151,37 @@ def expand_groups(groups: list[dict]) -> list[dict]:
     return clips
 
 
+def keep_pinned_for_train(
+    pinned: list[dict],
+    dev_groups: list[dict],
+    test_groups: list[dict],
+) -> list[dict]:
+    """
+    Filter pinned (augmented/synthetic) clips to avoid train/eval leakage.
+
+    Augmented clips inherit the source_id of the original clip they were derived
+    from. If that source was assigned to dev/test, force-adding the augmented
+    copy to train would leak the same raw source across splits. We therefore keep
+    a pinned clip only when its source did NOT land in dev/test. Synthetic clips
+    (source_id == "synthetic") never match an eval source, so they stay in train.
+    """
+    if not pinned:
+        return []
+
+    eval_sources = {group["source_id"] for group in dev_groups}
+    eval_sources |= {group["source_id"] for group in test_groups}
+
+    kept = [clip for clip in pinned if infer_source_id(clip) not in eval_sources]
+    dropped = len(pinned) - len(kept)
+    if dropped:
+        print(
+            f"[LEAKAGE GUARD] Dropped {dropped} pinned (augmented/synthetic) clips "
+            f"whose source was assigned to dev/test — prevents train/eval leakage."
+        )
+    print(f"[INFO] {len(kept)} pinned clips kept in train.")
+    return kept
+
+
 def split_clips(clips: list[dict]) -> tuple[list[dict], list[dict], list[dict]]:
     """
     Split train/dev/test by source, not by clip.
@@ -155,33 +214,37 @@ def split_clips(clips: list[dict]) -> tuple[list[dict], list[dict], list[dict]]:
     if len(groups) < 10 or len(unique_dialects) < 2:
         print("[INFO] Too few source groups for reliable stratification. Using random source split.")
         train_groups, dev_groups, test_groups = random_group_split(groups)
-        return (expand_groups(train_groups) + pinned_train,
-                expand_groups(dev_groups),
-                expand_groups(test_groups))
+    else:
+        try:
+            train_groups, temp_groups = train_test_split(
+                groups, test_size=0.2, random_state=42, stratify=dialects
+            )
+            temp_dialects = [group["dialect"] for group in temp_groups]
+            dev_groups, test_groups = train_test_split(
+                temp_groups, test_size=0.5, random_state=42, stratify=temp_dialects
+            )
+            print("[INFO] Using dialect-stratified source split.")
+        except ValueError as exc:
+            print(f"[WARNING] Stratified source split not possible: {exc}")
+            print("          Falling back to random source split.")
+            train_groups, dev_groups, test_groups = random_group_split(groups)
 
-    try:
-        train_groups, temp_groups = train_test_split(
-            groups, test_size=0.2, random_state=42, stratify=dialects
-        )
-        temp_dialects = [group["dialect"] for group in temp_groups]
-        dev_groups, test_groups = train_test_split(
-            temp_groups, test_size=0.5, random_state=42, stratify=temp_dialects
-        )
-        print("[INFO] Using dialect-stratified source split.")
-        return (expand_groups(train_groups) + pinned_train,
-                expand_groups(dev_groups),
-                expand_groups(test_groups))
-    except ValueError as exc:
-        print(f"[WARNING] Stratified source split not possible: {exc}")
-        print("          Falling back to random source split.")
-        train_groups, dev_groups, test_groups = random_group_split(groups)
-        return (expand_groups(train_groups) + pinned_train,
-                expand_groups(dev_groups),
-                expand_groups(test_groups))
+    # Add pinned clips to train, but only those whose source did not land in
+    # dev/test (prevents augmented clips leaking a source across splits).
+    pinned_kept = keep_pinned_for_train(pinned_train, dev_groups, test_groups)
+    return (expand_groups(train_groups) + pinned_kept,
+            expand_groups(dev_groups),
+            expand_groups(test_groups))
 
 
-def materialize_split(split_clips: list[dict], audio_dir: str):
-    """Copy audio files and build manifest rows for one split."""
+def materialize_split(split_clips: list[dict], audio_dir: str, copy_audio: bool = True):
+    """Build manifest rows for one split, optionally copying audio.
+
+    copy_audio=True  → copy each wav into final_dataset/<split>/audio/ (self-contained,
+                       but duplicates ~33 GB of audio).
+    copy_audio=False → leave audio in place and point the manifest at the source file
+                       (saves ~33 GB; requires segments/ to stay where it is).
+    """
     rows = []
     kept_clips = []
     missing_audio = 0
@@ -192,13 +255,16 @@ def materialize_split(split_clips: list[dict], audio_dir: str):
             missing_audio += 1
             continue
 
-        dst = os.path.join(audio_dir, Path(src).name)
-        shutil.copy2(src, dst)
+        if copy_audio:
+            audio_out = os.path.join(audio_dir, Path(src).name)
+            shutil.copy2(src, audio_out)
+        else:
+            audio_out = src
 
         row = {
             "clip_id": clip["clip_id"],
             "source_id": infer_source_id(clip),
-            "audio_path": dst,
+            "audio_path": audio_out,
             "transcript": clip.get("human_transcript", ""),
             "normalized_transcript": normalize_pronunciation_variants(
                 clip.get("human_transcript", "")
@@ -214,11 +280,43 @@ def materialize_split(split_clips: list[dict], audio_dir: str):
         rows.append(row)
 
         kept_clip = dict(clip)
-        kept_clip["audio_path"] = dst
+        kept_clip["audio_path"] = audio_out
         kept_clip["source_id"] = infer_source_id(clip)
         kept_clips.append(kept_clip)
 
     return rows, kept_clips, missing_audio
+
+
+REPLACEMENT_CHAR = "�"
+
+
+def is_low_quality(text: str) -> bool:
+    """
+    Flag transcripts unsuitable for an ASR benchmark.
+
+    Drops:
+      - empty transcripts
+      - text containing the Unicode replacement char (U+FFFD '�'), which means
+        bytes were lost during decoding — the text is unrecoverable
+      - text containing letters from a foreign script (anything that is an
+        alphabetic character but is neither Bengali (U+0980–U+09FF) nor ASCII
+        Latin) — e.g. Devanagari, Arabic, CJK contamination
+    """
+    if not text or not text.strip():
+        return True
+    if REPLACEMENT_CHAR in text:
+        return True
+    for ch in text:
+        code = ord(ch)
+        if code < 128:                       # ASCII (English CS words, digits)
+            continue
+        if "ঀ" <= ch <= "৿":       # Bengali script
+            continue
+        if ch.isspace():
+            continue
+        if ch.isalpha():                     # alphabetic but foreign script
+            return True
+    return False
 
 
 def load_noise_tokens() -> set[str]:
@@ -237,6 +335,8 @@ def build_dataset(
     output_dir: str = DATASET_DIR,
     cs_only: bool = False,
     filter_noise: bool = False,
+    filter_quality: bool = True,
+    copy_audio: bool = True,
 ):
     """Build train/dev/test manifests and audio folders."""
     with open(reviewed_path, encoding="utf-8") as f:
@@ -248,6 +348,14 @@ def build_dataset(
         clip["source_id"] = infer_source_id(clip)
 
     clips = [clip for clip in clips if clip.get("human_transcript", "").strip()]
+
+    if filter_quality:
+        before = len(clips)
+        clips = [c for c in clips if not is_low_quality(c.get("human_transcript", ""))]
+        print(
+            f"[QUALITY] Dropped {before - len(clips)} clips with corrupted (�) or "
+            f"foreign-script transcripts. ({len(clips)} remain)"
+        )
 
     if filter_noise:
         noise_set = load_noise_tokens()
@@ -283,7 +391,7 @@ def build_dataset(
 
     for split_name, split_rows in planned_splits.items():
         audio_dir = os.path.join(output_dir, split_name, "audio")
-        rows, kept_clips, missing_audio = materialize_split(split_rows, audio_dir)
+        rows, kept_clips, missing_audio = materialize_split(split_rows, audio_dir, copy_audio=copy_audio)
 
         df = pd.DataFrame(rows, columns=MANIFEST_COLUMNS)
         csv_path = os.path.join(output_dir, split_name, "manifest.csv")
@@ -334,6 +442,15 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--cs-only", action="store_true", help="Only include code-switched clips")
     parser.add_argument("--filter-noise", action="store_true", help="Drop clips containing words from lexicons/noise_tokens.txt")
+    parser.add_argument("--keep-low-quality", action="store_true",
+                        help="Disable the quality filter (keep transcripts with � or foreign-script contamination)")
+    parser.add_argument("--no-copy", action="store_true",
+                        help="Don't copy audio into final_dataset/; point manifests at the source files (saves ~33 GB)")
     args = parser.parse_args()
 
-    build_dataset(cs_only=args.cs_only, filter_noise=args.filter_noise)
+    build_dataset(
+        cs_only=args.cs_only,
+        filter_noise=args.filter_noise,
+        filter_quality=not args.keep_low_quality,
+        copy_audio=not args.no_copy,
+    )

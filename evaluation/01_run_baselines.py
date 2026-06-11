@@ -68,46 +68,71 @@ def load_audio_np(audio_path: str) -> np.ndarray:
 # ── Whisper (openai-whisper) ───────────────────────────────────────────────────
 
 def transcribe_whisper_openai(clips: list[dict], model_size: str) -> list[dict]:
-    """Zero-shot Whisper via openai-whisper library."""
+    """Zero-shot Whisper via HuggingFace transformers — BATCHED, with capped
+    generation.
+
+    NOTE: We deliberately do NOT use the openai-whisper `transcribe()` API here.
+    On out-of-distribution dialectal Bengali it is extremely slow because of
+    (a) temperature fallback (each hard clip is re-decoded 5-6x) and
+    (b) hallucination to max length. Batched HF generate with max_new_tokens is
+    1-2 orders of magnitude faster and gives the same zero-shot baseline.
+    """
     try:
-        import whisper
         import torch
+        from transformers import WhisperProcessor, WhisperForConditionalGeneration
     except ImportError:
-        print("[ERROR] pip install openai-whisper torch")
+        print("[ERROR] pip install transformers torch")
         raise SystemExit(1)
 
-    device = "cuda" if __import__("torch").cuda.is_available() else "cpu"
-    print(f"  Loading Whisper {model_size} on {device} ...")
-    model = whisper.load_model(model_size, device=device)
+    hf_id = {
+        "tiny":   "openai/whisper-tiny",
+        "base":   "openai/whisper-base",
+        "small":  "openai/whisper-small",
+        "medium": "openai/whisper-medium",
+        "large":  "openai/whisper-large-v3",
+        "large-v3": "openai/whisper-large-v3",
+    }.get(model_size, f"openai/whisper-{model_size}")
 
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    print(f"  Loading {hf_id} on {device} ...")
+    processor = WhisperProcessor.from_pretrained(hf_id)
+    model     = WhisperForConditionalGeneration.from_pretrained(hf_id).to(device)
+    model.eval()
+    # Force Bengali transcription via generation_config (v5-safe).
+    model.generation_config.forced_decoder_ids = None
+    model.generation_config.language = "bengali"
+    model.generation_config.task = "transcribe"
+
+    BATCH = 16
     predictions = []
-    for i, clip in enumerate(clips):
-        audio_np = load_audio_np(clip["audio_path"])
-        result   = model.transcribe(
-            audio_np,
-            language="bn",
-            task="transcribe",
-            verbose=False,
-            condition_on_previous_text=False,
-        )
-        pred_text = result.get("text", "").strip()
-        ref_text  = str(clip.get("transcript", "")).strip()
+    for start in range(0, len(clips), BATCH):
+        batch  = clips[start:start + BATCH]
+        audios = [load_audio_np(c["audio_path"]) for c in batch]
+        inputs = processor(
+            audios, sampling_rate=SAMPLE_RATE, return_tensors="pt"
+        ).input_features.to(device=device, dtype=model.dtype)
 
-        predictions.append({
-            "clip_id":         clip["clip_id"],
-            "audio_path":      clip["audio_path"],
-            "reference":       ref_text,
-            "hypothesis":      pred_text,
-            "dialect":         clip.get("dialect", "unknown"),
-            "domain":          clip.get("domain", "General"),
-            "is_code_switched": bool(clip.get("is_code_switched", False)),
-            "bn_ratio":        float(clip.get("bn_ratio", 0.0)),
-            "en_ratio":        float(clip.get("en_ratio", 0.0)),
-            "duration_sec":    float(clip.get("duration_sec", 0.0)),
-        })
+        with torch.no_grad():
+            ids = model.generate(inputs, max_new_tokens=128)
 
-        if (i + 1) % 50 == 0:
-            print(f"  [{i+1}/{len(clips)}] done")
+        texts = processor.batch_decode(ids, skip_special_tokens=True)
+        for clip, pred_text in zip(batch, texts):
+            predictions.append({
+                "clip_id":          clip["clip_id"],
+                "audio_path":       clip["audio_path"],
+                "reference":        str(clip.get("transcript", "")).strip(),
+                "hypothesis":       pred_text.strip(),
+                "dialect":          clip.get("dialect", "unknown"),
+                "domain":           clip.get("domain", "General"),
+                "is_code_switched": bool(clip.get("is_code_switched", False)),
+                "bn_ratio":         float(clip.get("bn_ratio", 0.0)),
+                "en_ratio":         float(clip.get("en_ratio", 0.0)),
+                "duration_sec":     float(clip.get("duration_sec", 0.0)),
+            })
+
+        done = min(start + BATCH, len(clips))
+        if (start // BATCH) % 5 == 0 or done == len(clips):
+            print(f"  [{done}/{len(clips)}] done")
 
     return predictions
 
@@ -129,8 +154,11 @@ def transcribe_whisper_hf(clips: list[dict], model_name: str) -> list[dict]:
     model     = WhisperForConditionalGeneration.from_pretrained(model_name).to(device)
     model.eval()
 
-    forced_ids = processor.get_decoder_prompt_ids(language="bengali", task="transcribe")
-    model.config.forced_decoder_ids = forced_ids
+    # Force Bengali transcription via generation_config (forced_decoder_ids is
+    # deprecated in transformers v5 and can be ignored or conflict).
+    model.generation_config.forced_decoder_ids = None
+    model.generation_config.language = "bengali"
+    model.generation_config.task = "transcribe"
 
     predictions = []
     for i, clip in enumerate(clips):
@@ -139,7 +167,7 @@ def transcribe_whisper_hf(clips: list[dict], model_name: str) -> list[dict]:
             audio_np,
             sampling_rate=SAMPLE_RATE,
             return_tensors="pt",
-        ).input_features.to(device)
+        ).input_features.to(device=device, dtype=model.dtype)
 
         with __import__("torch").no_grad():
             ids = model.generate(inputs)
@@ -191,7 +219,7 @@ def transcribe_wav2vec2(clips: list[dict], model_name: str) -> list[dict]:
             sampling_rate=SAMPLE_RATE,
             return_tensors="pt",
             padding=True,
-        ).input_values.to(device)
+        ).input_values.to(device=device, dtype=model.dtype)
 
         with __import__("torch").no_grad():
             logits = model(inputs).logits
@@ -249,7 +277,7 @@ def transcribe_mms(clips: list[dict], model_name: str, lang: str = "ben") -> lis
             audio_np,
             sampling_rate=SAMPLE_RATE,
             return_tensors="pt",
-        ).input_values.to(device)
+        ).input_values.to(device=device, dtype=model.dtype)
 
         with __import__("torch").no_grad():
             logits = model(inputs).logits

@@ -1,0 +1,20 @@
+{
+  "model": "ft_whisper_cs_only",
+  "n_clips": 50,
+  "semantic_correctness_mean": 2.268,
+  "semantic_correctness_std": 1.343,
+  "semantic_correctness_pass_rate": 0.46,
+  "cs_preservation_mean": 2.321,
+  "cs_preservation_std": 1.628,
+  "cs_preservation_pass_rate": 0.44,
+  "dialect_naturalness_mean": 2.053,
+  "dialect_naturalness_std": 1.495,
+  "dialect_naturalness_pass_rate": 0.46,
+  "overall_mean": 2.213,
+  "mean_agreement_rate": 0.851,
+  "model_mistral:7b_mean": 2.327,
+  "model_llama3.1:8b_mean": 2.267,
+  "model_gemma3:12b_mean": 2.047,
+  "overall_cs_mean": 2.0,
+  "overall_bn_mean": 2.218
+}

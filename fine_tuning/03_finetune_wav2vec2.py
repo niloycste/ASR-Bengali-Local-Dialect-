@@ -39,7 +39,7 @@ from config import CTC_MODELS, DATASET_DIR, MODELS_DIR, SUBSETS, TRAINING
 
 try:
     import pandas as pd
-    from datasets import Dataset, Audio
+    from datasets import Dataset, Audio, load_dataset
 except ImportError:
     print("[ERROR] pip install datasets pandas")
     raise SystemExit(1)
@@ -48,6 +48,71 @@ SAMPLE_RATE   = 16_000
 BLANK_TOKEN   = "[PAD]"
 UNK_TOKEN     = "[UNK]"
 WORD_DELIM    = "|"    # replaces space in CTC vocabulary
+
+
+def load_audio_array(path: str, retries: int = 3):
+    """Load a wav as 16 kHz mono float32. Retries transient read errors
+    (e.g. Google Drive I/O hiccups). Returns None if it ultimately fails, so a
+    single unreadable file doesn't crash a long training run."""
+    import time
+    import soundfile as sf
+    for attempt in range(retries):
+        try:
+            audio, sr = sf.read(path, dtype="float32")
+            if audio.ndim > 1:
+                audio = audio.mean(axis=1)
+            if sr != SAMPLE_RATE:
+                import librosa
+                audio = librosa.resample(audio, orig_sr=sr, target_sr=SAMPLE_RATE)
+            return audio
+        except Exception as e:
+            if attempt < retries - 1:
+                time.sleep(0.5 * (attempt + 1))
+            else:
+                print(f"    [WARN] skipping unreadable audio: {path} ({e})")
+    return None
+
+
+# ── Data collator ──────────────────────────────────────────────────────────────
+
+@dataclass
+class DataCollatorCTCWithPadding:
+    """
+    Pads CTC input_values and labels independently to the longest in the batch.
+
+    Acoustic features are extracted on-the-fly from the lazily-decoded audio so
+    that raw waveforms are never stored in the Arrow cache (which would blow past
+    PyArrow's memory limits on the full 160h "all" subset).
+    """
+    processor: Any
+    padding: bool = True
+
+    def __call__(self, features: list[dict]) -> dict:
+        input_features = []
+        kept = []
+        for f in features:
+            wav = load_audio_array(f["audio"])
+            if wav is None:
+                continue
+            extracted = self.processor.feature_extractor(
+                wav, sampling_rate=SAMPLE_RATE
+            )
+            input_features.append({"input_values": extracted.input_values[0]})
+            kept.append(f)
+
+        batch = self.processor.feature_extractor.pad(
+            input_features, padding=self.padding, return_tensors="pt"
+        )
+        label_features = [{"input_ids": f["labels"]} for f in kept]
+        labels_batch = self.processor.tokenizer.pad(
+            label_features, padding=self.padding, return_tensors="pt"
+        )
+        # Replace padding with -100 so it is ignored by the CTC loss.
+        labels = labels_batch["input_ids"].masked_fill(
+            labels_batch.attention_mask.ne(1), -100
+        )
+        batch["labels"] = labels
+        return batch
 
 
 # ── Vocabulary ─────────────────────────────────────────────────────────────────
@@ -86,101 +151,46 @@ def build_vocab(train_csv: str, dev_csv: str) -> dict[str, int]:
     return vocab
 
 
-# ── Data collator ──────────────────────────────────────────────────────────────
-
-@dataclass
-class DataCollatorCTCWithPadding:
-    """
-    Pad input values and labels for CTC training.
-    Labels are padded with -100 (ignored in CTC loss).
-    """
-    processor: Any
-    padding: bool = True
-
-    def __call__(self, features: list[dict]) -> dict:
-        import torch
-
-        # Extract audio features on-the-fly
-        input_features = []
-        for f in features:
-            inputs = self.processor(
-                f["audio"]["array"], 
-                sampling_rate=16000, 
-                return_tensors="pt"
-            )
-            input_features.append({"input_values": inputs.input_values[0]})
-
-        label_features = [{"input_ids": f["labels"]} for f in features]
-
-        batch = self.processor.pad(
-            input_features,
-            padding=self.padding,
-            return_tensors="pt",
-        )
-        labels_batch = self.processor.pad(
-            labels=label_features,
-            padding=self.padding,
-            return_tensors="pt",
-        )
-        labels = labels_batch["input_ids"].masked_fill(
-            labels_batch.attention_mask.ne(1), -100
-        )
-        batch["labels"] = labels
-        return batch
-
-
 # ── Dataset preparation ───────────────────────────────────────────────────────
-
-def load_audio_np(audio_path: str):
-    import numpy as np
-    from pydub import AudioSegment
-    audio = (
-        AudioSegment.from_file(audio_path)
-        .set_frame_rate(SAMPLE_RATE)
-        .set_channels(1)
-        .set_sample_width(2)
-    )
-    return np.frombuffer(audio.raw_data, dtype=np.int16).astype(np.float32) / 32768.0
-
 
 def prepare_dataset(csv_path: str, processor, subset: str) -> Dataset:
     """
     Load manifest CSV and convert to HuggingFace Dataset with CTC features.
     """
-
-    df = pd.read_csv(csv_path, encoding="utf-8")
+    ds = Dataset.from_csv(str(csv_path))
 
     # Filter by subset
     if subset == "bn_only":
-        df = df[df["is_code_switched"] == False]
+        ds = ds.filter(lambda x: not x.get("is_code_switched", False))
     elif subset == "cs_only":
-        df = df[df["is_code_switched"] == True]
+        ds = ds.filter(lambda x: x.get("is_code_switched", False))
 
     # Drop rows with missing audio or transcript
-    df = df[df["audio_path"].apply(lambda p: Path(str(p)).exists())]
-    df = df[df["transcript"].notna() & (df["transcript"].str.strip() != "")]
-    print(f"  {len(df)} clips after filtering for subset='{subset}'")
+    ds = ds.filter(lambda x: x and Path(str(x["audio_path"])).exists() and x["transcript"] and str(x["transcript"]).strip() != "")
+    print(f"  {len(ds)} clips after filtering for subset='{subset}'")
 
-    def _process_row(row):
-        text = str(row["transcript"]).strip().replace(" ", WORD_DELIM)
-        with processor.as_target_processor():
-            labels = processor(text).input_ids
+    # Keep audio as a plain path STRING — do NOT cast to Audio(). Casting a
+    # large_string column (which Dataset.from_csv produces) to Audio fails on
+    # some pyarrow versions ("Unsupported cast from large_string to struct").
+    # The collator loads each wav from its path on-the-fly, so waveforms never
+    # get materialized into the Arrow cache.
+    original_columns = list(ds.column_names)
+
+    def _prepare(example):
+        # Tokenize transcript into CTC label ids (space → word delimiter token).
+        # Modern API — processor.as_target_processor() was removed in transformers 4.x.
+        text   = str(example["transcript"]).strip().replace(" ", WORD_DELIM)
+        labels = processor.tokenizer(text).input_ids
+        # Cheap length proxy from the manifest duration so group_by_length can
+        # sort batches without decoding audio.
+        input_length = int(float(example.get("duration_sec") or 0.0) * SAMPLE_RATE)
         return {
-            "audio":        row["audio_path"],
+            "audio":        example["audio_path"],
             "labels":       labels,
-            "clip_id":      row.get("clip_id", ""),
-            "dialect":      row.get("dialect", "unknown"),
+            "input_length": input_length,
         }
 
-    records = []
-    for _, row in df.iterrows():
-        try:
-            records.append(_process_row(row))
-        except Exception as e:
-            pass  # skip corrupted audio
-
-    ds = Dataset.from_list(records)
-    ds = ds.cast_column("audio", Audio(sampling_rate=SAMPLE_RATE))
+    ds = ds.map(_prepare, remove_columns=original_columns)
     return ds
 
 
@@ -227,7 +237,7 @@ def finetune_ctc(arch: str, subset: str):
             Wav2Vec2CTCTokenizer,
             Wav2Vec2FeatureExtractor,
             Wav2Vec2Processor,
-            Wav2Vec2ForCTC,
+            AutoModelForCTC,
             TrainingArguments,
             Trainer,
         )
@@ -286,10 +296,14 @@ def finetune_ctc(arch: str, subset: str):
     print(f"Train: {len(train_ds)} | Dev: {len(dev_ds)}")
 
     # Load model
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    use_fp16 = TRAINING["fp16"] if device == "cuda" else False
-    print(f"Loading {model_name} on {device} ...")
-    model = Wav2Vec2ForCTC.from_pretrained(
+    device   = "cuda" if torch.cuda.is_available() else "cpu"
+    use_bf16 = device == "cuda" and torch.cuda.is_bf16_supported()
+    use_fp16 = device == "cuda" and not use_bf16
+    if device == "cuda":
+        torch.backends.cuda.matmul.allow_tf32 = True   # faster matmuls on A100/H100
+        torch.backends.cudnn.allow_tf32 = True
+    print(f"Loading {model_name} on {device} | bf16={use_bf16} fp16={use_fp16}")
+    model = AutoModelForCTC.from_pretrained(
         model_name,
         ctc_loss_reduction="mean",
         pad_token_id=processor.tokenizer.pad_token_id,
@@ -312,6 +326,8 @@ def finetune_ctc(arch: str, subset: str):
         learning_rate               = 1e-4,    # CTC needs higher LR than seq2seq
         warmup_steps                = TRAINING["warmup_steps"],
         fp16                        = use_fp16,
+        bf16                        = use_bf16,
+        dataloader_num_workers      = TRAINING.get("dataloader_num_workers", 0),
         save_steps                  = TRAINING["save_steps"],
         eval_steps                  = TRAINING["eval_steps"],
         eval_strategy               = "steps",
@@ -320,10 +336,9 @@ def finetune_ctc(arch: str, subset: str):
         load_best_model_at_end      = True,
         metric_for_best_model       = "wer",
         greater_is_better           = False,
-        group_by_length             = True,    # speeds up CTC training significantly
         push_to_hub                 = False,
         report_to                   = "none",
-        remove_unused_columns       = False,
+        remove_unused_columns       = False,   # keep the "audio" path column for the collator
     )
 
     trainer = Trainer(

@@ -1,0 +1,9 @@
+model,wer_overall,wer_cs,wer_bn_words,wer_en_words,cs_f1,n_clips,n_cs
+Whisper small (zero-shot),1.0656,1.0228,1.0,1.2617,0.0,4088,176
+Whisper large-v3 (zero-shot),0.9102,0.7953,0.8108,1.0824,0.1446,4088,176
+MMS-1B (zero-shot),0.9901,0.9396,0.9455,1.1064,0.0409,4088,176
+wav2vec2-XLS-R-BN (zero-shot),0.9631,0.9348,0.963,1.0302,0.044,4088,176
+wav2vec2 fine-tuned (no LM),0.8607,0.8777,0.8633,0.9969,0.1353,4088,176
+Whisper FT BN_ONLY (ablation A),0.8004,0.8183,0.8039,0.9958,0.0112,4088,176
+Whisper FT CS only (ablation B),0.8831,0.8125,0.8771,0.756,0.2794,4088,176
+Whisper FT ALL (proposed),0.8009,0.8154,0.8045,0.926,0.1923,4088,176

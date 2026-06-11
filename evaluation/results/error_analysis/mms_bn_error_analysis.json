@@ -1,0 +1,362 @@
+{
+  "model": "mms_bn",
+  "n_clips": 4088,
+  "error_breakdown": {
+    "substitution_rate": 0.663,
+    "deletion_rate": 0.1322,
+    "insertion_rate": 0.1949
+  },
+  "en_word_analysis": {
+    "total_en_words_in_ref": 715,
+    "en_words_preserved": 0,
+    "en_words_deleted": 715,
+    "en_word_survival_rate": 0.0,
+    "en_deletion_rate": 1.0,
+    "top_deleted_en_words": [
+      [
+        "the",
+        27
+      ],
+      [
+        "you",
+        19
+      ],
+      [
+        "in",
+        18
+      ],
+      [
+        "are",
+        9
+      ],
+      [
+        "to",
+        9
+      ],
+      [
+        "for",
+        8
+      ],
+      [
+        "your",
+        8
+      ],
+      [
+        "day",
+        8
+      ],
+      [
+        "after",
+        8
+      ],
+      [
+        "that",
+        7
+      ],
+      [
+        "language",
+        7
+      ],
+      [
+        "evening",
+        7
+      ],
+      [
+        "shanta",
+        7
+      ],
+      [
+        "of",
+        6
+      ],
+      [
+        "it",
+        6
+      ],
+      [
+        "morning",
+        6
+      ],
+      [
+        "night",
+        6
+      ],
+      [
+        "every",
+        6
+      ],
+      [
+        "and",
+        5
+      ],
+      [
+        "not",
+        5
+      ]
+    ]
+  },
+  "top_substitutions": [
+    [
+      "জে→যে",
+      94
+    ],
+    [
+      "জায়→যায়",
+      80
+    ],
+    [
+      "ছিলো→ছিল",
+      57
+    ],
+    [
+      "কোনো→কোন",
+      55
+    ],
+    [
+      "তো→ত",
+      52
+    ],
+    [
+      "নারোতো→নারত",
+      43
+    ],
+    [
+      "কিন্তো→কিন্তু",
+      40
+    ],
+    [
+      "তুমার→তোমার",
+      39
+    ],
+    [
+      "এই→এ",
+      37
+    ],
+    [
+      "আসে→আছে",
+      33
+    ],
+    [
+      "ভালো→ভাল",
+      32
+    ],
+    [
+      "দে→দেয়",
+      28
+    ],
+    [
+      "হলো→হল",
+      27
+    ],
+    [
+      "তেকে→থেকে",
+      27
+    ],
+    [
+      "বারে→পারে",
+      27
+    ]
+  ],
+  "worst_clips": [
+    {
+      "clip_id": "HjUZN7IAKwo_0062",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 25.5,
+      "reference": "পিছে পিছে",
+      "hypothesis": "লie to atc মor o ম stu লa e m caনe do eলo i ou লie a ou see oং oret o suscrie to t e utu caeল aং it a নotiicatio ut so ou ca e otiied ever time i apid coংteনt i o লi to support মe a ca"
+    },
+    {
+      "clip_id": "P3l0zFqCSIc_0017",
+      "dialect": "Sandwip",
+      "is_cs": false,
+      "wer": 15.6667,
+      "reference": "এটি ক্ষেন সুনে",
+      "hypothesis": "ং a ese are e iং a ou heed to tiংk aout eং prepariং or or o iংtervie u t e ood ংeh or ou মost o tিs or av area ee oন eং ou crate t e o adverticemet ee u e a partme r m"
+    },
+    {
+      "clip_id": "FVq2lnRBHFQ_0000",
+      "dialect": "Old_Dhaka",
+      "is_cs": false,
+      "wer": 13.5,
+      "reference": "এস্টালো বালাইকুম",
+      "hypothesis": "সেললই আমরাদের কাছে অনেকই প্রশ্না কযায যে ভাইয়া কিভাবে গুঝিয়ে সুন্দর হয়ে কথা বলব আসাল বিষেটাহছে আমার নিজেরই বেসের শিখাদরকার তে আজকে আমার সাথে এনেছি স্টাযলার্টের তনওয়াকে"
+    },
+    {
+      "clip_id": "Sylhet_UK_CS__7cQH3yF9JmY_0049",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 13.0,
+      "reference": "ক্তে",
+      "hypothesis": "e r u e si o ou t0 u o uh ল0 u"
+    },
+    {
+      "clip_id": "Sylhet_UK_CS__JI3CKPGzx9g_0083",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 12.0,
+      "reference": "স্লাম্যালিকুম",
+      "hypothesis": "লমনদিরঅন্ধ করনলােে া াখম মাসেষ্ট াব ঠি াা াব ছা কেকঠে লিগারনদত"
+    },
+    {
+      "clip_id": "-JGXMwpNeIQ_0244",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 11.5,
+      "reference": "আনিত্রতে এই",
+      "hypothesis": "m estio s rear eer a cover ad as o protect er rom t e iteনtio o meন or or a reলiious re"
+    },
+    {
+      "clip_id": "Sylhet_UK_CS__JI3CKPGzx9g_0198",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 10.5,
+      "reference": "আরেন আইটিম",
+      "hypothesis": "e oন iং i t ম a d i ca e sic u iল ic h মov o to e h"
+    },
+    {
+      "clip_id": "9B4MlWB6_F0_0034",
+      "dialect": "Rangpur",
+      "is_cs": false,
+      "wer": 10.0,
+      "reference": "প্লাস প্লাস",
+      "hypothesis": "e লiংcoল memoriaল is coমiং up oং or লeফt r oং o লov ম লicoল memoriaল ং ac o লease"
+    },
+    {
+      "clip_id": "_IlgMsczkbs_0014",
+      "dialect": "Comilla",
+      "is_cs": false,
+      "wer": 9.6667,
+      "reference": "আপনার পিছে হাড়ে",
+      "hypothesis": "ক্ষ যাচা করুন pএডড5 বছরের একটি প্রতিশ্রুতি তাই আবেগের বসে বা হুট করে কোন সিদ্ধান্ত না নিয়ে সময় নিয়ে ধৈর্য ধরে সিদ্ধান্তনেন মনোবল শক্ত করুন সাফল্য বরং আপনার পিছেই হাটবে"
+    },
+    {
+      "clip_id": "9B4MlWB6_F0_0042",
+      "dialect": "Rangpur",
+      "is_cs": false,
+      "wer": 9.5,
+      "reference": "সেয়ে লেদিস",
+      "hypothesis": "i r মa u acts iং is লessoন ি ou লarং out rpoitio er a লst o e ti"
+    },
+    {
+      "clip_id": "fjmLbMyUpG4_0496",
+      "dialect": "Narail",
+      "is_cs": false,
+      "wer": 9.4,
+      "reference": "আমাদে সেট্যে পলো করতে বালো",
+      "hypothesis": "ার জন্য এখনও দেখে নি আর যা নারত সাম্পর্কে জানতে চায় তারা এই বিরোড়ী দেখে জানতে পারে নারতয় সাম্পর্কে তোমাদের কি মতামত তা অবশ্যই কমেন্টে জানাও তোমার নারত সাম্পর্কে কি ভাল লাগে আর কি ভাল লাগে না তাও কমেন্টে বল তোমরা চেলে আমাদের সোসিয়েল সাটে ফালো করতে পার"
+    },
+    {
+      "clip_id": "Td9AAsG18Yc_0027",
+      "dialect": "Chittagong",
+      "is_cs": false,
+      "wer": 9.3333,
+      "reference": "আমনে নারাযন পুর্বাজার",
+      "hypothesis": "ম শব দিকে যাওয়া যাই় আর এখানে প্রচুর টলার রয়েছে এখানে থেকে কিন্তু প্রচুর মাছ ইলিশ মাছ বিশেষ করে তারা কিন্তু সমস্ত কিছু এই সামনে যে নাড়ায়ন পুড়বাজার"
+    },
+    {
+      "clip_id": "ImzLbRAXprI_0032",
+      "dialect": "Habiganj",
+      "is_cs": false,
+      "wer": 9.0,
+      "reference": "কন্তে শিলপি",
+      "hypothesis": "হোবি গঞ্চ সাদা সেলিকা বালোর জন্য বিক্ঞাত রয়েছে যেলা আধুনিক ষ্টেডিয়াম এবং শীঘ্রহী কৃশী বিশ্ববিদ্যালয় স্থাপন করা হবে"
+    },
+    {
+      "clip_id": "YfPvPjHvq10_0002",
+      "dialect": "Habiganj",
+      "is_cs": false,
+      "wer": 9.0,
+      "reference": "আমান আমান",
+      "hypothesis": "ন ৎ রা গার ফণেন খান বেরে ঘরসে র sা থেন ে চমাচমে ণে ফলায বেন ষৎাহ রান"
+    },
+    {
+      "clip_id": "WZTks_8AtCs_0446",
+      "dialect": "Kishoreganj",
+      "is_cs": false,
+      "wer": 9.0,
+      "reference": "আমায় আমায়",
+      "hypothesis": "ছ তোমা সব সাদাকে া তুমি কে কে মই আরফানসারের পিয়েস মন্নামল সাদা সানমিয়া য টিকাছে তুমি থাক"
+    },
+    {
+      "clip_id": "WZTks_8AtCs_0444",
+      "dialect": "Kishoreganj",
+      "is_cs": false,
+      "wer": 8.5,
+      "reference": "আমি আমি",
+      "hypothesis": "জানঅক্করা নিয়া ফুষকুনির মাছথানে গারা তযে দেয়ান কোন কথা ামম টোার াকাছে ক্ষমতা তার আতছা যা়া া"
+    },
+    {
+      "clip_id": "lfBJgwQZB3w_0001",
+      "dialect": "Chittagong",
+      "is_cs": false,
+      "wer": 8.0,
+      "reference": "চট্রকামে ভাসানি সবছি যুনিক",
+      "hypothesis": "চট্টগরামের ভাষাটা ইউনিক এটা অন্যান্য জেলার মানুষ বুঝতে গেলে তাদেরকে কোরস করতে হবে চট্টগরামে মানুষ তারা তাদের ভাষা নিয়ে এতো বেশি কেন গর্ভ করে কারণ উচ্ছে যে চট্টগ্রামের ভাষা হচ্ছে সবছেয়ে ইউনিক"
+    },
+    {
+      "clip_id": "HjUZN7IAKwo_0042",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 8.0,
+      "reference": "ক্যানাতে ক্যানাতে",
+      "hypothesis": "pao ঘuraং লiফ o rফiট মuহamমd লih iorapi o pফiট aং চa লল v s ট"
+    },
+    {
+      "clip_id": "Sylhet_UK_CS__7cQH3yF9JmY_0005",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 7.75,
+      "reference": "একটি সুতুকরি তেছি আলেনাম",
+      "hypothesis": "oংce e turং the লit a t e eং0in str মov i িve o a মr o a t ruড is pলace actu লoo লi 0 e mssিল ri it v"
+    },
+    {
+      "clip_id": "IM8hiGSoNBU_0021",
+      "dialect": "Sandwip",
+      "is_cs": true,
+      "wer": 7.4286,
+      "reference": "আপ আপনি ফাইল কো পাস হি রখিয়ে",
+      "hypothesis": "অর ইস তরীকে সে আপ পনে হাত ক রখলে গে পর মাঈ আপক পঋডণ নহী পত ই ব আপক পঋডণ ত পতা নঈ এ তো আপ ক্যা করে গে ত দেখি আপকা য আজগ য এ হoগা যে হoগা কি আপনে পনী ফাই ক পকড় র ব পন ফাই ক আপনে পাস রখি"
+    },
+    {
+      "clip_id": "9B4MlWB6_F0_0112",
+      "dialect": "Rangpur",
+      "is_cs": false,
+      "wer": 7.4,
+      "reference": "প্রভেলন হাটেক প্রভেলারেষ্টানার ডেন সহারে",
+      "hypothesis": "a মa e true to u u o to মe h ল er aং ct লই a ou ar i u im i re oo e vলs ou caন e eer acit o e etমe ucat mm"
+    },
+    {
+      "clip_id": "4wUXS_W-mtE_0039",
+      "dialect": "Barishal",
+      "is_cs": false,
+      "wer": 7.4,
+      "reference": "আপনার পাছান্ত লেবলের ভার লাগের",
+      "hypothesis": "ে ারেন এরকালফিন নিয ়াসত্রত কোনও কথাই নেই রিলাক্সে টাইম স্পেন করতে পারবেন তো যাই হোক জায়গাটা কিন্তু বর়িশেলের মধ্যে সবথেকে ফেমাচেকটি জায়গা তো বরিশেলে যদি আসেন অবশ্য় অবশ্যই এই দুর্গাসাগর হয়ে যাবেন আপনার প্রচন্ড লেবেলের ভাল লাগতে"
+    },
+    {
+      "clip_id": "extra__Sylhet__1438359963450746_0257",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 7.25,
+      "reference": "আপনা দেরকে ধুন্ন বাদ",
+      "hypothesis": "মম ব বালবাল খাওয়ার টেওয়ার দিলি হালকার পয়ে দি ছাড়ি দেছি বুলি তাকোমি একটু ধন্যবাদ দিচ্ছি আর বেশি কিছু বলব না আপাতত জানমাল নিয়ে বাড়ি জাতিপারলি হয় আপনাদেরকে ধন্যবাদ"
+    },
+    {
+      "clip_id": "WZTks_8AtCs_0322",
+      "dialect": "Kishoreganj",
+      "is_cs": false,
+      "wer": 7.0,
+      "reference": "টে টে",
+      "hypothesis": "ওকে বুসতেপেরেছি আপনি মনেহায দেখতে চাচ্ছেন না তাহলে আআমি আমিআকত গান শুনে গান শনদর"
+    },
+    {
+      "clip_id": "Sylhet_UK_CS__JI3CKPGzx9g_0247",
+      "dialect": "Sylhet",
+      "is_cs": false,
+      "wer": 7.0,
+      "reference": "সালমানেশা সালমানেশা",
+      "hypothesis": "e 1 ম aং crie r am e caংe সport h মov om otবল"
+    }
+  ]
+}

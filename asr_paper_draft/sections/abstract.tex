@@ -6,23 +6,24 @@ code-switching (CS) separately~\citep{mucs2021}, no dataset or model covers
 \emph{dialectal Bengali speech mixed with English}---the dominant communication
 style of young, educated Bangladeshi speakers.
 
-We present \textbf{BanglaMix}, the first large-scale dataset for dialectal
-Bengali--English CS-ASR, comprising \textbf{51,857 audio clips totalling
-164.74~hours} spanning \textbf{15 regional dialects} of Bangladesh.
+This work introduces \textbf{BanglaMix}, the first large-scale dataset for
+dialectal Bengali--English CS-ASR, comprising \textbf{51,857 audio clips
+totalling 164.74~hours} spanning \textbf{15 regional dialects} of Bangladesh.
 Audio is sourced from YouTube and Facebook using dialect-name search queries
 targeting creator vlogs, comedy, technology reviews, and campus content---
 domains where natural English code-switching is most prevalent.
 
-We benchmark five ASR architectures under zero-shot and fine-tuned conditions:
-Whisper~\citep{radford2023whisper} (multiple sizes), the Ben-10 dialect-tuned
-Whisper model~\citep{ben10_2025}, Meta MMS~\citep{pratap2024mms},
-wav2vec2-XLS-R~\citep{babu2022xlsr}, and WavLM~\citep{chen2022wavlm}.
-For CTC-based models we further apply n-gram language model shallow
-fusion~\citep{hannun2014deep}.
-Through systematic ablation we show that \emph{combining dialect-only and
-code-switched training data} yields the best performance.
-Our fine-tuned Whisper model achieves \TODO{XX.X}\%~WER overall and
-\TODO{XX.X}\%~WER on code-switched clips, outperforming the strongest baseline
-by a relative \TODO{XX.X}\% reduction.
-We release the dataset, models, and full pipeline to support future research
+Three ASR architectures are benchmarked under zero-shot and fine-tuned
+conditions: Whisper~\citep{radford2023whisper}, Meta MMS~\citep{pratap2024mms},
+and wav2vec2-XLS-R~\citep{babu2022xlsr}.
+A systematic ablation shows that \emph{combining dialect-only and
+code-switched training data} yields the best balance of accuracy.
+The fine-tuned Whisper-small model reaches \textbf{0.80~WER} / \textbf{0.49~CER}
+--- a 25\% relative WER reduction over its zero-shot counterpart and a
+statistically significant improvement over every baseline ($p<0.001$, paired
+bootstrap), including a fine-tuned CTC model and zero-shot Whisper~large-v3.
+Absolute error rates remain high, reflecting un-standardised dialectal
+orthography and the intrinsic difficulty of the task, and establishing
+BanglaMix as a challenging open benchmark.
+The dataset, models, and full pipeline are released to support future research
 in low-resource dialectal CS-ASR.

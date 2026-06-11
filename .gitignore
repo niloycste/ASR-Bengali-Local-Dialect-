@@ -7,6 +7,7 @@ venv/
 env/
 ASR/
 .ipynb_checkpoints/
+upload_to_hf.py
 
 # Large Audio & Video Files
 dataset_pipeline/raw_audio/
@@ -38,3 +39,32 @@ fine_tuning/language_models/*.binary
 # OS Files
 .DS_Store
 Thumbs.db
+
+# Compressed archives (audio / data dumps)
+*.zip
+*.7z
+*.tar
+*.tar.gz
+*.rar
+
+# Intermediate data exports (CSV/TSV dumps — data, not code)
+dataset_pipeline/transcripts/
+dataset_pipeline/Data ASR/
+
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.blg
+*.toc
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.log
+_*.log
+
+# Scratch / temp / throwaway
+*.tmp
+file.tmp
+delete_hf_data.py
+conference_101719.tex

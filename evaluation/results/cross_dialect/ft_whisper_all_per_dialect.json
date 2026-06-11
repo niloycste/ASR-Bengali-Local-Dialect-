@@ -1,0 +1,107 @@
+{
+  "Barishal": {
+    "n_clips": 282,
+    "n_cs_clips": 31,
+    "wer": 0.8646,
+    "cer": 0.5382,
+    "wer_cs": 0.9008
+  },
+  "Chittagong": {
+    "n_clips": 198,
+    "n_cs_clips": 3,
+    "wer": 0.79,
+    "cer": 0.4586,
+    "wer_cs": 1.1333
+  },
+  "Comilla": {
+    "n_clips": 157,
+    "n_cs_clips": 8,
+    "wer": 0.7763,
+    "cer": 0.4152,
+    "wer_cs": 0.8049
+  },
+  "Habiganj": {
+    "n_clips": 75,
+    "n_cs_clips": 2,
+    "wer": 0.8997,
+    "cer": 0.5153,
+    "wer_cs": 0.8846
+  },
+  "Khulna": {
+    "n_clips": 120,
+    "n_cs_clips": 5,
+    "wer": 0.6642,
+    "cer": 0.3903,
+    "wer_cs": 0.6204
+  },
+  "Kishoreganj": {
+    "n_clips": 743,
+    "n_cs_clips": 11,
+    "wer": 0.7451,
+    "cer": 0.3588,
+    "wer_cs": 0.7414
+  },
+  "Mymensingh": {
+    "n_clips": 56,
+    "n_cs_clips": 0,
+    "wer": 0.7014,
+    "cer": 0.3503,
+    "wer_cs": null
+  },
+  "Narail": {
+    "n_clips": 464,
+    "n_cs_clips": 12,
+    "wer": 0.6957,
+    "cer": 0.4123,
+    "wer_cs": 0.7819
+  },
+  "Narsingdi": {
+    "n_clips": 60,
+    "n_cs_clips": 2,
+    "wer": 0.7189,
+    "cer": 0.3941,
+    "wer_cs": 0.8837
+  },
+  "Noakhali": {
+    "n_clips": 70,
+    "n_cs_clips": 2,
+    "wer": 0.6995,
+    "cer": 0.3579,
+    "wer_cs": 1.0556
+  },
+  "Old_Dhaka": {
+    "n_clips": 360,
+    "n_cs_clips": 39,
+    "wer": 0.7808,
+    "cer": 0.5274,
+    "wer_cs": 0.6874
+  },
+  "Rangpur": {
+    "n_clips": 165,
+    "n_cs_clips": 17,
+    "wer": 0.7907,
+    "cer": 0.5054,
+    "wer_cs": 0.6299
+  },
+  "Sandwip": {
+    "n_clips": 176,
+    "n_cs_clips": 11,
+    "wer": 0.9238,
+    "cer": 0.6689,
+    "wer_cs": 0.9391
+  },
+  "Sylhet": {
+    "n_clips": 1111,
+    "n_cs_clips": 32,
+    "wer": 0.9273,
+    "cer": 0.6528,
+    "wer_cs": 0.9777
+  },
+  "Tangail": {
+    "n_clips": 51,
+    "n_cs_clips": 1,
+    "wer": 0.74,
+    "cer": 0.3881,
+    "wer_cs": 1.0
+  }
+}

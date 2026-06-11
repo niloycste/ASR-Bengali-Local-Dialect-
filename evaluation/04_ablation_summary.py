@@ -158,7 +158,7 @@ def main():
 
     print(f"Saved: {txt_path}")
     print(f"Saved: {csv_path}")
-    print(f"Saved: {tex_path}  ← paste directly into your LaTeX paper")
+    print(f"Saved: {tex_path}  <- paste directly into your LaTeX paper")
     print("\nNext: python 05_plot_results.py")
 
 
