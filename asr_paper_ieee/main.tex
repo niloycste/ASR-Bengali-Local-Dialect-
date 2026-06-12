@@ -19,6 +19,8 @@
 \usepackage{cite}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
 
 \graphicspath{{figures/}}
 \emergencystretch=2em
@@ -116,7 +118,9 @@ and uses script-based code-switch detection), the model choice (which favors a
 shared-vocabulary sequence-to-sequence model), and the evaluation (which
 emphasizes character-level error and code-switch-specific metrics).
 
-This work fills that gap. The main contributions are as follows.
+This work fills that gap; Fig.~\ref{fig:overview} gives an end-to-end overview of
+the dataset construction, models, and evaluation. The main contributions are as
+follows.
 \begin{enumerate}[leftmargin=*]
 \item \textbf{BanglaMix dataset.} The first large-scale dataset for dialectal
 Bengali--English CS-ASR: 41{,}499 transcribed clips (about 131 hours) across 15
@@ -146,6 +150,19 @@ Section~\ref{sec:analysis} provides an in-depth error, code-switching, ablation,
 and case-study analysis. Section~\ref{sec:limitations} discusses limitations and
 reproducibility, and Section~\ref{sec:conclusion} concludes with directions for
 future work. Table~\ref{tab:notation} summarizes the notation used throughout.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\textwidth]{ASR_pipeline.png}
+\caption{End-to-end overview of BanglaMix. Dialect-targeted social-media
+collection and voice-activity segmentation feed a fully automated
+silver-standard labeling stage (Whisper large-v3 transcription, script-based
+code-switch detection, and an LLM judge), yielding 41{,}499 transcribed clips.
+After normalization and a leakage-safe, source-stratified split, fine-tuned and
+zero-shot ASR models are benchmarked with edit-distance, code-switching, and
+LLM-ensemble metrics.}
+\label{fig:overview}
+\end{figure*}
 
 \begin{table}[t]
 \caption{Summary of notation.}
