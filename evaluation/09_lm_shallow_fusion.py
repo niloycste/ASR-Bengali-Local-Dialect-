@@ -101,6 +101,18 @@ def _corpus_from_reviewed() -> list[str]:
     return texts
 
 
+def _resolve_audio(x) -> str | None:
+    """Resolve a clip's audio cross-platform: trust the stored path if it exists,
+    else rebuild it as <project>/dataset_pipeline/segments/<dialect>/<clip_id>.wav
+    (so Windows-saved paths still work on Colab/Linux)."""
+    ap = str(x.get("audio_path", ""))
+    if ap and Path(ap).exists():
+        return ap
+    cand = (PROJECT_ROOT / "dataset_pipeline" / "segments"
+            / str(x.get("dialect", "")) / f"{x.get('clip_id', '')}.wav")
+    return str(cand) if cand.exists() else None
+
+
 def _load_eval_clips(split: str) -> list:
     """Eval clips for a split. Falls back to reconstructing the TEST set from a
     predictions JSON when the manifest is missing; DEV -> [] (only used by
@@ -119,16 +131,24 @@ def _load_eval_clips(split: str) -> list:
             preds = json.load(open(p, encoding="utf-8"))
         except Exception:
             continue
-        clips = [{"clip_id": x.get("clip_id", ""), "audio_path": x.get("audio_path", ""),
-                  "transcript": x.get("reference", ""), "dialect": x.get("dialect", "unknown"),
-                  "domain": x.get("domain", "General"),
-                  "is_code_switched": x.get("is_code_switched", False),
-                  "bn_ratio": x.get("bn_ratio", 0.0), "en_ratio": x.get("en_ratio", 0.0),
-                  "duration_sec": x.get("duration_sec", 0.0)}
-                 for x in preds if x.get("audio_path") and Path(str(x["audio_path"])).exists()]
+        clips = []
+        for x in preds:
+            ap = _resolve_audio(x)
+            if not ap:
+                continue
+            clips.append({"clip_id": x.get("clip_id", ""), "audio_path": ap,
+                          "transcript": x.get("reference", ""),
+                          "dialect": x.get("dialect", "unknown"),
+                          "domain": x.get("domain", "General"),
+                          "is_code_switched": x.get("is_code_switched", False),
+                          "bn_ratio": x.get("bn_ratio", 0.0),
+                          "en_ratio": x.get("en_ratio", 0.0),
+                          "duration_sec": x.get("duration_sec", 0.0)})
         if clips:
             print(f"  [INFO] reconstructed {len(clips)} test clips from {Path(p).name}.")
             return clips
+    print("  [ERROR] No *_predictions.json in evaluation/results/ -- upload one "
+          "(e.g. ft_wav2vec2_all_predictions.json) so the test split can be recovered.")
     return []
 
 
