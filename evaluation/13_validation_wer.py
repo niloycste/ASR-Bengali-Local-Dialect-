@@ -43,24 +43,44 @@ def _score(refs, hyps, metric):
     return round(fn(list(r), list(h)), 4)
 
 
-def _load_filled() -> list[dict]:
-    """Read the validation sample, preferring the .xlsx (correct Bengali in Excel)."""
-    xlsx = RESULTS_DIR / "validation_sample.xlsx"
-    csvp = RESULTS_DIR / "validation_sample.csv"
+def _read_one(stem: str) -> list[dict]:
+    """Read one validation file by stem, preferring .xlsx (correct Bengali)."""
+    xlsx = RESULTS_DIR / f"{stem}.xlsx"
+    csvp = RESULTS_DIR / f"{stem}.csv"
     if xlsx.exists():
         from openpyxl import load_workbook
         ws = load_workbook(xlsx, read_only=True).active
         header = [c.value for c in next(ws.iter_rows(min_row=1, max_row=1))]
-        rows = []
-        for r in ws.iter_rows(min_row=2, values_only=True):
-            rows.append({header[i]: ("" if r[i] is None else str(r[i]))
-                         for i in range(len(header))})
-        return rows
+        return [{header[i]: ("" if r[i] is None else str(r[i]))
+                 for i in range(len(header))}
+                for r in ws.iter_rows(min_row=2, values_only=True)]
     if csvp.exists():
         with open(csvp, encoding="utf-8-sig") as f:
             return [dict(r) for r in csv.DictReader(f)]
-    print("[ERROR] No validation_sample.xlsx/.csv found. Run 12_make_validation_sample.py first.")
-    raise SystemExit(1)
+    return []
+
+
+def _load_filled() -> list[dict]:
+    """Combine all validation batches (validation_sample + validation_sample_batch*),
+    de-duplicated by clip_id so the original and the per-dialect batch are scored
+    together."""
+    import glob
+    stems = ["validation_sample"]
+    stems += sorted({Path(p).stem for p in
+                     glob.glob(str(RESULTS_DIR / "validation_sample_batch*.xlsx"))
+                     + glob.glob(str(RESULTS_DIR / "validation_sample_batch*.csv"))})
+    rows, seen = [], set()
+    for stem in stems:
+        for r in _read_one(stem):
+            cid = str(r.get("clip_id", ""))
+            if cid and cid not in seen:
+                seen.add(cid)
+                rows.append(r)
+    if not rows:
+        print("[ERROR] No validation_sample*.xlsx/.csv found. Run 12_make_validation_sample.py first.")
+        raise SystemExit(1)
+    print(f"[info] loaded {len(rows)} rows from {len(stems)} batch file(s): {stems}")
+    return rows
 
 
 def main():
