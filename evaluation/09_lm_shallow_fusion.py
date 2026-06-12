@@ -63,8 +63,18 @@ BIN_PATH    = LM_DIR / f"bengali_cs_{LM_CONFIG['ngram_order']}gram.bin"
 # ── Step 1: Build n-gram Language Model ────────────────────────────────────────
 
 def _test_clip_ids() -> set:
-    """Test clip_ids (recovered from any *_predictions.json) -- used to exclude
-    test sentences from the LM corpus and to reconstruct the test set."""
+    """Test clip_ids -- used to exclude test sentences from the LM corpus and to
+    reconstruct the test set. Prefers the committed test_set.json (available in
+    every checkout, incl. Colab), then falls back to any *_predictions.json."""
+    canon = RESULTS_DIR / "test_set.json"
+    if canon.exists():
+        try:
+            rows = json.load(open(canon, encoding="utf-8"))
+            ids = {x.get("clip_id") for x in rows if x.get("clip_id")}
+            if ids:
+                return ids
+        except Exception:
+            pass
     import glob
     for p in sorted(glob.glob(str(RESULTS_DIR / "*_predictions.json"))):
         try:
@@ -125,6 +135,33 @@ def _load_eval_clips(split: str) -> list:
     if split != "test":
         print(f"  [WARNING] {csv_path} missing; '{split}' set is empty.")
         return []
+    # Preferred source: committed canonical test split (works on any machine).
+    canon = RESULTS_DIR / "test_set.json"
+    if canon.exists():
+        try:
+            rows = json.load(open(canon, encoding="utf-8"))
+        except Exception:
+            rows = []
+        clips, missing = [], 0
+        for x in rows:
+            ap = _resolve_audio(x)
+            if not ap:
+                missing += 1
+                continue
+            clips.append({"clip_id": x.get("clip_id", ""), "audio_path": ap,
+                          "transcript": x.get("reference", ""),
+                          "dialect": x.get("dialect", "unknown"),
+                          "domain": x.get("domain", "General"),
+                          "is_code_switched": x.get("is_code_switched", False),
+                          "bn_ratio": x.get("bn_ratio", 0.0),
+                          "en_ratio": x.get("en_ratio", 0.0),
+                          "duration_sec": x.get("duration_sec", 0.0)})
+        if clips:
+            note = f" ({missing} clips' audio not found)" if missing else ""
+            print(f"  [INFO] loaded {len(clips)} test clips from test_set.json{note}.")
+            return clips
+        print("  [WARNING] test_set.json present but no audio resolved under "
+              "dataset_pipeline/segments/<dialect>/<clip_id>.wav.")
     import glob
     for p in sorted(glob.glob(str(RESULTS_DIR / "*_predictions.json"))):
         try:
