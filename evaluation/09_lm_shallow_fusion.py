@@ -62,6 +62,76 @@ BIN_PATH    = LM_DIR / f"bengali_cs_{LM_CONFIG['ngram_order']}gram.bin"
 
 # ── Step 1: Build n-gram Language Model ────────────────────────────────────────
 
+def _test_clip_ids() -> set:
+    """Test clip_ids (recovered from any *_predictions.json) -- used to exclude
+    test sentences from the LM corpus and to reconstruct the test set."""
+    import glob
+    for p in sorted(glob.glob(str(RESULTS_DIR / "*_predictions.json"))):
+        try:
+            preds = json.load(open(p, encoding="utf-8"))
+            ids = {x.get("clip_id") for x in preds if x.get("clip_id")}
+            if ids:
+                return ids
+        except Exception:
+            pass
+    return set()
+
+
+def _corpus_from_reviewed() -> list[str]:
+    """LM corpus from the reviewed silver transcripts when final_dataset manifests
+    are gone. Excludes augmented clips and the TEST set (no LM leakage)."""
+    rev = PROJECT_ROOT / "dataset_pipeline" / "transcripts" / "transcripts_reviewed.json"
+    if not rev.exists():
+        return []
+    test_ids = _test_clip_ids()
+
+    def is_aug(ap):
+        ap = str(ap).replace("\\", "/").lower()
+        return "/augmented/" in ap or "/synthetic/" in ap or "augment" in ap
+
+    texts = []
+    for r in json.load(open(rev, encoding="utf-8")):
+        if r.get("clip_id") in test_ids or is_aug(r.get("audio_path", "")):
+            continue
+        t = (r.get("transcript") or "").strip()
+        if t:
+            texts.append(t)
+    print(f"  [INFO] LM corpus from transcripts_reviewed.json: {len(texts)} real "
+          f"non-test sentences ({len(test_ids)} test clips excluded -> no leakage).")
+    return texts
+
+
+def _load_eval_clips(split: str) -> list:
+    """Eval clips for a split. Falls back to reconstructing the TEST set from a
+    predictions JSON when the manifest is missing; DEV -> [] (only used by
+    --tune_alpha)."""
+    csv_path = DATASET_DIR / split / "manifest.csv"
+    if csv_path.exists():
+        import pandas as pd
+        df = pd.read_csv(csv_path, encoding="utf-8")
+        return [r for r in df.to_dict("records") if Path(str(r["audio_path"])).exists()]
+    if split != "test":
+        print(f"  [WARNING] {csv_path} missing; '{split}' set is empty.")
+        return []
+    import glob
+    for p in sorted(glob.glob(str(RESULTS_DIR / "*_predictions.json"))):
+        try:
+            preds = json.load(open(p, encoding="utf-8"))
+        except Exception:
+            continue
+        clips = [{"clip_id": x.get("clip_id", ""), "audio_path": x.get("audio_path", ""),
+                  "transcript": x.get("reference", ""), "dialect": x.get("dialect", "unknown"),
+                  "domain": x.get("domain", "General"),
+                  "is_code_switched": x.get("is_code_switched", False),
+                  "bn_ratio": x.get("bn_ratio", 0.0), "en_ratio": x.get("en_ratio", 0.0),
+                  "duration_sec": x.get("duration_sec", 0.0)}
+                 for x in preds if x.get("audio_path") and Path(str(x["audio_path"])).exists()]
+        if clips:
+            print(f"  [INFO] reconstructed {len(clips)} test clips from {Path(p).name}.")
+            return clips
+    return []
+
+
 def collect_transcripts() -> list[str]:
     """Collect all training + dev transcripts to build the LM corpus.
 
@@ -84,6 +154,10 @@ def collect_transcripts() -> list[str]:
             t = str(t).strip()
             if t:
                 texts.append(t)
+
+    # Fallback: split manifests gone -> reviewed silver transcripts (excl. test).
+    if not texts:
+        texts = _corpus_from_reviewed()
 
     # Also include synthetic CS transcripts (text-only, no audio needed)
     synth_path = (Path(__file__).resolve().parent.parent
@@ -350,27 +424,23 @@ def run_lm_fusion(arch: str, tune_alpha: bool = False):
     print("Building beam search decoder ...")
     decoder = build_decoder(model_dir, lm_path)
 
-    # Load test and dev manifests
-    try:
-        import pandas as pd
-    except ImportError:
-        print("[ERROR] pip install pandas"); raise SystemExit(1)
+    # Load test (and dev) clips -- reconstructs from predictions if manifests gone
+    test_clips = _load_eval_clips("test")
+    dev_clips = _load_eval_clips("dev")
+    if not test_clips:
+        print("[ERROR] No test clips available (no manifest and no predictions JSON).")
+        raise SystemExit(1)
 
-    test_df = pd.read_csv(DATASET_DIR / "test" / "manifest.csv", encoding="utf-8")
-    test_clips = [r for r in test_df.to_dict("records")
-                  if Path(str(r["audio_path"])).exists()]
-
-    dev_df = pd.read_csv(DATASET_DIR / "dev" / "manifest.csv", encoding="utf-8")
-    dev_clips = [r for r in dev_df.to_dict("records")
-                 if Path(str(r["audio_path"])).exists()]
-
-    # Tune or use defaults
-    if tune_alpha:
+    # Tune or use defaults (tuning needs a dev set)
+    if tune_alpha and dev_clips:
         alpha, beta = tune_alpha_beta(model, processor, decoder, dev_clips, device, arch)
     else:
+        if tune_alpha and not dev_clips:
+            print("  [WARNING] no dev set available; using default alpha/beta "
+                  "instead of tuning.")
         alpha = LM_CONFIG["alpha"]
         beta  = LM_CONFIG["beta"]
-        print(f"  Using default alpha={alpha}  beta={beta}  (run with --tune_alpha to optimise)")
+        print(f"  Using default alpha={alpha}  beta={beta}")
 
     beam_width = LM_CONFIG["beam_width"]
 
