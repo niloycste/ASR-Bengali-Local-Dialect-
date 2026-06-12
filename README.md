@@ -240,7 +240,11 @@ pip install https://github.com/kpu/kenlm/archive/master.zip pyctcdecode
 
 ## 🔁 Reproduce Step by Step
 
-A GPU is strongly recommended for transcription, fine-tuning, and baseline evaluation.
+**Hardware used in this work:**
+- **Fine-tuning + baseline/benchmark inference** — single **NVIDIA A100-SXM4-40GB** GPU
+- **Silver-standard transcription (Whisper large-v3)** — **CPU** workstation: Intel Core i9-14900 (24 cores), 32 GB RAM
+
+A GPU is strongly recommended for fine-tuning and baseline evaluation; transcription runs on CPU (slower) or GPU.
 
 > 📦 Dataset-only usage  
 > If you only want to use the dataset, download it from [Hugging Face](https://huggingface.co/datasets/niloycste68/Bangali_local_dialect_ASR_HF_Dataset) and skip Phase 1.
