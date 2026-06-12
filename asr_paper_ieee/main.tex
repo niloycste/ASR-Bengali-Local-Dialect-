@@ -598,7 +598,11 @@ $10^{-5}$, effective batch size 16, three epochs, 500 warm-up steps, with the
 best checkpoint selected by development WER. For the CTC model, a character vocabulary
 covering Bengali, Latin, and common punctuation is built from the training
 transcripts, the CTC head is reinitialized, and the encoder is fine-tuned at
-learning rate $10^{-4}$ for three epochs. The CTC model is trained to minimize
+learning rate $10^{-4}$ for three epochs. All fine-tuning and benchmark
+inference (zero-shot baselines and fine-tuned systems) run on a single
+NVIDIA~A100 GPU, whereas the one-time silver-standard transcription of all clips
+with Whisper~large-v3 was performed on a CPU workstation (Intel~Core~i9-14900,
+24~cores, 32~GB RAM). The CTC model is trained to minimize
 the negative log-likelihood marginalized over all alignments $\pi$ that collapse
 to the target $y$,
 \begin{equation}
