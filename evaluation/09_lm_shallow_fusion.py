@@ -238,7 +238,7 @@ def build_decoder(model_dir: Path, lm_path: Path) -> Any:
     kenlm_model = str(lm_path) if lm_path and lm_path.exists() else None
     decoder = build_ctcdecoder(
         clean_vocab,
-        kenlm_model=kenlm_model,
+        kenlm_model_path=kenlm_model,   # pyctcdecode keyword is kenlm_model_path
     )
     return decoder
 
