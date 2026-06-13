@@ -63,7 +63,8 @@ statistically significant improvement ($p<0.001$, paired bootstrap) over every
 zero-shot baseline and a fine-tuned CTC model, including zero-shot
 Whisper~large-v3.
 Absolute error rates remain high because dialectal Bengali has no standardized
-orthography and the labels are silver-standard; BanglaMix is therefore
+orthography and the labels are silver-standard; a human validation of 61 clips
+quantifies the label quality at WER~0.70 / CER~0.39, and BanglaMix is therefore
 positioned as a challenging, open benchmark for the community. The dataset and
 full construction-and-evaluation code are publicly available\footnote{Dataset:
 \url{https://huggingface.co/datasets/niloycste68/Bangali_local_dialect_ASR_HF_Dataset};
@@ -1132,11 +1133,13 @@ statistically significant gains are the central result.
 Several limitations frame the scope of this work and should guide interpretation
 of the results. First, the transcripts are \emph{silver-standard}: they are
 produced by Whisper large-v3 and validated by an LLM judge rather than by human
-annotators, so part of the measured error reflects label noise. Because the
-silver labels originate from Whisper large-v3, the benchmark may also slightly
-favour Whisper-family systems over other architectures; the planned
-human-validated test subset is intended to quantify both this label noise and any
-such bias. Second, the fine-tuned
+annotators, so part of the measured error reflects label noise. Our human
+validation of 61 clips (Section~\ref{sec:validation}) bounds this noise at
+WER~0.70 / CER~0.39 and shows it is uneven across dialects (WER~$0.26$--$1.06$);
+because the silver labels originate from Whisper large-v3, the benchmark may also
+slightly favour Whisper-family systems over other architectures, and a larger
+human-validated subset remains valuable to tighten these per-dialect estimates.
+Second, the fine-tuned
 models use Whisper-small for tractability; larger backbones would likely lower
 absolute error, as the per-dialect comparison already hints for dialects such as
 Barishal. Third, code-switched clips are a minority ($\sim$6\%) of the data,
