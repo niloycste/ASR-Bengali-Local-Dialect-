@@ -765,8 +765,8 @@ Finally, English-word survival quantifies code-switch fidelity as the fraction
 of Latin-script reference words on code-switched clips that also appear in the
 hypothesis,
 \begin{equation}
-\text{EN-Surv} = \frac{1}{|\mathcal{C}|}\sum_{(r,h)\in\mathcal{C}}
-\frac{|\,\{w\in r : \mathrm{lat}(w)\}\cap h\,|}{|\,\{w\in r : \mathrm{lat}(w)\}\,|},
+\text{EN-Surv} = \frac{\sum_{(r,h)\in\mathcal{C}} |\,\{w\in r : \mathrm{lat}(w)\}\cap h\,|}
+{\sum_{(r,h)\in\mathcal{C}} |\,\{w\in r : \mathrm{lat}(w)\}\,|},
 \end{equation}
 where $\mathcal{C}$ is the set of code-switched reference--hypothesis pairs and
 $\mathrm{lat}(w)$ is true for Latin-script words.
