@@ -502,7 +502,13 @@ Table~\ref{tab:dialects} lists the 15 dialects and Fig.~\ref{fig:dist} shows the
 clip distribution, which is intentionally broad but naturally imbalanced,
 mirroring online content availability. Of the 51{,}857 segmented clips, 41{,}499
 pass silver-standard annotation and constitute the released dataset;
-Table~\ref{tab:splits} reports its train/dev/test splits.
+Table~\ref{tab:splits} reports its train/dev/test splits. The dataset's primary
+scale is its dialect breadth---15 varieties over 131 hours---while
+code-switching forms a deliberate \emph{natural-prevalence} minority (5.7\% of
+clips): English insertion is a spontaneous, in-the-wild phenomenon, and we
+capture it at its real frequency rather than artificially oversampling it. Code-switching is therefore treated as a distinct evaluation axis layered on top
+of broad dialect coverage, and CS-specific results (Section~\ref{sec:results})
+are reported on this naturally small subset accordingly.
 
 \begin{table}[t]
 \caption{Dialect coverage in the released dataset.}
@@ -980,6 +986,15 @@ fine-tuned on code-switched data, handle CS words far more faithfully than
 monolingual CTC models.
 
 \subsection{Where Code-Switching Difficulty Lives}
+We first note the scope of the CS evidence: the per-clip CS metrics
+(WER-CS, CS-F1) are computed on the 176 code-switched test clips and are
+therefore \emph{indicative} rather than high-precision. The central CS finding,
+however, does not depend on that sample size: it is the \emph{qualitative}
+English-deletion effect---monolingual and Bengali-only models drop English words
+almost entirely---which is a large, unambiguous effect visible across thousands
+of English tokens (Table~\ref{tab:errors}), not a marginal difference on a small
+subset.
+
 Table~\ref{tab:csgap} reports WER on CS versus Bengali-only clips. The whole-clip
 gap is small (within $\pm0.12$): because CS clips are predominantly Bengali,
 code-switching does not greatly change overall clip WER. The difficulty instead
