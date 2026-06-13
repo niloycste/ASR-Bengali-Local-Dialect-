@@ -58,20 +58,57 @@ def load_audio_np(audio_path: str):
     return np.frombuffer(audio.raw_data, dtype=np.int16).astype(np.float32) / 32768.0
 
 
-def load_test_manifest() -> list[dict]:
-    try:
-        import pandas as pd
-    except ImportError:
-        print("[ERROR] pip install pandas"); raise SystemExit(1)
+def _resolve_audio(x) -> str | None:
+    """Resolve a clip's audio cross-platform: trust the stored path if it exists,
+    else rebuild it as <project>/dataset_pipeline/segments/<dialect>/<clip_id>.wav."""
+    ap = str(x.get("audio_path", ""))
+    if ap and Path(ap).exists():
+        return ap
+    cand = (PROJECT_ROOT / "dataset_pipeline" / "segments"
+            / str(x.get("dialect", "")) / f"{x.get('clip_id', '')}.wav")
+    return str(cand) if cand.exists() else None
 
+
+def load_test_manifest() -> list[dict]:
+    """Test clips from the manifest if present; otherwise from the committed
+    test_set.json (works on any machine, incl. after the dataset is rebuilt)."""
     csv_path = DATASET_DIR / "test" / "manifest.csv"
-    if not csv_path.exists():
-        print(f"[ERROR] {csv_path} not found. Run 05_build_dataset.py first.")
+    if csv_path.exists():
+        try:
+            import pandas as pd
+        except ImportError:
+            print("[ERROR] pip install pandas"); raise SystemExit(1)
+        rows = pd.read_csv(csv_path, encoding="utf-8").to_dict("records")
+        return [r for r in rows if Path(str(r["audio_path"])).exists()]
+
+    canon = RESULTS_DIR / "test_set.json"
+    if canon.exists():
+        rows = json.load(open(canon, encoding="utf-8"))
+        clips, missing = [], 0
+        for x in rows:
+            ap = _resolve_audio(x)
+            if not ap:
+                missing += 1
+                continue
+            clips.append({"clip_id": x.get("clip_id", ""), "audio_path": ap,
+                          "transcript": x.get("reference", ""),
+                          "dialect": x.get("dialect", "unknown"),
+                          "domain": x.get("domain", "General"),
+                          "is_code_switched": x.get("is_code_switched", False),
+                          "bn_ratio": x.get("bn_ratio", 0.0),
+                          "en_ratio": x.get("en_ratio", 0.0),
+                          "duration_sec": x.get("duration_sec", 0.0)})
+        if clips:
+            note = f" ({missing} clips' audio not found)" if missing else ""
+            print(f"[info] loaded {len(clips)} test clips from test_set.json{note}.")
+            return clips
+        print("[ERROR] test_set.json present but no audio resolved under "
+              "dataset_pipeline/segments/<dialect>/<clip_id>.wav.")
         raise SystemExit(1)
 
-    df   = pd.read_csv(csv_path, encoding="utf-8")
-    rows = df.to_dict("records")
-    return [r for r in rows if Path(str(r["audio_path"])).exists()]
+    print(f"[ERROR] {csv_path} not found and no test_set.json in "
+          f"{RESULTS_DIR}. Run 05_build_dataset.py, or ensure test_set.json exists.")
+    raise SystemExit(1)
 
 
 # ── Experiment A: Zero-shot evaluation ────────────────────────────────────────
