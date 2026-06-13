@@ -132,7 +132,7 @@ def main(per: int = 2, seed: int = 7):
     records = [{
         "clip_id": c["clip_id"], "dialect": c.get("dialect", "unknown"),
         "is_code_switched": _is_cs(c),
-        "audio_path": f"validation_clips_batch2/{c.get('dialect')}/{c['clip_id']}.wav",
+        "audio_path": f"validation_clips_batch2/{c['clip_id']}.wav",
         "silver_transcript": str(c.get("reference", "")).strip(),
         "human_transcript": "",
     } for c, _ in sample]
@@ -148,10 +148,9 @@ def main(per: int = 2, seed: int = 7):
     clip_dir = RESULTS_DIR / "validation_clips_batch2"
     if clip_dir.exists():
         shutil.rmtree(clip_dir)
+    clip_dir.mkdir(parents=True, exist_ok=True)
     for c, audio in sample:
-        dst = clip_dir / str(c.get("dialect")) / f"{c['clip_id']}.wav"
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(audio, dst)
+        shutil.copy2(audio, clip_dir / f"{c['clip_id']}.wav")  # flat: no dialect subfolders
     zip_path = RESULTS_DIR / "validation_clips_batch2.zip"
     with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as z:
         for wav in clip_dir.rglob("*.wav"):
