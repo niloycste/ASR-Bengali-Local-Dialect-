@@ -47,11 +47,13 @@ def _is_cs(row: dict) -> bool:
 
 
 def _used_clip_ids() -> set:
-    """Clip ids already in validation_sample.xlsx/.csv (exclude to avoid overlap)."""
+    """Clip ids already in ANY validation_sample*.xlsx/.csv (exclude to avoid
+    overlap across all batches, so a new batch is always fresh clips)."""
+    import glob
     used = set()
-    xlsx = RESULTS_DIR / "validation_sample.xlsx"
-    csvp = RESULTS_DIR / "validation_sample.csv"
-    if xlsx.exists():
+    for xlsx in glob.glob(str(RESULTS_DIR / "validation_sample*.xlsx")):
+        if Path(xlsx).name.startswith("~$"):
+            continue
         from openpyxl import load_workbook
         ws = load_workbook(xlsx, read_only=True).active
         hdr = [c.value for c in next(ws.iter_rows(min_row=1, max_row=1))]
@@ -59,9 +61,9 @@ def _used_clip_ids() -> set:
             d = {hdr[i]: r[i] for i in range(len(hdr))}
             if d.get("clip_id"):
                 used.add(str(d["clip_id"]))
-    elif csvp.exists():
+    for csvp in glob.glob(str(RESULTS_DIR / "validation_sample*.csv")):
         with open(csvp, encoding="utf-8-sig") as f:
-            used = {str(r["clip_id"]) for r in csv.DictReader(f) if r.get("clip_id")}
+            used |= {str(r["clip_id"]) for r in csv.DictReader(f) if r.get("clip_id")}
     return used
 
 
@@ -96,11 +98,11 @@ def _write_xlsx(path: Path, records: list[dict]) -> None:
     wb.save(path)
 
 
-def main(per: int = 2, seed: int = 7):
+def main(per: int = 2, seed: int = 7, tag: str = "batch2"):
     rng = random.Random(seed)
     test = json.load(open(RESULTS_DIR / "test_set.json", encoding="utf-8"))
     used = _used_clip_ids()
-    print(f"[info] excluding {len(used)} clips already in validation_sample")
+    print(f"[info] excluding {len(used)} clips already in existing validation batches")
 
     by_dialect = defaultdict(list)
     for r in test:
@@ -129,29 +131,30 @@ def main(per: int = 2, seed: int = 7):
             print(f"  [warn] {dialect}: only {chosen}/{per} clips had resolvable audio")
 
     rng.shuffle(sample)
+    clip_folder = f"validation_clips_{tag}"
     records = [{
         "clip_id": c["clip_id"], "dialect": c.get("dialect", "unknown"),
         "is_code_switched": _is_cs(c),
-        "audio_path": f"validation_clips_batch2/{c['clip_id']}.wav",
+        "audio_path": f"{clip_folder}/{c['clip_id']}.wav",
         "silver_transcript": str(c.get("reference", "")).strip(),
         "human_transcript": "",
     } for c, _ in sample]
 
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     # csv + xlsx
-    with open(RESULTS_DIR / "validation_sample_batch2.csv", "w",
+    with open(RESULTS_DIR / f"validation_sample_{tag}.csv", "w",
               encoding="utf-8-sig", newline="") as f:
         w = csv.DictWriter(f, fieldnames=COLS); w.writeheader(); w.writerows(records)
-    _write_xlsx(RESULTS_DIR / "validation_sample_batch2.xlsx", records)
+    _write_xlsx(RESULTS_DIR / f"validation_sample_{tag}.xlsx", records)
 
     # copy audio + zip
-    clip_dir = RESULTS_DIR / "validation_clips_batch2"
+    clip_dir = RESULTS_DIR / clip_folder
     if clip_dir.exists():
         shutil.rmtree(clip_dir)
     clip_dir.mkdir(parents=True, exist_ok=True)
     for c, audio in sample:
         shutil.copy2(audio, clip_dir / f"{c['clip_id']}.wav")  # flat: no dialect subfolders
-    zip_path = RESULTS_DIR / "validation_clips_batch2.zip"
+    zip_path = RESULTS_DIR / f"{clip_folder}.zip"
     with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as z:
         for wav in clip_dir.rglob("*.wav"):
             z.write(wav, wav.relative_to(RESULTS_DIR))
@@ -159,7 +162,7 @@ def main(per: int = 2, seed: int = 7):
     n_cs = sum(1 for r in records if r["is_code_switched"])
     print(f"\nWrote {len(records)} clips across {len({r['dialect'] for r in records})} dialects")
     print(f"  CS: {n_cs} | BN: {len(records) - n_cs}")
-    print(f"  -> {RESULTS_DIR / 'validation_sample_batch2.xlsx'}")
+    print(f"  -> {RESULTS_DIR / f'validation_sample_{tag}.xlsx'}")
     print(f"  -> {zip_path}  (audio to listen to)")
     by = defaultdict(int)
     for r in records:
@@ -172,4 +175,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--per", type=int, default=2, help="clips per dialect (default 2)")
     ap.add_argument("--seed", type=int, default=7)
-    main(per=ap.parse_args().per, seed=ap.parse_args().seed)
+    ap.add_argument("--name", default="batch2",
+                    help="output tag, e.g. batch3 -> validation_sample_batch3.xlsx")
+    a = ap.parse_args()
+    main(per=a.per, seed=a.seed, tag=a.name)
