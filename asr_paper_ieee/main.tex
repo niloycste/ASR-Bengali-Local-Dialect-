@@ -546,6 +546,62 @@ Total & 41{,}499 & 131.2 & 2{,}361 & 5.7 \\
 \end{tabular}
 \end{table}
 
+\subsection{Human Validation of Silver-Standard Labels}
+\label{sec:validation}
+Because the transcripts are silver-standard, we quantify their reliability against
+human reference. A bilingual annotator transcribed 61 randomly drawn test clips
+(2--6 per dialect, balanced across the code-switching axis) by listening to the
+audio; the human transcript is treated as the reference and the silver label as
+the hypothesis. Overall agreement is \textbf{WER~$0.70$} and \textbf{CER~$0.39$}.
+The large WER--CER gap is informative: at the character level the labels are far
+closer to human transcription than the word-level figure suggests, reflecting the
+absence of a standardized orthography for these dialects---annotators and Whisper
+frequently choose different spellings of the same spoken word, which inflates WER
+without indicating a semantic error.
+
+Two patterns are consistent across the sample. First, code-switched labels are
+\emph{more} reliable than Bengali-only ones (WER $0.58$ vs.\ $0.74$): the embedded
+English tokens act as clear acoustic anchors that the transcription model captures
+well. Second, label quality varies by dialect (Table~\ref{tab:validation}):
+Sandwip, Kishoreganj, Sylhet, Khulna, and Old~Dhaka are transcribed reliably
+(WER~$\le 0.54$, CER~$\le 0.34$), whereas Habiganj and Noakhali are weakest
+(WER~$>1.0$, CER~$\approx 0.6$), driven by Whisper insertions and hallucination on
+their more divergent phonology. These figures bound the silver-label noise floor,
+contextualize the absolute error rates reported in Section~\ref{sec:results}, and
+motivate label-refinement directions (e.g.\ judge-guided self-training) for future
+work. Per-dialect estimates rest on small samples ($n=2$--$6$) and are therefore
+indicative rather than definitive.
+
+\begin{table}[t]
+\caption{Human validation of silver-standard labels on 61 test clips (human
+reference vs.\ silver hypothesis). Lower is better; $n$ is clips per dialect.}
+\label{tab:validation}
+\centering\small
+\begin{tabular}{lrrr}
+\toprule
+\textbf{Dialect} & \textbf{$n$} & \textbf{WER} & \textbf{CER} \\
+\midrule
+Sandwip     & 3 & 0.26 & 0.10 \\
+Kishoreganj & 5 & 0.46 & 0.25 \\
+Khulna      & 3 & 0.53 & 0.32 \\
+Old Dhaka   & 6 & 0.54 & 0.31 \\
+Sylhet      & 4 & 0.54 & 0.34 \\
+Narail      & 3 & 0.63 & 0.27 \\
+Barishal    & 5 & 0.72 & 0.39 \\
+Tangail     & 4 & 0.74 & 0.41 \\
+Rangpur     & 6 & 0.75 & 0.51 \\
+Narsingdi   & 3 & 0.76 & 0.38 \\
+Chittagong  & 4 & 0.80 & 0.40 \\
+Mymensingh  & 6 & 0.84 & 0.47 \\
+Comilla     & 2 & 0.92 & 0.44 \\
+Noakhali    & 3 & 1.04 & 0.59 \\
+Habiganj    & 4 & 1.06 & 0.60 \\
+\midrule
+\textbf{Overall} & \textbf{61} & \textbf{0.70} & \textbf{0.39} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{Ethical and Legal Considerations}
 All audio is sourced from publicly available social-media content. To respect
 creators and platform terms, the released dataset will distribute segmented audio
