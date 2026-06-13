@@ -1,0 +1,66 @@
+[
+  {
+    "key": "mms_bn",
+    "label": "MMS-1B (zero-shot)",
+    "n": 61,
+    "wer_human": 0.7627,
+    "cer_human": 0.4126,
+    "wer_silver": 0.8945
+  },
+  {
+    "key": "ft_whisper_all",
+    "label": "Whisper ALL (proposed)",
+    "n": 61,
+    "wer_human": 0.8328,
+    "cer_human": 0.4898,
+    "wer_silver": 0.6855
+  },
+  {
+    "key": "ft_whisper_bn_only",
+    "label": "Whisper BN_ONLY",
+    "n": 61,
+    "wer_human": 0.8431,
+    "cer_human": 0.522,
+    "wer_silver": 0.6996
+  },
+  {
+    "key": "ft_wav2vec2_all",
+    "label": "wav2vec2 (fine-tuned)",
+    "n": 61,
+    "wer_human": 0.8534,
+    "cer_human": 0.4827,
+    "wer_silver": 0.7816
+  },
+  {
+    "key": "wav2vec2_bn",
+    "label": "wav2vec2-XLS-R-BN (zero-shot)",
+    "n": 61,
+    "wer_human": 0.872,
+    "cer_human": 0.5458,
+    "wer_silver": 0.922
+  },
+  {
+    "key": "ft_whisper_cs_only",
+    "label": "Whisper CS_ONLY",
+    "n": 61,
+    "wer_human": 0.883,
+    "cer_human": 0.5226,
+    "wer_silver": 0.8065
+  },
+  {
+    "key": "whisper_large_v3",
+    "label": "Whisper large-v3 (zero-shot)",
+    "n": 61,
+    "wer_human": 0.8971,
+    "cer_human": 0.724,
+    "wer_silver": 0.8118
+  },
+  {
+    "key": "whisper_small_zs",
+    "label": "Whisper-small (zero-shot)",
+    "n": 61,
+    "wer_human": 1.0296,
+    "cer_human": 0.9871,
+    "wer_silver": 1.0397
+  }
+]
