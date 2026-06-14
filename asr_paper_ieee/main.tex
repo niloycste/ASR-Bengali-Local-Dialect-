@@ -514,8 +514,10 @@ leaks a source across splits.
 \subsection{Statistics}
 Table~\ref{tab:dialects} lists the 15 dialects and Fig.~\ref{fig:dist} shows the
 clip distribution, which is intentionally broad but naturally imbalanced,
-mirroring online content availability. Of the 51{,}857 segmented clips, 41{,}499
-pass silver-standard annotation and constitute the released dataset;
+mirroring online content availability. Of the 51{,}857 segmented clips
+($\approx$164 hours of raw audio), 41{,}499 (131.2 hours) pass silver-standard
+annotation and constitute the released dataset---the remaining $\approx$33 hours
+are clips rejected by the no-speech threshold or the LLM judge;
 Table~\ref{tab:splits} reports its train/dev/test splits. The dataset's primary
 scale is its dialect breadth---15 varieties over 131 hours---while
 code-switching forms a deliberate \emph{natural-prevalence} minority (5.7\% of
