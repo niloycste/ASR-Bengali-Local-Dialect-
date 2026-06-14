@@ -470,7 +470,8 @@ Manual transcription of dialectal CS speech at scale is infeasible, so a
 two-stage silver-standard strategy is used. High-confidence transcripts
 (Whisper no-speech probability below $0.30$) are accepted directly, following
 evidence that high-confidence Whisper output is a usable training
-signal~\cite{gandhi2023whisper}; clips above $0.60$ are rejected as noise. The
+signal~\cite{gandhi2023whisper,yang2025gigaspeech2}; clips above $0.60$ are
+rejected as noise. The
 uncertain middle band is the hard case, and here a single strong multilingual
 judge (Qwen2.5~\cite{qwen2025}) scores each transcript on Bengali validity,
 code-switch naturalness, dialect authenticity, and absence of hallucination, and
