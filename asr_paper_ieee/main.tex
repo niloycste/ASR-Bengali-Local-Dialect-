@@ -1028,7 +1028,13 @@ however, does not depend on that sample size: it is the \emph{qualitative}
 English-deletion effect---monolingual and Bengali-only models drop English words
 almost entirely---which is a large, unambiguous effect visible across thousands
 of English tokens (Table~\ref{tab:errors}), not a marginal difference on a small
-subset.
+subset. Consistent with this, a paired bootstrap ($N{=}10{,}000$) on the 176 CS
+clips yields a wide 95\% confidence interval for the proposed model's WER-CS,
+$[0.76,0.87]$, that overlaps those of the other Whisper systems (BN\_ONLY
+$[0.78,0.86]$; zero-shot large-v3 $[0.75,0.84]$): whole-clip WER-CS does
+\emph{not} statistically separate models at this sample size, which is precisely
+why we treat English-word survival---not WER-CS---as the discriminative
+code-switching measure.
 
 Table~\ref{tab:csgap} reports WER on CS versus Bengali-only clips. The whole-clip
 gap is small (within $\pm0.12$): because CS clips are predominantly Bengali,
@@ -1163,7 +1169,9 @@ proposed Whisper~ALL model attains the highest overall score (2.56/5), the best
 semantic correctness (2.55), and the best code-switch preservation (2.71);
 zero-shot large-v3 is marginally higher only on dialect naturalness
 (2.57 vs.\ 2.43), and the CS-only ablation is lowest overall (2.21).
-Inter-model agreement is 0.73--0.85. This corroborates the WER findings under an
+Inter-annotator (inter-judge) agreement among the three LLM judges---the fraction
+of judge pairs whose per-clip scores agree within one point on the 0--5 scale---is
+0.73--0.85, indicating the ensemble is internally consistent rather than arbitrary. This corroborates the WER findings under an
 independent, semantics-aware metric---the proposed model is judged best, and its
 advantage is largest precisely on code-switch preservation---while the
 mid-range absolute scores reflect the same task difficulty discussed above.
