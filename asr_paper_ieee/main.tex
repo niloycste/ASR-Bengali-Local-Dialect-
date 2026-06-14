@@ -12,18 +12,19 @@
 \usepackage{array}
 \usepackage{multirow}
 \usepackage{xcolor}
-\usepackage{subcaption}
 \usepackage{stfloats}
 \usepackage{enumitem}
-\usepackage[hidelinks]{hyperref}
+\usepackage[hidelinks,hypertexnames=false]{hyperref}
 \usepackage{cite}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
-\usepackage{tikz}
-\usetikzlibrary{positioning,arrows.meta}
+
 
 \graphicspath{{figures/}}
 \emergencystretch=2em
+\hbadness=10000
+\vbadness=10000
+\hfuzz=20pt
 
 \definecolor{proposed}{RGB}{27,94,32}
 \newcommand{\best}[1]{\textcolor{proposed}{\textbf{#1}}}
@@ -34,10 +35,10 @@
 in Bangladeshi Regional Dialects}
 
 \author{\IEEEauthorblockN{M. Mohaiminul Islam}
-\IEEEauthorblockA{\textit{Department of Computer Science and Engineering} \\
+\IEEEauthorblockA{\textit{Department of Computer Science and Telecommunication Engineering} \\
 \textit{Noakhali Science and Technology University} \\
 Noakhali, Bangladesh \\
-mohaiminul.islam@nstu.edu.bd}}
+mohaiminul.islam@elitelab.ai}}
 
 \maketitle
 
@@ -46,8 +47,9 @@ Automatic speech recognition (ASR) for low-resource, dialectal, and
 code-switched speech remains an open problem. Existing Bengali resources
 address either regional dialects or Bengali--English code-switching (CS), but
 never both, even though young Bangladeshi speakers routinely mix English into
-regional-dialect speech. This work introduces \textbf{BanglaMix}, the first
-large-scale dataset for dialectal Bengali--English CS-ASR, comprising 41{,}499
+regional-dialect speech. This work introduces \textbf{BanglaMix}, to our
+knowledge the first large-scale dataset for dialectal Bengali--English CS-ASR,
+comprising 41{,}499
 transcribed clips (about 131 hours) spanning 15 regional dialects, collected from
 social-media content where natural code-switching is most common. A fully
 automated pipeline based on voice-activity segmentation, Whisper-based
@@ -79,7 +81,7 @@ low-resource speech recognition, Whisper, large language model judge.
 
 % =====================================================================
 \section{Introduction}
-\IEEEPARstart{S}{peech} is the most natural interface to technology, yet
+Speech is the most natural interface to technology, yet
 automatic speech recognition (ASR) quality is highly uneven across languages
 and speaking styles. Two factors that strongly degrade ASR are \emph{dialectal
 variation} and \emph{code-switching} (CS), the practice of mixing words from a
@@ -123,8 +125,8 @@ This work fills that gap; Fig.~\ref{fig:overview} gives an end-to-end overview o
 the dataset construction, models, and evaluation. The main contributions are as
 follows.
 \begin{enumerate}[leftmargin=*]
-\item \textbf{BanglaMix dataset.} The first large-scale dataset for dialectal
-Bengali--English CS-ASR: 41{,}499 transcribed clips (about 131 hours) across 15
+\item \textbf{BanglaMix dataset.} To our knowledge, the first large-scale dataset
+for dialectal Bengali--English CS-ASR: 41{,}499 transcribed clips (about 131 hours) across 15
 regional dialects, sourced from social media using dialect-name search queries.
 \item \textbf{Automated, annotator-free pipeline.} An end-to-end pipeline using
 voice-activity segmentation, Whisper-based silver-standard transcription,
@@ -180,8 +182,8 @@ LLM-ensemble metrics.}
 \begin{table}[t]
 \caption{Summary of notation.}
 \label{tab:notation}
-\centering\small
-\begin{tabular}{ll}
+\centering\footnotesize
+\begin{tabular}{@{}p{0.24\columnwidth}p{0.68\columnwidth}@{}}
 \toprule
 \textbf{Symbol} & \textbf{Description} \\
 \midrule
@@ -299,8 +301,9 @@ multiple dialects but no code-switching, while the MUCS task~\cite{mucs2021}
 covers code-switching but only in standard Bengali. General multilingual models
 \cite{babu2022xlsr,radford2023whisper,pratap2024mms} transfer to standard
 Bengali but degrade sharply on dialects and, for monolingual CTC models, cannot
-emit code-switched output at all. BanglaMix is the first resource to occupy the
-intersection: \emph{multi-dialect Bengali with natural English code-switching}.
+emit code-switched output at all. BanglaMix is, to our knowledge, the first
+resource to occupy the intersection: \emph{multi-dialect Bengali with natural
+English code-switching}.
 
 \begin{table*}[t]
 \caption{Comparative summary of representative Bengali and code-switching ASR
@@ -327,7 +330,7 @@ Ridoy et al.~\cite{ridoy2025adaptability} & Whisper vs.\ Wav2Vec-BERT & Low-reso
 Biswas et al.~\cite{biswas2025unified} & WavLM denoising + adaptation & Noise-robust dialectal Bengali ASR & Dialectal BN & No & $\sim$20 & Dialectal but no code-switching; noise-focused \\
 GigaSpeech~2~\cite{yang2025gigaspeech2} & Automated crawl + transcribe + refine & Large-scale low-resource corpus & Th/Id/Vi & No & $\sim$30k & Not Bengali; no dialect or code-switching \\
 \midrule
-\textbf{BanglaMix (this work)} & \textbf{Dataset + Whisper/CTC benchmark} & \textbf{Dialectal Bengali--English CS-ASR} & \textbf{Dialectal BN} & \textbf{Yes} & \textbf{165} & First multi-dialect Bengali with code-switching \\
+\textbf{BanglaMix (this work)} & \textbf{Dataset + Whisper/CTC benchmark} & \textbf{Dialectal Bengali--English CS-ASR} & \textbf{Dialectal BN} & \textbf{Yes} & \textbf{131} & First multi-dialect Bengali with code-switching \\
 \bottomrule
 \end{tabular}
 \end{table*}
@@ -389,35 +392,46 @@ justified below.
 \label{alg:pipeline}
 \small
 \begin{algorithmic}[1]
-\Require dialect-name queries $\mathcal{Q}$; VAD aggressiveness $a$;
+
+\State \textbf{Input:} dialect-name queries $\mathcal{Q}$; VAD aggressiveness $a$;
 no-speech thresholds $\tau_{\text{lo}}{=}0.30,\ \tau_{\text{hi}}{=}0.60$; split ratio $80/10/10$
-\Ensure curated dataset $\mathcal{D}=(\mathcal{D}_{\text{tr}},\mathcal{D}_{\text{dev}},\mathcal{D}_{\text{te}})$
+
+\State \textbf{Output:} curated dataset $\mathcal{D}=(\mathcal{D}_{\text{tr}},\mathcal{D}_{\text{dev}},\mathcal{D}_{\text{te}})$
+
 \Statex \textit{Step 1: Acquire and segment}
 \State $\mathcal{A} \gets \textsc{Download16k}(\mathcal{Q})$ \Comment{yt-dlp + ffmpeg; shared dedup archive}
 \State $\mathcal{C} \gets \textsc{VADSegment}(\mathcal{A}, a)$ \Comment{WebRTC VAD; 5--15\,s clips $\Rightarrow$ 51{,}857}
+
 \Statex \textit{Step 2: Transcribe and detect code-switching}
 \For{each clip $c \in \mathcal{C}$}
     \State $t_c \gets \textsc{WhisperLargeV3}(c,\ \text{lang}{=}\text{bn})$
     \State $c.\textsc{cs} \gets \textsc{ScriptCSDetect}(t_c)$ \Comment{Bengali vs.\ Latin Unicode ranges}
 \EndFor
+
 \Statex \textit{Step 3: Silver-standard annotation (no human transcribers)}
 \State $\mathcal{A} \gets \{c : \textsc{nsp}(c) < \tau_{\text{lo}}\}$ \Comment{auto-accept $\Rightarrow$ 39{,}772}
 \State $\mathcal{B} \gets \{c : \tau_{\text{lo}} \le \textsc{nsp}(c) < \tau_{\text{hi}}\}$ \Comment{borderline $\Rightarrow$ 8{,}712}
+
 \For{each $c \in \mathcal{B}$}
-    \State $d \gets \textsc{Qwen2.5Judge}(t_c)$ \Comment{4 dimensions; \textsc{accept}/\textsc{reject}/\textsc{uncertain}}
+    \State $d \gets \textsc{Qwen2.5Judge}(t_c)$ \Comment{4 dimensions; accept/reject/uncertain}
     \If{$d = \textsc{accept}$}
-        \State $\mathcal{A} \gets \mathcal{A} \cup \{c\}$ \Comment{$+1{,}727$; reviewed pool $\Rightarrow$ 41{,}499}
+        \State $\mathcal{A} \gets \mathcal{A} \cup \{c\}$ \Comment{$+1{,}727$}
     \EndIf
 \EndFor
+
 \Statex \textit{Step 4: Normalise transcripts}
-\State $\forall c \in \mathcal{A}:\ t_c \gets \textsc{Normalise}(t_c)$ \Comment{surface clean + 271-entry variant lexicon}
+\State $\forall c \in \mathcal{A}:\ t_c \gets \textsc{Normalise}(t_c)$
+
 \Statex \textit{Step 5: Augment (training pool only)}
-\State $\mathcal{G} \gets \textsc{Augment}(\mathcal{A})$ \Comment{speed $\times0.9/\times1.1$, $+$noise (20\,dB), pitch $\pm2$}
+\State $\mathcal{G} \gets \textsc{Augment}(\mathcal{A})$
+
 \Statex \textit{Step 6: Quality filter and leakage-safe split}
-\State $\mathcal{A} \gets \textsc{DropLowQuality}(\mathcal{A} \cup \mathcal{G})$ \Comment{drop corrupted/foreign-script $\Rightarrow$ 75{,}742}
-\State $(\mathcal{D}_{\text{tr}},\mathcal{D}_{\text{dev}},\mathcal{D}_{\text{te}}) \gets \textsc{SourceStratSplit}(\mathcal{A},\ 80/10/10)$ \Comment{1{,}002 source groups}
-\State $\mathcal{D}_{\text{tr}} \gets \mathcal{D}_{\text{tr}} \cup \textsc{PinAugToTrain}(\mathcal{G})$ \Comment{leakage guard drops 7{,}912 cross-split aug.}
-\State \Return $\mathcal{D}$ \Comment{60{,}936 / 2{,}806 / 4{,}088 (train/dev/test)}
+\State $\mathcal{A} \gets \textsc{DropLowQuality}(\mathcal{A} \cup \mathcal{G})$
+\State $(\mathcal{D}_{\text{tr}},\mathcal{D}_{\text{dev}},\mathcal{D}_{\text{te}}) \gets \textsc{SourceStratSplit}(\mathcal{A},\ 80/10/10)$
+\State $\mathcal{D}_{\text{tr}} \gets \mathcal{D}_{\text{tr}} \cup \textsc{PinAugToTrain}(\mathcal{G})$
+
+\State \Return $\mathcal{D}$ \Comment{final curated dataset}
+
 \end{algorithmic}
 \end{algorithm}
 
@@ -633,6 +647,25 @@ building and evaluating speech-recognition systems. Dialect coverage follows
 online content availability rather than population, so it is intentionally not a
 demographic sample; this imbalance is reported transparently
 (Fig.~\ref{fig:dist}) so that downstream users can weight or resample as needed.
+
+Several further considerations apply. \emph{Consent and platform terms:} the
+source content is public, but its creators did not explicitly consent to research
+use; we therefore release the data strictly for non-commercial research, honor
+platform Terms of Service and copyright by distributing short derived segments
+with source identifiers rather than re-hosting whole videos, and we provide a
+contact-based \emph{takedown/opt-out} process so any creator can request removal
+of their content. \emph{Voice as personal data:} speech is biometric and
+potentially identifying, so we release no speaker names, handles, faces, or
+contact information, segment audio into short clips that hinder reconstruction of
+full recordings, and explicitly prohibit speaker-identification, surveillance, or
+re-identification uses in the accompanying license. \emph{Potential harms:} as
+with any ASR resource, downstream models could be misused or could underperform
+for less-represented dialects; we mitigate this through per-dialect reporting,
+transparent disclosure of label noise (Section~\ref{sec:validation}), and an
+intended-use statement limiting the dataset to building and evaluating ASR for
+these under-served varieties. A formal ethics-board review was not required for
+the use of public, de-identified media under the host institution's policy, but
+the above safeguards were applied throughout.
 
 % =====================================================================
 \section{ASR Models and Fine-Tuning}
@@ -913,10 +946,10 @@ for some dialects and motivating larger fine-tuned backbones as future work.
 \caption{Per-dialect WER for representative models. \best{Bold green} = best per
 dialect.}
 \label{tab:cross}
-\centering\small
-\begin{tabular}{lrrr}
+\centering\scriptsize
+\begin{tabular}{@{}lrrr@{}}
 \toprule
-\textbf{Dialect} & \textbf{large-v3 (zs)} & \textbf{wav2vec2 (FT)} & \textbf{Whisper ALL} \\
+\textbf{Dialect} & \textbf{large-v3} & \textbf{wav2vec2} & \textbf{Whisper ALL} \\
 \midrule
 Sylhet & 1.09 & 0.93 & \best{0.93} \\
 Old Dhaka & 0.97 & 0.86 & \best{0.78} \\
@@ -1023,14 +1056,17 @@ Whisper CS\_ONLY      & 0.81 & 0.89 & $-$0.08 \\
 
 \begin{figure}[t]
 \centering
-\begin{subfigure}{0.49\columnwidth}
+\begin{minipage}{0.49\columnwidth}
+\centering
 \includegraphics[width=\linewidth]{cs_vs_bn_wer.png}
-\caption{WER: CS vs.\ BN clips.}
-\end{subfigure}\hfill
-\begin{subfigure}{0.49\columnwidth}
+\footnotesize (a) WER: CS vs.\ BN clips.
+\end{minipage}
+\hfill
+\begin{minipage}{0.49\columnwidth}
+\centering
 \includegraphics[width=\linewidth]{cs_f1_comparison.png}
-\caption{Code-switch detection F1.}
-\end{subfigure}
+\footnotesize (b) Code-switch detection F1.
+\end{minipage}
 \caption{Code-switching analysis. Models never trained on CS show near-zero
 CS-F1.}
 \label{fig:cs}
@@ -1134,14 +1170,14 @@ mid-range absolute scores reflect the same task difficulty discussed above.
 \caption{LLM-ensemble evaluation (mean score 0--5; three open judges; stratified
 50-clip sample per model). \best{Bold green} = best per column.}
 \label{tab:llmjudge}
-\centering\small
-\begin{tabular}{lcccc}
+\centering\scriptsize
+\begin{tabular}{@{}lcccc@{}}
 \toprule
 \textbf{Model} & \textbf{Sem.} & \textbf{CS-pres.} & \textbf{Dialect} & \textbf{Overall} \\
 \midrule
-Whisper large-v3 (zs) & 2.41 & 2.46 & \best{2.57} & 2.48 \\
+Whisper large-v3 & 2.41 & 2.46 & \best{2.57} & 2.48 \\
 Whisper CS\_ONLY      & 2.27 & 2.32 & 2.05 & 2.21 \\
-\best{Whisper ALL (proposed)} & \best{2.55} & \best{2.71} & 2.43 & \best{2.56} \\
+\best{Whisper ALL} & \best{2.55} & \best{2.71} & 2.43 & \best{2.56} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -1183,11 +1219,13 @@ are indicative; the \emph{direction} follows directly from the bias mechanism an
 is unlikely to be an artifact.
 
 \begin{table}[t]
-\caption{Model error against \emph{human} references vs.\ silver labels on the 61
+\caption{Model error against human references vs.\ silver labels on the 61
 human-validated test clips. WER(human) is the bias-free, gold-reference number;
 WER(silver) is on the same clips for comparison. Lower is better.}
 \label{tab:humaneval}
-\centering\small
+\centering
+\small
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{lrrr}
 \toprule
 \textbf{Model} & \textbf{WER$_\text{human}$} & \textbf{CER$_\text{human}$} & \textbf{WER$_\text{silver}$} \\
@@ -1201,7 +1239,8 @@ Whisper CS\_ONLY             & 0.88 & 0.52 & 0.81 \\
 Whisper large-v3 (zero-shot) & 0.90 & 0.72 & 0.81 \\
 Whisper-small (zero-shot)    & 1.03 & 0.99 & 1.04 \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 % =====================================================================
@@ -1243,8 +1282,9 @@ confidence intervals and $p$-values are reproducible from the prediction files.
 % =====================================================================
 \section{Conclusion}
 \label{sec:conclusion}
-This work introduced BanglaMix, the first large-scale dataset and benchmark for
-dialectal Bengali--English code-switching ASR, together with a fully automated,
+This work introduced BanglaMix, to our knowledge the first large-scale dataset
+and benchmark for dialectal Bengali--English code-switching ASR, together with a
+fully automated,
 annotator-free construction pipeline. A systematic benchmark of three model
 families shows that zero-shot multilingual models fail badly on this task,
 that fine-tuning on BanglaMix yields large and statistically significant gains,
