@@ -1062,6 +1062,43 @@ Whisper CS\_ONLY      & 0.81 & 0.89 & $-$0.08 \\
 \end{tabular}
 \end{table}
 
+Beyond \emph{whether} English words survive, we also measure whether models
+reproduce the code-switching \emph{structure}---the number of intra-utterance
+language switches---computed over roughly 600 reference switch points (more stable
+than per-clip WER). Reference CS clips contain on average 3.5 switches, yet every
+system produces far fewer (Table~\ref{tab:switch}): models systematically
+\emph{collapse} code-switching rather than reproduce it. Among the fine-tuned
+systems the ordering tracks code-switch supervision---CS-only preserves the most
+switch structure (47\%), Bengali-only the least (20\%), and the proposed model
+lies in between (33\%)---confirming from a third independent angle that
+code-switch training restores switching behaviour. Zero-shot large-v3 preserves a
+comparable fraction (45\%), but only by over-generating text: it also shows the
+highest English survival (Table~\ref{tab:errors}) yet the worst overall WER
+(0.91), i.e.\ it keeps switches at the cost of accuracy. The measure counts switch
+\emph{density} rather than exact positions, so it upper-bounds positional
+accuracy.
+
+\begin{table}[t]
+\caption{Code-switch structure preservation on CS clips: average intra-utterance
+language switches produced, and the fraction of reference switches preserved.
+Reference clips average 3.48 switches.}
+\label{tab:switch}
+\centering\small
+\begin{tabular}{lrr}
+\toprule
+\textbf{Model} & \textbf{Switches/clip} & \textbf{Switch preserved} \\
+\midrule
+\textit{Reference (human silver)} & 3.48 & --- \\
+\midrule
+Whisper CS\_ONLY      & \best{2.19} & \best{47\%} \\
+MMS-1B (zs)           & 1.81 & 37\% \\
+Whisper large-v3 (zs) & 1.75 & 45\% \\
+Whisper ALL (proposed)& 1.32 & 33\% \\
+Whisper BN\_ONLY      & 0.85 & 20\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \begin{figure}[t]
 \centering
 \begin{minipage}{0.49\columnwidth}
