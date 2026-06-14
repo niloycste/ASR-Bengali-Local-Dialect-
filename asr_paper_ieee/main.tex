@@ -1104,6 +1104,36 @@ These patterns explain the headline numbers: fine-tuning chiefly removes
 hallucination and English deletion, while the residual error is dominated by
 benign spelling variance over un-standardized dialectal orthography.
 
+To make this quantitative, Table~\ref{tab:taxonomy} decomposes every word error
+into deletions, insertions, and substitutions, and further estimates the share
+of \emph{all} errors that are benign spelling variants---substitutions whose
+reference and hypothesis words differ by a normalized character distance
+$\le 0.34$ (i.e.\ a near-identical spelling). The contrast is stark: zero-shot
+large-v3 is dominated by \emph{deletions} (53\%)---it simply fails to transcribe
+large spans of dialect speech---whereas fine-tuning halves the deletion share
+(to $\sim$26\%) and converts the output into mostly-complete transcripts whose
+errors are predominantly substitutions, roughly one sixth of which (15--17\% of
+all errors) are mere spelling variants rather than genuine recognition mistakes.
+This quantifies why CER is substantially lower than WER for the fine-tuned
+systems and why WER overstates their true error.
+
+\begin{table}[t]
+\caption{Error taxonomy: deletion / insertion / substitution share of all word
+errors, and the fraction of \emph{all} errors that are benign spelling variants
+(near-identical substitutions, char-distance $\le 0.34$).}
+\label{tab:taxonomy}
+\centering\small
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Model} & \textbf{Del} & \textbf{Ins} & \textbf{Sub} & \textbf{Spelling var.} \\
+\midrule
+Whisper large-v3 (zs)   & 53\% & 13\% & 34\% & 5\% \\
+wav2vec2 (FT)           & 27\% & 12\% & 61\% & 15\% \\
+\best{Whisper ALL (proposed)} & 26\% & 18\% & 56\% & \best{17\%} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 \subsection{Ablation Study}
 Two ablations isolate key design choices. The \textit{training-subset} ablation
 (Table~\ref{tab:main}) shows that BN\_ONLY and CS\_ONLY each sacrifice one
