@@ -18,6 +18,8 @@
 \usepackage{cite}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
+% render algorithm comments as "// ..." (code-comment style, matches our template)
+\algrenewcommand{\algorithmiccomment}[1]{\hfill\textit{// #1}}
 \usepackage{hyperref}
 \usepackage{url}
 
