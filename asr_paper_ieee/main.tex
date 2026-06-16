@@ -323,9 +323,9 @@ no-speech thresholds $\tau_{\text{lo}}{=}0.30,\ \tau_{\text{hi}}{=}0.60$; split 
 
 \Statex \textit{Step 3: Silver-standard annotation (no human transcribers)}
 \State $\mathcal{A} \gets \{c : \textsc{nsp}(c) < \tau_{\text{lo}}\}$ \Comment{auto-accept $\Rightarrow$ 39{,}772}
-\State $\mathcal{B} \gets \{c : \tau_{\text{lo}} \le \textsc{nsp}(c) < \tau_{\text{hi}}\}$ \Comment{borderline $\Rightarrow$ 8{,}712}
+\State $\mathcal{M} \gets \{c : \tau_{\text{lo}} \le \textsc{nsp}(c) < \tau_{\text{hi}}\}$ \Comment{borderline (middle band) $\Rightarrow$ 8{,}712}
 
-\For{each $c \in \mathcal{B}$}
+\For{each $c \in \mathcal{M}$}
     \State $d \gets \textsc{Qwen2.5Judge}(t_c)$ \Comment{4 dimensions; accept/reject/uncertain}
     \If{$d = \textsc{accept}$}
         \State $\mathcal{A} \gets \mathcal{A} \cup \{c\}$ \Comment{$+1{,}727$}
@@ -719,11 +719,11 @@ Finally, English-word survival (EN-Surv) measures how many English words in the 
 
 \begin{equation}
 \text{EN-Surv} =
-\frac{\sum_{(r,h)\in\mathcal{C}} |\{w \in r : \mathrm{English}(w)\} \cap h|}
-{\sum_{(r,h)\in\mathcal{C}} |\{w \in r : \mathrm{English}(w)\}|}
+\frac{\sum_{(r,h)\in\mathcal{P}} |\{w \in r : \mathrm{English}(w)\} \cap h|}
+{\sum_{(r,h)\in\mathcal{P}} |\{w \in r : \mathrm{English}(w)\}|}
 \end{equation}
 
-where $\mathcal{C}$ is the set of code-switched samples.
+where $\mathcal{P}$ is the set of code-switched (reference, hypothesis) pairs.
 
 \subsection{Baselines}
 
