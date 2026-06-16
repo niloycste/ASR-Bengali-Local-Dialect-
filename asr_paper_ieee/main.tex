@@ -301,47 +301,46 @@ Algorithm~\ref{alg:pipeline} summarizes the end-to-end pipeline; each step is
 justified below.
 
 \begin{algorithm}[t]
-\caption{BanglaMix: From Raw Dialectal Audio to a Curated CS-ASR Benchmark}
+\caption{BanglaMix: From raw dialectal audio to a curated CS-ASR benchmark}
 \label{alg:pipeline}
-\small
+\scriptsize
 \begin{algorithmic}[1]
 
-\State \textbf{Input:} dialect-name queries $\mathcal{Q}$; VAD aggressiveness $a$;
-no-speech thresholds $\tau_{\text{lo}}{=}0.30,\ \tau_{\text{hi}}{=}0.60$; split ratio $80/10/10$
+\Statex \textbf{Input:} dialect-name queries $\mathcal{Q}$; VAD aggressiveness $a$; no-speech thresholds $\tau_{\text{lo}}{=}0.30,\ \tau_{\text{hi}}{=}0.60$; split ratio $80/10/10$
+\Statex \textbf{Output:} curated dataset $\mathcal{D}=(\mathcal{D}_{\text{tr}},\mathcal{D}_{\text{dev}},\mathcal{D}_{\text{te}})$
 
-\State \textbf{Output:} curated dataset $\mathcal{D}=(\mathcal{D}_{\text{tr}},\mathcal{D}_{\text{dev}},\mathcal{D}_{\text{te}})$
+\Statex \textit{\textbf{Step 1: Acquire and segment}}
+\State $\mathcal{R} \gets \Call{Download16k}{\mathcal{Q}}$ \Comment{yt-dlp + ffmpeg; shared dedup archive}
+\State $\mathcal{C} \gets \Call{VADSegment}{\mathcal{R}, a}$ \Comment{WebRTC VAD; 5--15\,s clips $\rightarrow 51{,}857$}
 
-\Statex \textit{Step 1: Acquire and segment}
-\State $\mathcal{A} \gets \textsc{Download16k}(\mathcal{Q})$ \Comment{yt-dlp + ffmpeg; shared dedup archive}
-\State $\mathcal{C} \gets \textsc{VADSegment}(\mathcal{A}, a)$ \Comment{WebRTC VAD; 5--15\,s clips $\Rightarrow$ 51{,}857}
-
-\Statex \textit{Step 2: Transcribe and detect code-switching}
-\For{each clip $c \in \mathcal{C}$}
-    \State $t_c \gets \textsc{WhisperLargeV3}(c,\ \text{lang}{=}\text{bn})$
-    \State $c.\textsc{cs} \gets \textsc{ScriptCSDetect}(t_c)$ \Comment{Bengali vs.\ Latin Unicode ranges}
+\Statex \textit{\textbf{Step 2: Transcribe and detect code-switching}}
+\ForAll{clip $c \in \mathcal{C}$}
+    \State $t_c \gets \Call{WhisperLargeV3}{c,\ \text{lang}{=}\text{bn}}$
+    \State $c.\textsc{cs} \gets \Call{ScriptCSDetect}{t_c}$ \Comment{Bengali vs.\ Latin Unicode ranges}
 \EndFor
 
-\Statex \textit{Step 3: Silver-standard annotation (no human transcribers)}
-\State $\mathcal{A} \gets \{c : \textsc{nsp}(c) < \tau_{\text{lo}}\}$ \Comment{auto-accept $\Rightarrow$ 39{,}772}
-\State $\mathcal{M} \gets \{c : \tau_{\text{lo}} \le \textsc{nsp}(c) < \tau_{\text{hi}}\}$ \Comment{borderline (middle band) $\Rightarrow$ 8{,}712}
-
-\For{each $c \in \mathcal{M}$}
-    \State $d \gets \textsc{Qwen2.5Judge}(t_c)$ \Comment{4 dimensions; accept/reject/uncertain}
+\Statex \textit{\textbf{Step 3: Silver-standard annotation (no human transcribers)}}
+\State $\mathcal{A} \gets \{c : \Call{nsp}{c} < \tau_{\text{lo}}\}$ \Comment{auto-accept $\rightarrow 39{,}772$}
+\State $\mathcal{M} \gets \{c : \tau_{\text{lo}} \le \Call{nsp}{c} < \tau_{\text{hi}}\}$ \Comment{borderline (middle band) $\rightarrow 8{,}712$}
+\ForAll{$c \in \mathcal{M}$}
+    \State $d \gets \Call{Qwen2.5Judge}{t_c}$ \Comment{4 dimensions; accept/reject/uncertain}
     \If{$d = \textsc{accept}$}
         \State $\mathcal{A} \gets \mathcal{A} \cup \{c\}$ \Comment{$+1{,}727$}
     \EndIf
 \EndFor
 
-\Statex \textit{Step 4: Normalise transcripts}
-\State $\forall c \in \mathcal{A}:\ t_c \gets \textsc{Normalise}(t_c)$
+\Statex \textit{\textbf{Step 4: Normalize transcripts}}
+\ForAll{$c \in \mathcal{A}$}
+    \State $t_c \gets \Call{Normalize}{t_c}$ \Comment{NFC; variant lexicon; repetition collapse}
+\EndFor
 
-\Statex \textit{Step 5: Augment (training pool only)}
-\State $\mathcal{G} \gets \textsc{Augment}(\mathcal{A})$
+\Statex \textit{\textbf{Step 5: Augment (training pool only)}}
+\State $\mathcal{G} \gets \Call{Augment}{\mathcal{A}}$ \Comment{speed, noise, pitch}
 
-\Statex \textit{Step 6: Quality filter and leakage-safe split}
-\State $\mathcal{A} \gets \textsc{DropLowQuality}(\mathcal{A} \cup \mathcal{G})$
-\State $(\mathcal{D}_{\text{tr}},\mathcal{D}_{\text{dev}},\mathcal{D}_{\text{te}}) \gets \textsc{SourceStratSplit}(\mathcal{A},\ 80/10/10)$
-\State $\mathcal{D}_{\text{tr}} \gets \mathcal{D}_{\text{tr}} \cup \textsc{PinAugToTrain}(\mathcal{G})$
+\Statex \textit{\textbf{Step 6: Quality filter and leakage-safe split}}
+\State $\mathcal{A} \gets \Call{DropLowQuality}{\mathcal{A} \cup \mathcal{G}}$
+\State $(\mathcal{D}_{\text{tr}},\mathcal{D}_{\text{dev}},\mathcal{D}_{\text{te}}) \gets \Call{SourceStratSplit}{\mathcal{A},\ 80/10/10}$ \Comment{per-source; dialect-stratified}
+\State $\mathcal{D}_{\text{tr}} \gets \mathcal{D}_{\text{tr}} \cup \Call{PinAugToTrain}{\mathcal{G}}$
 
 \State \Return $\mathcal{D}$ \Comment{final curated dataset}
 
