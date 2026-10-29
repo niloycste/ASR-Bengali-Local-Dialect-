@@ -1,17 +1,11 @@
-% ============================================================
-% BanglaMix -- IEEE-style single-file manuscript (pdfLaTeX)
-% Compile: pdflatex main -> bibtex main -> pdflatex main x2
-% No Unicode/Bengali text is used, so standard pdfLaTeX works.
-% ============================================================
-% Two-column IEEE conference format (matches conference_101719.tex).
-\documentclass[conference]{IEEEtran}
+
+\documentclass[journal]{IEEEtran}
 
 \usepackage{amsmath,amssymb,amsfonts}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{multirow}
-\usepackage{xcolor}
 \usepackage{stfloats}
 \usepackage{enumitem}
 \usepackage[hidelinks,hypertexnames=false]{hyperref}
@@ -20,7 +14,6 @@
 \usepackage{algpseudocode}
 % render algorithm comments as "// ..." (code-comment style, matches our template)
 \algrenewcommand{\algorithmiccomment}[1]{\hfill\textit{// #1}}
-\usepackage{hyperref}
 \usepackage{url}
 
 
@@ -30,24 +23,34 @@
 \vbadness=10000
 \hfuzz=20pt
 
-\definecolor{proposed}{RGB}{27,94,32}
-\newcommand{\best}[1]{\textcolor{proposed}{\textbf{#1}}}
+\newcommand{\best}[1]{\textbf{#1}}
 
 \begin{document}
 
-\title{BanglaMix: A Dataset and Benchmark for Code-Switching {ASR}
-in Bangladeshi Regional Dialects}
+\title{\texttt{AncholVox:} A Silver-Standard Diagnostic Benchmark for
+Multi-Dialect Bengali and Bengali--English Code-Switched Speech Recognition}
 
-\author{\IEEEauthorblockN{M. Mohaiminul Islam}
-\IEEEauthorblockA{\textit{Department of Computer Science and Telecommunication Engineering} \\
-\textit{Noakhali Science and Technology University} \\
-Noakhali, Bangladesh \\
-mohaiminul.islam@elitelab.ai}}
+\author{M.~Mohaiminul~Islam%
+\thanks{M. M. Islam is with the Department of Computer Science and
+Telecommunication Engineering, Noakhali Science and Technology University,
+Noakhali, Bangladesh (e-mail: mohaiminul.islam@elitelab.ai).}}
 
 \maketitle
 
 \begin{abstract}
-Automatic speech recognition (ASR) for low-resource, dialectal, and code-switched speech is still a challenging problem. Existing Bengali datasets usually focus on either regional dialects or Bengali--English code-switching, but not both, even though speakers in Bangladesh often mix English words into regional dialect speech in daily communication. In this work, we introduce BanglaMix, to our knowledge the first large-scale dataset for dialectal Bengali--English code-switched ASR, containing 41,499 transcribed audio clips (about 131 hours) across 15 regional dialects, collected from social media where natural code-switching is common. We build a fully automated data pipeline using voice activity detection, Whisper-based silver-standard transcription, script-based code-switch detection, and a large language model (LLM) filter to remove uncertain cases, avoiding manual transcription. We evaluate three ASR model families—Whisper, Meta MMS, and wav2vec2-XLS-R—under both zero-shot and fine-tuned settings, and also study different training setups including dialect-only, code-switch-only, and combined data. The fine-tuned Whisper-small model achieves a word error rate (WER) of 0.80 and a character error rate (CER) of 0.49, which is a 25\% relative improvement over the zero-shot model and is statistically significant ($p < 0.001$, paired bootstrap) compared to all zero-shot baselines and the fine-tuned CTC model, including zero-shot Whisper large-v3. Although performance improves, error rates remain high due to non-standard dialect spelling and silver-standard labels, and manual evaluation of 61 clips shows label quality of WER 0.70 and CER 0.39. Therefore, BanglaMix provides a challenging open benchmark for future research, and the dataset and code are publicly available\footnote{Dataset: \url{https://huggingface.co/datasets/niloycste68/Bangali_local_dialect_ASR_HF_Dataset}, Code: \url{https://github.com/niloycste/ASR-Bengali-Local-Dialect-}.}.
+We introduce AncholVox, a silver-standard diagnostic benchmark for
+multi-dialect Bengali ASR and Bengali--English code-switching detected in
+automatic transcripts. It contains $41{,}499$ clips (131.2 hours) from 15
+regional labels, constructed through speech segmentation, Whisper large-v3
+transcription, script-based switch detection, and text-only LLM filtering. On
+the archived historical split, fine-tuned wav2vec2 achieves the lowest primary
+WER against the silver references ($0.861$). These model comparisons are
+diagnostic because that split is not source-disjoint. In a limited 100-clip,
+two-annotator validation study, MMS-1B has the lowest WER against both human
+references ($0.757$ and $0.697$), showing that rankings depend on the reference.
+AncholVox is therefore presented as an auditable dataset and stress-test
+benchmark for silver-label noise, dialect variation, decoder repetition, and
+English-token retention, not as a new state-of-the-art ASR model.\footnote{Dataset: \url{https://huggingface.co/datasets/niloycste68/Bangali_local_dialect_ASR_HF_Dataset} --- gated access pending the institutional determinations recorded in the release register; code: \url{https://github.com/niloycste/ASR-Bengali-Local-Dialect-}.}
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -55,184 +58,117 @@ Automatic speech recognition, Bengali ASR, code-switching, dialectal speech,
 low-resource speech recognition, Whisper, and a large language model judge.
 \end{IEEEkeywords}
 
+\IEEEpeerreviewmaketitle
+
 % =====================================================================
 \section{Introduction}
 
-Speech is the most natural interface to technology, yet automatic speech recognition (ASR) performance remains highly uneven across languages and speaking styles. Two major factors that significantly degrade ASR are dialectal variation and code-switching (CS), the practice of mixing words from a second language within a single utterance. Both phenomena are pervasive in everyday Bangladeshi speech: the country has many mutually distinct regional dialects, and younger, educated speakers frequently insert English words into dialectal Bengali, producing utterances such as ``\textit{chatgaiya bhashay phone unboxing kortachi, honestly speaking camera performance onek bhalo}'' (``unboxing a phone in the Chittagong dialect; honestly speaking, the camera performance is very good'').
 
-Despite this reality, existing Bengali speech resources only address one of these phenomena at a time. Read-speech corpora such as OpenSLR-37~\cite{kjartansson2018bengali} focus on standard Bengali, while the Ben-10 corpus~\cite{ben10_2025} covers ten dialects but contains no code-switching. The MUCS shared task~\cite{mucs2021} provides Bengali--English code-switching data, but only in standard (Dhaka) Bengali. As a result, no dataset or model captures the intersection of regional dialects and English code-switching, even though this is one of the most common forms of informal speech in Bangladesh. This mismatch between real-world speech and available resources creates a fundamental barrier for robust ASR development.
 
-Recognizing dialectal code-switched speech is challenging due to several compounding factors. First, regional dialects differ significantly from standard Bengali in vowel quality, consonant clusters, prosody, and vocabulary, causing acoustic models trained on standard Bengali to generalize poorly. Second, code-switching requires models to seamlessly transition between Bengali and English within a single utterance, often involving mixed scripts that monolingual systems cannot handle. Third, dialectal and code-switched speech is underrepresented in existing corpora, and large-scale manual transcription across 15 dialects is prohibitively expensive for a low-resource language setting. Finally, dialect words and borrowed English terms often lack standardized spelling, meaning that even linguistically correct transcriptions can be penalized under strict word-level evaluation metrics.
+Automatic speech recognition (ASR) does not work equally well across languages,
+regional varieties, and speaking styles. Dialect variation and code-switching
+(CS), in which speakers alternate between languages within an utterance, are
+particularly challenging when annotated speech is scarce.
 
-These challenges jointly motivate the design of our dataset, pipeline, and evaluation strategy. Specifically, they influence our decision to adopt an automated annotation pipeline without manual transcribers, to use script-aware code-switch detection, to select a shared-vocabulary sequence-to-sequence modeling framework, and to emphasize character-level and code-switch-aware evaluation metrics.
+Bengali has substantial regional variation, including Chittagonian, Sylheti,
+Noakhali, Rangpuri, and Barishali varieties, which differ in pronunciation,
+vocabulary, and expression. Informal online speech may also contain Bengali and
+English words in the same utterance. For example, a speaker may say,
+`\textit{chatgaiya bhashay phone unboxing kortachi, honestly speaking camera
+performance onek bhalo},'' meaning `unboxing a phone in the Chittagong dialect;
+honestly speaking, the camera performance is very good.''
+
+Despite this, most existing Bengali speech datasets focus on only one problem at a time. For example, read-speech datasets like OpenSLR-37~\cite{kjartansson2018bengali} mainly cover standard Bengali. The Ben-10 corpus~\cite{ben10_2025} includes ten regional dialects but does not include code-switching. On the other hand, the MUCS shared task~\cite{mucs2021} provides Bengali--English code-switching data, but only in standard Dhaka Bengali. We are not aware of another released resource at this scale that jointly targets broad regional variation and Bengali--English switching detected in silver transcripts. This gap between real-world speech and available resources makes it difficult to study robust ASR systems.
+
+
+Recognizing dialectal code-switched speech is difficult for several reasons. First, regional dialects can be quite different from standard Bengali in pronunciation, sound patterns, rhythm, and vocabulary, so models trained on standard Bengali do not perform well. Second, code-switching requires the system to handle smooth switching between Bengali and English within the same sentence, often mixing languages that standard monolingual models are not designed for. Third, there is very little training data for dialectal and code-switched speech, and manually transcribing data across 15 dialects is very expensive. Finally, many dialect words and borrowed English terms do not have fixed spellings, so even correct transcriptions may be marked wrong by strict evaluation metrics. These challenges together motivate the design of our dataset, pipeline, and evaluation approach. They lead us to build an automated annotation pipeline without manual transcription, use script-aware code-switch detection, adopt a shared vocabulary sequence-to-sequence model, and focus on character-level and code-switch-aware evaluation metrics.
+
 
 This work fills this gap; Fig.~\ref{fig:overview} provides an end-to-end overview of the dataset construction, models, and evaluation. The main contributions of this paper are as follows:
 
 \begin{enumerate}[leftmargin=*]
-\item To our knowledge, the first large-scale dataset for dialectal Bengali--English code-switched ASR, containing 41{,}499 transcribed clips (about 131 hours) across 15 regional dialects, collected from social media using dialect-name search queries.
+\item One of the first large-scale resources designed specifically for the intersection of regional Bengali dialects and Bengali--English switching detected in silver transcripts: 41{,}499 clips (131.2 hours) across 15 regional labels.
 
-\item An end-to-end automated pipeline that does not require human annotators, using voice-activity segmentation, Whisper-based silver-standard transcription, script-based code-switching detection, and a strong multilingual LLM as a judge for borderline cases to enable large-scale annotation.
+\item A scalable automated construction pipeline using voice-activity segmentation, Whisper-based silver transcription, script-based code-switch detection, and text-only multilingual LLM review of borderline cases, complemented by a two-annotator validation subset.
 
-\item A systematic benchmark and ablation study comparing three ASR model families under zero-shot and fine-tuned settings, including controlled training subsets (dialect-only, code-switching-only, and combined) to measure the contribution of each data type.
+\item A diagnostic benchmark comparing three ASR model families under zero-shot and fine-tuned settings, including Bengali-only, code-switch-only, and joint-data training recipes. Because these recipes differ in coverage and data budget, they provide practical comparisons rather than a controlled causal estimate of each data type.
 
-\item A detailed evaluation and error analysis across dialects and code-switching conditions, including statistical significance testing, to identify failure patterns and establish the dataset as a challenging benchmark for current ASR systems.
+\item A detailed evaluation and error analysis across dialects and code-switching conditions, including two-sided significance tests, bootstrap uncertainty for code-switching metrics, and an LLM-ensemble meaning-preservation diagnostic.
 \end{enumerate}
 
-Beyond dataset construction, this work also highlights an important empirical finding: high error rates are not incidental but reflect the intrinsic difficulty of this speech setting. Even large-scale pretraining (e.g., models trained on hundreds of thousands of hours of audio) struggles to achieve strong performance on dialectal code-switched Bengali. This suggests that such speech remains largely outside the effective coverage of current ASR systems, leaving millions of speakers underserved. Therefore, our primary contribution is not only the dataset itself but also the establishment of a measurable benchmark for this previously unquantified performance gap, supported by a carefully validated silver-label noise estimate (Section~\ref{sec:validation}). The goal is not to achieve state-of-the-art performance, but to expose a realistic and challenging setting that can guide future research toward more inclusive ASR systems.
+AncholVox is positioned primarily as a dataset-construction and auditability
+contribution. The model experiments are diagnostic stress tests of the released
+resource, not an exhaustive state-of-the-art leaderboard. Their purpose is to
+measure failure modes under a common protocol and to separate model behavior
+from silver-reference noise, which is characterized on a limited sample in
+Section~\ref{sec:validation}.
 
-The rest of the paper is organized as follows. Section~\ref{sec:related} reviews related work on Bengali, dialectal, and code-switched ASR. Section~\ref{sec:dataset} describes the BanglaMix dataset and its construction process. Section~\ref{sec:models} presents the ASR models and fine-tuning strategy, while Section~\ref{sec:setup} details the experimental setup. Section~\ref{sec:results} reports the main results, Section~\ref{sec:analysis} provides detailed error analysis, ablation studies, and case studies, Section~\ref{sec:limitations} discusses limitations and reproducibility, and Section~\ref{sec:conclusion} concludes the paper with future directions.
 
-Table~\ref{tab:notation} summarizes the notation used in this paper.
+The rest of the paper is organized as follows: Section~\ref{sec:related} reviews related work on Bengali, dialectal, and code-switched ASR. Section~\ref{sec:dataset} describes the AncholVox dataset and its construction process. Section~\ref{sec:models} presents the ASR models and fine-tuning strategy, while Section~\ref{sec:setup} details the experimental setup. Section~\ref{sec:results} reports the main results, Section~\ref{sec:analysis} provides detailed error analysis, training-recipe comparisons, and case studies, Section~\ref{sec:limitations} discusses limitations and reproducibility, and Section~\ref{sec:conclusion} concludes the paper with future directions.
+
 
 \begin{figure*}[t]
 \centering
-\includegraphics[width=\textwidth]{ASR_pipeline.png}
-\caption{End to end overview of BanglaMix. Dialect-targeted social media collection and voice activity segmentation feed a fully automated silver-standard labeling pipeline (Whisper large-v3 transcription, script based code-switch detection, and an LLM-based quality judge), producing 41{,}499 transcribed clips. After normalization and a leakage-safe, source-stratified split, we benchmark fine-tuned and zero-shot ASR models using edit-distance, code-switch-aware, and LLM-based evaluation metrics.}
+\includegraphics[width=\textwidth]{figures/ASR_pipeline.png}
+\caption{Auditable overview of dataset construction and evaluation. Clips with no-speech probability below 0.30 are retained, clips in $[0.30,0.60)$ receive LLM review, and clips at or above 0.60 are rejected. Evaluation separates conventional surface-normalized scores, which retain repetitions, from explicitly labeled repetition-collapsed system scores.
+}
 \label{fig:overview}
 \end{figure*}
-
-\begin{table}[t]
-\caption{Summary of notation.}
-\label{tab:notation}
-\centering\footnotesize
-\begin{tabular}{@{}p{0.24\columnwidth}p{0.68\columnwidth}@{}}
-\toprule
-\textbf{Symbol} & \textbf{Description} \\
-\midrule
-$\tau_{\text{lo}},\tau_{\text{hi}}$ & low/high no-speech acceptance thresholds (0.30, 0.60) \\
-$n_{\mathrm{bn}},n_{\mathrm{en}}$ & number of Bengali / English words in a clip \\
-$b$ & number of intra-utterance language boundaries \\
-$\rho$ & English-word ratio $n_{\mathrm{en}}/(n_{\mathrm{en}}+n_{\mathrm{bn}})$ \\
-$S,D,I$ & substitutions, deletions, insertions in the alignment \\
-$N$ & number of reference tokens \\
-$\mathrm{P},\mathrm{R}$ & precision and recall of code-switch detection \\
-$\mathcal{B}$ & CTC alignment-collapsing function \\
-\bottomrule
-\end{tabular}
-\end{table}
 
 % =====================================================================
 \section{Related Work}
 \label{sec:related}
 
-This section reviews prior work related to Bengali automatic speech recognition, including standard and dialectal ASR systems, code-switching speech recognition, large-scale pre-trained speech models, automated speech corpus construction, and large language model-based data quality evaluation. Although substantial progress has been made in multilingual and low-resource speech recognition, most existing approaches focus on standard Bengali speech and do not adequately address the combined challenges of regional dialect variation and code-switched speech.
+This section reviews prior studies on Bengali automatic speech recognition (ASR), covering standard and dialectal ASR, code-switched speech recognition, large scale pretrained speech models, automated speech corpus construction, and large language model (LLM)-based data quality assessment. While recent advances in multilingual and low-resource ASR have improved speech recognition performance across many languages, existing Bengali ASR research has largely focused on standard Bengali speech. As a result, the combined challenges of regional dialect variation and Bengali--English code-switching remain underexplored.
+
 
 \subsection{Bengali and Dialectal ASR}
-Early Bengali ASR relied on a Gaussian mixture and a deep neural network hidden
-Markov models with hand-built pronunciation lexicons~\cite{hasnat2007isolated,
-swarna2017survey}, which were limited to standard Bengali
-and struggled with out-of-vocabulary words. The field then moved to end-to-end
-models: connectionist temporal classification (CTC)~\cite{graves2006ctc}, deep
-recurrent networks~\cite{graves2013speech}, Deep Speech~\cite{hannun2014deep},
-and attention-based encoder--decoders such as Listen, Attend, and
-Spell~\cite{chan2016listen}, supported by toolkits such as
-ESPnet~\cite{watanabe2018espnet}, which lowered error rates on standard
-Bengali~\cite{mandal2020e2e}. The Transformer~\cite{vaswani2017attention} and
-masked pre-training~\cite{devlin2019bert} subsequently enabled large
-self-supervised and weakly-supervised speech models---wav2vec\,2.0
-\cite{baevski2020wav2vec2}, HuBERT~\cite{hsu2021hubert}, WavLM~\cite{chen2022wavlm},
-the multilingual XLS-R~\cite{babu2022xlsr,conneau2021xlsr},
-Whisper~\cite{radford2023whisper}, and MMS~\cite{pratap2024mms}---which, together
-with multilingual corpora such as Common Voice~\cite{ardila2020commonvoice},
-improved transfer to low-resource Bengali. Dialectal Bengali received focused
-attention only recently. The Ben-10 corpus~\cite{ben10_2025} covers ten regional
-dialects (over 78 hours, 394 speakers) and shows that even strong foundation
-models, including Whisper large-v3, perform poorly on out-of-distribution dialect
-speech, both zero-shot and after fine-tuning. Biswas \emph{et al.}
-\cite{biswas2025unified} propose a WavLM-based denoising and adaptation framework
-for dialectal Bengali (e.g., Chittagonian and Sylheti) under simulated noise,
-reporting large relative WER reductions over wav2vec\,2.0 and Whisper at low
-signal-to-noise ratios. Ridoy \emph{et al.}~\cite{ridoy2025adaptability} compare
-Whisper and Wav2Vec-BERT on standard Bangla and find the self-supervised encoder
-is both more accurate and more computationally efficient under low-resource conditions. None
-of these, however, addresses code-switching, which motivates a benchmark that
-combines dialect and code-switching in a single resource.
+Early Bengali ASR systems were mainly based on Gaussian mixture models and deep neural network hidden Markov models with manually designed pronunciation lexicons~\cite{hasnat2007isolated,swarna2017survey}. These systems mostly focused on standard Bengali and had limited ability to handle unseen words. Later, Bengali ASR research moved toward end to end approaches, including connectionist temporal classification (CTC)~\cite{graves2006ctc}, deep recurrent networks~\cite{graves2013speech}, Deep Speech~\cite{hannun2014deep}, and attention based encoder decoder models such as Listen, Attend and Spell~\cite{chan2016listen}. Toolkits such as ESPnet~\cite{watanabe2018espnet} further supported this progress and helped reduce error rates for standard Bengali ASR~\cite{mandal2020e2e}. More recently, the Transformer~\cite{vaswani2017attention} and masked pre training~\cite{devlin2019bert} have enabled powerful self supervised and weakly supervised speech models, including wav2vec,2.0~\cite{baevski2020wav2vec2}, HuBERT~\cite{hsu2021hubert}, WavLM~\cite{chen2022wavlm}, XLS-R~\cite{babu2022xlsr,conneau2021xlsr}, Whisper~\cite{radford2023whisper}, and MMS~\cite{pratap2024mms}. Together with multilingual datasets such as Common Voice~\cite{ardila2020commonvoice}, these models have improved transfer learning for resource limited Bengali speech recognition. However, dialectal Bengali has received focused attention only recently. The Ben-10 corpus~\cite{ben10_2025}, which contains more than 78 hours of speech from 394 speakers across ten regional dialects, shows that even strong foundation models such as Whisper large v3 perform poorly on dialectal speech that differs from the training data, both before and after fine tuning. Biswas \emph{et al.}~\cite{biswas2025unified} propose a WavLM based denoising and adaptation framework for dialectal Bengali, including Chittagonian and Sylheti, under simulated noise, and report large relative reductions in WER compared with wav2vec,2.0 and Whisper at low signal to noise ratios. Ridoy \emph{et al.}~\cite{ridoy2025adaptability} compare Whisper and Wav2Vec-BERT on standard Bangla and find that the self supervised encoder is both more accurate and more computationally efficient in resource limited settings. However, these studies do not address code switching, which motivates the need for a benchmark that brings dialect variation and code switching together in a single resource.
+
 
 \subsection{Code-Switching ASR}
-Code-switching---alternating between two languages within a conversation or even
-a single utterance---is pervasive in multilingual societies and especially common
-in informal Bangladeshi speech, where English words are routinely embedded in
-Bengali sentences. It is hard for ASR for several compounding reasons: the
-effective vocabulary spans two languages and, for Bengali--English, two scripts;
-code-switched utterances are rare in standard training corpora; and language
-switches interact with accent and acoustic variation, complicating both the
-acoustic and language-modelling components~\cite{yilmaz2018augmentation,
-sitaram2019survey}. Dedicated corpora have driven much of the progress in the
-field, most prominently the Mandarin--English SEAME corpus~\cite{lyu2010seame},
-while recent analysis shows that even large multilingual models handle
-code-switching unreliably unless given explicit code-switched
-supervision~\cite{winata2021multilingual}. For Indian languages, the MUCS~2021
-challenge~\cite{mucs2021} introduced Bengali--English and Hindi--English
-code-switching benchmarks, but its Bengali portion is restricted to standard
-(Dhaka) Bengali and contains no regional dialects. A useful property of the
-Bengali--English pair is that the two languages occupy disjoint Unicode ranges,
-so word-level language identification is almost exact from script alone, without
-a dedicated language-identification model. Architecturally, sequence-to-sequence
-models such as Whisper are well-suited to code-switching because their shared
-sub-word vocabulary~\cite{sennrich2016bpe} already covers both scripts and can
-emit mixed-script text in a single decoding pass, whereas monolingual CTC models
-such as MMS must commit to one output script and cannot represent code-switching
-at all. This work evaluates both paradigms in order to quantify that gap on
-dialectal Bengali.
+Code switching, where speakers alternate between two languages within a conversation or even within a single sentence, is common in multilingual communities. It is especially frequent in informal Bangladeshi speech, where English words are often inserted into Bengali sentences. This creates several challenges for ASR systems. First, the model must recognize words from two languages and, in the case of Bengali and English, two different writing systems. Second, code switched speech is still rare in standard ASR training datasets. Third, language switching often occurs together with accent, pronunciation, and acoustic variation, which makes both speech recognition and language modeling more difficult~\cite{yilmaz2018augmentation,sitaram2019survey}. Progress in code switched ASR has largely been supported by dedicated datasets, such as the Mandarin English SEAME corpus~\cite{lyu2010seame}. However, recent studies show that even large multilingual models do not handle code switching reliably unless they are trained with explicit code switched data~\cite{winata2021multilingual}. For Indian languages, the MUCS 2021 challenge~\cite{mucs2021} introduced Bengali English and Hindi English code switching benchmarks, but the Bengali data is limited to standard Dhaka Bengali and does not include regional dialects. One useful feature of Bengali English code switching is that the two languages use different Unicode ranges. This allows word level language identification to be performed almost directly from the script, without requiring a separate language identification model. From a modeling perspective, sequence to sequence models such as Whisper are better suited to this setting because their shared subword vocabulary~\cite{sennrich2016bpe} can represent both scripts and generate mixed script text in a single decoding process. In contrast, monolingual CTC models such as MMS are usually restricted to one output script and therefore cannot properly represent code switched speech. This work evaluates both modeling paradigms to measure this gap in dialectal Bengali ASR.
+
 
 \subsection{Automated Corpus Construction for Low-Resource ASR}
-Because manual transcription does not scale to many low-resource varieties,
-recent corpora are built with automated pipelines. GigaSpeech~2
-\cite{yang2025gigaspeech2} assembles a large multi-domain corpus for Thai,
-Indonesian and Vietnamese through automated web crawling, Whisper-based
-transcription, and iterative refinement, demonstrating that weakly supervised
-labels can replace human transcribers at scale. Complementary work uses synthetic
-speech and spectrogram augmentation to enlarge low-resource ASR training
-pools~\cite{dhahbi2025endtoend}. BanglaMix follows this automated
-philosophy but targets a previously uncovered setting---multi-dialect Bengali
-with English code-switching---and adds an LLM judge for borderline transcripts.
+Since manual transcription is difficult to scale for many low-resource language varieties, recent speech corpora increasingly rely on automated data construction pipelines. For example, GigaSpeech 2~\cite{yang2025gigaspeech2} builds a large multi-domain corpus for Thai, Indonesian, and Vietnamese using automated web crawling, Whisper-based transcription, and iterative refinement. This shows that weakly supervised labels can support large-scale corpus creation without relying entirely on human transcribers. Other studies have also used synthetic speech and spectrogram augmentation to increase the amount of training data for low-resource ASR~\cite{dhahbi2025endtoend}. AncholVox follows this automated approach, but focuses on a previously underexplored setting: multi-dialect Bengali speech with English code switching. It also adds an LLM-based judge to filter borderline or uncertain transcripts.
 
 \subsection{LLM-as-a-Judge for Data Quality}
-Using large language models (LLMs) as automatic evaluators has become common in
-natural-language processing, ranging from pairwise response
-judging~\cite{zheng2023judging,wang2023pandalm} to multi-dimensional quality
-scoring~\cite{fu2023gptscore}. Such judges are attractive precisely when
-human annotation is costly, and reference labels are scarce or noisy---as in
-low-resource dialectal ASR---although their reliability depends on prompt design
-and the capacity of the judging model. In this work, an LLM judge is used at two
-distinct stages. During \emph{dataset construction}, a single strong multilingual
-model (Qwen2.5~\cite{qwen2025}) scores borderline silver-standard transcripts
-along several quality dimensions and decides whether to retain them. During
-\emph{evaluation}, an ensemble of three open models---Mistral
-\cite{jiang2023mistral}, LLaMA~\cite{dubey2024llama}, and
-Gemma~\cite{team2024gemma}---provides an auxiliary, reference-free signal that
-complements word-level metrics (Section~\ref{sec:analysis}). Applying LLM judges
-to both quality control and evaluation for code-switched, low-resource ASR has,
-to the authors' knowledge, not been explored before.
+Large language models (LLMs) are increasingly used as automatic evaluators in natural language processing, including pairwise response judging~\cite{zheng2023judging,wang2023pandalm} and multi-dimensional quality scoring~\cite{fu2023gptscore}. These models are especially useful when human annotation is expensive and reference labels are limited or noisy, as in low-resource dialectal ASR. However, their reliability depends on careful prompt design and the capability of the judging model. In this work, we use LLM judges at two stages. During dataset construction, a strong multilingual model, Qwen2.5~\cite{qwen2025}, evaluates borderline silver-standard transcripts across several quality dimensions and decides whether they should be retained. During evaluation, an ensemble of three open models, Mistral~\cite{jiang2023mistral}, LLaMA~\cite{dubey2024llama}, and Gemma~\cite{gemmateam2025gemma3technicalreport}, provides an additional reference-free assessment that complements word-level metrics, as discussed in Section~\ref{sec:analysis}. To the best of our knowledge, using LLM judges for both quality control and evaluation in code-switched low-resource ASR has not been previously explored.
 
-\subsection{Positioning of This Work}
-Table~\ref{tab:relwork} summarizes representative Bengali and code-switching
-ASR resources along the dimensions most relevant to this work. Two gaps are
-clear. Standard-Bengali corpora and models~\cite{hasnat2007isolated,
-swarna2017survey,mandal2020e2e,kjartansson2018bengali} address neither
-dialect nor code-switching. The dialectal corpus Ben-10~\cite{ben10_2025} covers
-multiple dialects but no code-switching, while the MUCS task~\cite{mucs2021}
-covers code-switching but only in standard Bengali. General multilingual models
-\cite{babu2022xlsr,radford2023whisper,pratap2024mms} transfer to standard
-Bengali but degrade sharply on dialects and, for monolingual CTC models, cannot
-emit code-switched output at all. BanglaMix is, to our knowledge, the first
-resource to occupy the intersection: \emph{multi-dialect Bengali with natural
-English code-switching}.
+Qwen2.5 was selected because its open weights permit fixed, local inference:
+transcripts need not be sent to a commercial API, and the same model and prompt
+can be rerun by other researchers. This choice is operational rather than a
+claim that Qwen2.5 is superior to commercial judges or manual review. Moreover,
+the construction-stage judge receives text only; it assesses transcript
+plausibility and cannot verify acoustic alignment. The threshold cascade and
+the independent human sample are therefore essential safeguards rather than
+treating the LLM decision as ground truth.
+
+Recent multilingual systems provide additional context for the experimental
+scope. SeamlessM4T supports Bengali as an input speech language and is a
+relevant future cross-architecture baseline~\cite{seamlessm4t2023}. Canary-1B is
+a strong multilingual ASR model, but its released language set is limited to
+English, German, French, and Spanish and therefore does not provide a Bengali
+decoding condition~\cite{puvvada2024canary}. The present suite is consequently
+representative rather than exhaustive.
+
+
+\subsection{Comparison with Existing ASR Resources}
+Table~\ref{tab:relwork} summarizes representative Bengali and code-switching ASR resources based on the dimensions most relevant to this study. The comparison highlights two clear gaps in the existing literature. First, standard Bengali ASR corpora and models~\cite{hasnat2007isolated,swarna2017survey,mandal2020e2e,kjartansson2018bengali} mainly focus on standard speech and do not address either regional dialect variation or code switching. Second, existing specialized resources cover only one of these challenges at a time. The Ben-10 corpus~\cite{ben10_2025} includes multiple Bengali dialects but does not contain code-switched speech, while the MUCS task~\cite{mucs2021} provides Bengali English code-switching data only for standard Bengali. Although large multilingual models such as XLS-R, Whisper, and MMS~\cite{babu2022xlsr,radford2023whisper,pratap2024mms} support transfer to Bengali, their performance often drops on dialectal speech. In addition, monolingual CTC models cannot properly generate mixed-script code-switched output. AncholVox addresses this gap by focusing on the intersection of these two underexplored problems: multi-dialect Bengali speech and Bengali--English switching detected in silver transcripts. To the best of our knowledge, it is one of the first resources designed specifically for this setting.
+
 
 \begin{table*}[t]
-\caption{Comparative Summary of representative Bengali and code-switching ASR
-resources and models. ``CS'' indicates code-switching support; ``--'' denotes
-not applicable. BanglaMix is the first to combine multi-dialect Bengali with
-English code-switching.}
+\caption{Summary of representative Bengali and code-switching ASR resources and models. ``CS'' denotes code-switching support, and ``--'' indicates not applicable. AncholVox is, to our knowledge, one of the first resources to combine multi-dialect Bengali coverage with English switching detected in silver transcripts.}
 \label{tab:relwork}
 \centering\footnotesize
 \renewcommand{\arraystretch}{1.3}
 \begin{tabular}{@{}p{2.5cm}p{2.6cm}p{2.6cm}p{1.7cm}cp{1.0cm}p{3.4cm}@{}}
 \toprule
-\textbf{Work} & \textbf{Method / Model} & \textbf{Objective} & \textbf{Variety} & \textbf{CS} & \textbf{Hours} & \textbf{Key limitation} \\
+\textbf{Ref. } & \textbf{Method / Model} & \textbf{Objective} & \textbf{Variety} & \textbf{CS} & \textbf{Hours} & \textbf{Key limitation} \\
 \midrule
 Hasnat et al.~\cite{hasnat2007isolated} & GMM-HMM & Isolated-word Bengali ASR & Standard BN & No & -- & Lexicon-dependent; WER $>$50\%; no OOV handling \\
-Swarna et al.~\cite{swarna2017survey} & Survey (HMM/GMM/DNN) & Bengali phoneme recognition survey & Standard BN & No & -- & Survey; standard Bengali, no dialect or CS \\
+Swarna et al.~\cite{swarna2017survey} & Survey (HMM/DNN) & Bengali phoneme recognition survey & Standard BN & No & -- & Survey; standard Bengali, no dialect or CS \\
 Mandal et al.~\cite{mandal2020e2e} & End-to-end (CTC/attention) & Lexicon-free Bengali ASR & Standard BN & No & -- & Standard Bengali only; no dialect or CS \\
 Kjartansson et al.~\cite{kjartansson2018bengali} & OpenSLR-37 corpus & Read-speech benchmark & Standard BN & No & 100 & Read speech; no dialect, no code-switching \\
 MUCS~2021~\cite{mucs2021} & CS challenge corpus & Bengali--English CS-ASR & Standard BN & Yes & 16 & Standard Dhaka Bengali; no dialect \\
@@ -240,57 +176,62 @@ Ben-10~\cite{ben10_2025} & Whisper fine-tuning & Multi-dialect Bengali ASR & Dia
 XLS-R~\cite{babu2022xlsr} & wav2vec2 self-supervised & Multilingual transfer & Multilingual & No & -- & Standard Bengali via transfer; no dialect/CS \\
 Whisper~\cite{radford2023whisper} & Weakly-supervised seq2seq & Multilingual ASR & Multilingual & No & -- & $\sim$70\% WER on unseen Bengali dialects \\
 MMS~\cite{pratap2024mms} & CTC with adapters & 1000+ language ASR & Multilingual & No & -- & Monolingual output; cannot emit code-switching \\
-Ridoy et al.~\cite{ridoy2025adaptability} & Whisper vs.\ Wav2Vec-BERT & Low-resource Bangla model comparison & Standard BN & No & $\sim$90--100 & Standard Bangla only; no dialect or CS \\
+Ridoy et al.~\cite{ridoy2025adaptability} & Whisper vs.\ Wav2Vec-BERT & Low-resource Bangla model comparison & Standard BN & No & 90--100 & Standard Bangla only; no dialect or CS \\
 Biswas et al.~\cite{biswas2025unified} & WavLM denoising + adaptation & Noise-robust dialectal Bengali ASR & Dialectal BN & No & $\sim$20 & Dialectal but no code-switching; noise-focused \\
 GigaSpeech~2~\cite{yang2025gigaspeech2} & Automated crawl + transcribe + refine & Large-scale low-resource corpus & Th/Id/Vi & No & $\sim$30k & Not Bengali; no dialect or code-switching \\
 \midrule
-% \textbf{BanglaMix (this work)} & \textbf{Dataset + Whisper/CTC benchmark} & \textbf{Dialectal Bengali--English CS-ASR} & \textbf{Dialectal BN} & \textbf{Yes} & \textbf{131} & First multi-dialect Bengali with code-switching \\
+% \textbf{AncholVox (this work)} & \textbf{Dataset + Whisper/CTC benchmark} & \textbf{Dialectal Bengali--English CS-ASR} & \textbf{Dialectal BN} & \textbf{Yes} & \textbf{131} & First multi-dialect Bengali with code-switching \\
 \bottomrule
 \end{tabular}
 \end{table*}
 
 % =====================================================================
-\section{The BanglaMix Dataset Construction}
+\section{The AncholVox Dataset Construction}
 \label{sec:dataset}
-The BanglaMix dataset is created to study real-world Bengali speech that includes different regional dialects and natural English code-switching. The main goal is to collect speech that reflects how people actually speak in everyday situations. The dataset focuses on three key ideas: using real dialect speech, capturing natural code-switching, and building the dataset without manual transcription. All data is collected from social media using dialect-based search queries to ensure authentic regional speech instead of standard pronunciation. After collection, the audio is processed using automatic segmentation, transcription, and quality checking methods. This results in a large dataset that can be used to test and improve speech recognition systems for challenging real-world conditions.
+AncholVox is designed to study regional Bengali speech and Bengali--English
+switching detected in automatically generated transcripts. It combines
+dialect-targeted social-media collection with automatic segmentation,
+transcription, script-based labeling, and quality filtering. The search design
+increases the likelihood of retrieving informal regional speech, but neither a
+query label nor a silver transcript independently verifies a speaker's dialect
+or the words present in the audio. AncholVox is therefore presented as a large,
+auditable diagnostic dataset rather than a manually verified corpus.
 
-\subsection{Design Principles and Why They Matter}
-BanglaMix is built around three principles. First, \emph{dialectal authenticity}:
-the audio must contain genuine regional dialect, not standard Bengali spoken by
-someone from a region. This matters because region-name queries (for example,
-``Chittagong vlog'') mostly retrieve people \emph{from} a region speaking
-standard Bengali to a general audience; dialect-name queries instead surface
-content where creators deliberately use the dialect. Second, \emph{natural
-code-switching}: CS must arise spontaneously in informal speech rather than from
-scripted content, because scripted CS does not reflect real acoustic and
-lexical patterns. Third, \emph{scalability}: the pipeline must be fully
-automated so the dataset can grow without paid transcribers, which is essential
-for a low-resource language where annotation budgets are small.
 
-\subsection{Query Design}
-Search queries are the single most important lever for collecting authentic
-dialectal code-switched speech, because they determine \emph{which} creators are
-retrieved. As noted above, region-name queries surface standard-Bengali content,
-so this work instead uses \emph{dialect-name} queries combined with content
-genres in which spontaneous code-switching is most frequent. For each dialect,
-around a dozen queries are designed across five content angles, summarized in
-Table~\ref{tab:queries}. The rationale is that street interviews and live-reaction
-content are spontaneous and cannot sustain a fake accent, technology and campus
-content elicit English technical terms, and vlog content yields relaxed, mixed,
-informal speech. Quality filters exclude pre-2021 uploads and videos with
-negligible viewership.
+\subsection{Dataset Design Principles}
+AncholVox is built on three principles. First, dialect-name queries are used to
+increase regional coverage because region-name queries, such as ``Chittagong
+vlog,'' may retrieve standard Bengali intended for a broad audience. Second,
+genres likely to contain informal Bengali--English mixing are prioritized, and
+switching labels are subsequently derived from the silver transcripts. Third,
+the construction pipeline is automated so that the corpus can be expanded
+without requiring manual transcription of every clip. These principles guide
+collection; they do not replace acoustic or speaker-level verification.
+
+
+\subsection{Dialect-Aware Search Query Design}
+
+Search queries determine which creators and speech styles are retrieved.
+AncholVox therefore combines dialect-name queries with content genres likely to
+contain informal speech and English terms. For each regional label, around
+twelve queries are designed across the five categories in
+Table~\ref{tab:queries}. Street interviews and live reactions tend to contain
+unscripted responses, while technology, gaming, campus, and career content
+often contains English terminology. Vlogs add relaxed conversational speech.
+Videos uploaded before 2021 and videos with very low viewership are excluded.
+
 
 \begin{table}[t]
-\caption{Content angles used to design dialect-name search queries, and why each
-elicits authentic dialectal code-switching.}
+\caption{Content angles used to design dialect-name search queries and why each
+is likely to contain informal speech or Bengali--English mixing.}
 \label{tab:queries}
 \centering\small
 \begin{tabular}{p{2.4cm}p{5.0cm}}
 \toprule
-\textbf{Content angle} & \textbf{Why it elicits dialectal CS} \\
+\textbf{Content type} & \textbf{Reason for dialectal code-switching} \\
 \midrule
-Technology/phone review & Forces English technical terms within dialect speech \\
-Street interview/reaction & Spontaneous public responses; a fake accent cannot be sustained \\
+Technology/phone review & Frequently contains English technical terms \\
+Street interview/reaction & Often contains unscripted public responses \\
 Gaming / live stream & Live commentary with frequent English game terms \\
 Campus/career & Academic and job English mixed into regional speech \\
 Vlog / content creator & Relaxed informal speech with frequent CS \\
@@ -303,143 +244,164 @@ Algorithm~\ref{alg:pipeline} summarizes the end-to-end pipeline; each step is
 justified below.
 
 \begin{algorithm}[t]
-\caption{BanglaMix: From raw dialectal audio to a curated CS-ASR benchmark}
+\caption{AncholVox: From raw dialectal audio to a curated CS-ASR benchmark}
 \label{alg:pipeline}
-\scriptsize
+\footnotesize
 \begin{algorithmic}[1]
-
-\Statex \textbf{Input:} dialect-name queries $\mathcal{Q}$; VAD aggressiveness $a$; no-speech thresholds $\tau_{\text{lo}}{=}0.30,\ \tau_{\text{hi}}{=}0.60$; split ratio $80/10/10$
-\Statex \textbf{Output:} curated dataset $\mathcal{D}=(\mathcal{D}_{\text{tr}},\mathcal{D}_{\text{dev}},\mathcal{D}_{\text{te}})$
-
-\Statex \textit{\textbf{Step 1: Acquire and segment}}
-\State $\mathcal{R} \gets \Call{Download16k}{\mathcal{Q}}$ \Comment{yt-dlp + ffmpeg; shared dedup archive}
-\State $\mathcal{C} \gets \Call{VADSegment}{\mathcal{R}, a}$ \Comment{WebRTC VAD; 5--15\,s clips $\rightarrow 51{,}857$}
-
-\Statex \textit{\textbf{Step 2: Transcribe and detect code-switching}}
+\Statex \textbf{Input:} dialect-name queries $\mathcal{Q}$; VAD aggressiveness $a$; no-speech thresholds $\tau_{\text{lo}}{=}0.30$, $\tau_{\text{hi}}{=}0.60$; historical split target $\approx83/7/10$
+\Statex \textbf{Output:} curated dataset $\mathcal{D}=(\mathcal{D}_{\text{train}},\mathcal{D}_{\text{dev}},\mathcal{D}_{\text{test}})$
+\vspace{0.2em}
+\Statex \textbf{Step 1: Acquire and segment}
+\State $\mathcal{R} \gets \textsc{Download16k}(\mathcal{Q})$ \Comment{yt-dlp + ffmpeg; shared de-duplication archive}
+\State $\mathcal{C} \gets \textsc{VADSegment}(\mathcal{R}, a)$ \Comment{WebRTC VAD; 5--15 s clips $\rightarrow 52{,}020$}
+\vspace{0.2em}
+\Statex \textbf{Step 2: Transcribe}
 \ForAll{clip $c \in \mathcal{C}$}
-    \State $t_c \gets \Call{WhisperLargeV3}{c,\ \text{lang}{=}\text{bn}}$
-    \State $c.\textsc{cs} \gets \Call{ScriptCSDetect}{t_c}$ \Comment{Bengali vs.\ Latin Unicode ranges}
+    \State $t_c \gets \textsc{WhisperLargeV3}(c,\ \text{lang}{=}\text{bn})$
 \EndFor
-
-\Statex \textit{\textbf{Step 3: Silver-standard annotation (no human transcribers)}}
-\State $\mathcal{A} \gets \{c : \Call{nsp}{c} < \tau_{\text{lo}}\}$ \Comment{auto-accept $\rightarrow 39{,}772$}
-\State $\mathcal{M} \gets \{c : \tau_{\text{lo}} \le \Call{nsp}{c} < \tau_{\text{hi}}\}$ \Comment{borderline (middle band) $\rightarrow 8{,}712$}
+\vspace{0.2em}
+\Statex \textbf{Step 3: Detect code-switching}
+\ForAll{clip $c \in \mathcal{C}$}
+    \State Compute $n_{\mathrm{bn}}$, $n_{\mathrm{en}}$, $b$, and $\rho = n_{\mathrm{en}}/(n_{\mathrm{bn}}+n_{\mathrm{en}})$ from $t_c$ using Bengali and Latin scripts
+    \State $R_c \gets (n_{\mathrm{bn}}+n_{\mathrm{en}})\ge4 \land n_{\mathrm{bn}}\ge2 \land n_{\mathrm{en}}\ge1 \land b\ge1 \land 0.05\le\rho\le0.80$
+    \State $c.\textsc{CS} \gets \mathbf{1}\!\left[R_c\right]$
+\EndFor
+\vspace{0.2em}
+\Statex \textbf{Step 4: Silver-standard annotation}
+\State Define $\textsc{NSP}(c)$ as the Whisper large-v3 no-speech probability for clip $c$
+\State $\mathcal{A} \gets \{c : \textsc{NSP}(c) < \tau_{\text{lo}}\}$ \Comment{auto-accept $\rightarrow 39{,}772$}
+\State $\mathcal{M} \gets \{c : \tau_{\text{lo}} \le \textsc{NSP}(c) < \tau_{\text{hi}}\}$ \Comment{borderline band $\rightarrow 8{,}712$}
 \ForAll{$c \in \mathcal{M}$}
-    \State $d \gets \Call{Qwen2.5Judge}{t_c}$ \Comment{4 dimensions; accept/reject/uncertain}
-    \If{$d = \textsc{accept}$}
+    \State $d \gets \textsc{Qwen2.5Judge}(t_c)$ \Comment{4 yes/no criteria; ACCEPT/REJECT/UNCERTAIN}
+    \If{$d = \textsc{ACCEPT}$}
         \State $\mathcal{A} \gets \mathcal{A} \cup \{c\}$ \Comment{$+1{,}727$}
+    \Else
+        \State do not add $c$ to $\mathcal{A}$ \Comment{REJECT/UNCERTAIN clips conservatively discarded}
     \EndIf
 \EndFor
-
-\Statex \textit{\textbf{Step 4: Normalize transcripts}}
+\State \textbf{Final silver-standard clips:} $|\mathcal{A}|=41{,}499$
+\vspace{0.2em}
+\Statex \textbf{Step 5: Normalize transcripts}
 \ForAll{$c \in \mathcal{A}$}
-    \State $t_c \gets \Call{Normalize}{t_c}$ \Comment{NFC; variant lexicon; repetition collapse}
+    \State $t_c \gets \textsc{Normalize}(t_c)$ \Comment{release-time NFC and text cleanup}
 \EndFor
-
-\Statex \textit{\textbf{Step 5: Augment (training pool only)}}
-\State $\mathcal{G} \gets \Call{Augment}{\mathcal{A}}$ \Comment{speed, noise, pitch}
-
-\Statex \textit{\textbf{Step 6: Quality filter and leakage-safe split}}
-\State $\mathcal{A} \gets \Call{DropLowQuality}{\mathcal{A} \cup \mathcal{G}}$
-\State $(\mathcal{D}_{\text{tr}},\mathcal{D}_{\text{dev}},\mathcal{D}_{\text{te}}) \gets \Call{SourceStratSplit}{\mathcal{A},\ 80/10/10}$ \Comment{per-source; dialect-stratified}
-\State $\mathcal{D}_{\text{tr}} \gets \mathcal{D}_{\text{tr}} \cup \Call{PinAugToTrain}{\mathcal{G}}$
-
-\State \Return $\mathcal{D}$ \Comment{final curated dataset}
-
+\vspace{0.2em}
+\Statex \textbf{Step 6: Archive historical split and audit dependence}
+\State $(\mathcal{D}_{\text{train}},\mathcal{D}_{\text{dev}},\mathcal{D}_{\text{test}}) \gets \textsc{HistoricalSplit}(\mathcal{A})$ \Comment{not source-disjoint; repaired split frozen for future retraining}
+\State \textbf{Historical sizes:} $34{,}605/2{,}806/4{,}088$ \Comment{all reported model scores use this archive}
+\vspace{0.2em}
+\Statex \textbf{Step 7: Augment training split only}
+\State $\mathcal{G}_{\text{train}} \gets \textsc{Augment}(\mathcal{D}_{\text{train}})$ \Comment{speed $\times0.9/\times1.1$; noise (20 dB); pitch $\pm2$ semitones}
+\State $\mathcal{D}^{\text{aug}}_{\text{train}} \gets \mathcal{D}_{\text{train}} \cup \mathcal{G}_{\text{train}}$
+\State \textbf{Training clips after augmentation:} $60{,}936$
+\vspace{0.2em}
+\State \Return $\mathcal{D}$ \Comment{released dataset; $\mathcal{D}^{\text{aug}}_{\text{train}}$ used for model training}
 \end{algorithmic}
 \end{algorithm}
 
-\paragraph*{Step 1: acquisition and segmentation}
-Audio is downloaded at 16~kHz mono using \texttt{yt-dlp}~\cite{ytdlp} from
-social-media platforms (YouTube, TikTok, and Facebook), with a shared
-de-duplication archive so the same video is never collected twice. Long recordings are segmented into 5--15\,s clips using
-WebRTC voice-activity detection~\cite{webrtcvad}. Segmentation is necessary
-because raw social-media audio contains long non-speech regions, and fixed 5--15\,s
-clips match the input length that modern ASR models train on, which keeps
-both transcription and fine-tuning efficient. This step yields 51{,}857 clips.
 
-\paragraph*{Step 2: transcription and CS detection}
-Each clip is transcribed with Whisper large-v3~\cite{radford2023whisper} with the
-language forced to Bengali. Whisper large-v3 is chosen as the labeler because it
-is the strongest openly available multilingual model and therefore the best
-available proxy for a human transcriber on this hard data. Code-switching is
-detected directly from Unicode script ranges: Bengali (U+0980--U+09FF) and Latin
-(ASCII) occupy disjoint ranges, so word-level language identification is nearly
-exact without a dedicated model. Let $n_{\mathrm{bn}}$ and $n_{\mathrm{en}}$ be the number of Bengali- and
-Latin-script words in a clip, $b$ the number of language boundaries (adjacent
-words of different scripts), and $\rho = n_{\mathrm{en}}/(n_{\mathrm{en}}+
-n_{\mathrm{bn}})$ the English-word ratio. A clip is labeled code-switched when
+
+
+
+\paragraph*{Step 1: Data Acquisition and Segmentation}
+
+Audio is collected from social media platforms, including YouTube, TikTok, and Facebook, using yt-dlp. All audio is downloaded in 16 kHz mono WAV format. A shared de-duplication archive is used to ensure that the same video is not collected more than once. Since social media recordings often contain long silent or non-speech parts, each recording is divided into shorter 5--15 s speech clips using WebRTC voice activity detection. This step produces the audited total of 52{,}020 clips (165.23 hours). Language filtering after transcription retains 48{,}772 clips (155.08 hours), of which 48{,}484 fall below the upper no-speech threshold and enter the confidence cascade described below.
+
+\paragraph*{Step 2: Transcription}
+
+Each clip is transcribed using Whisper large-v3~\cite{radford2023whisper}, with the language setting forced to Bengali. It is used as a reproducible, openly available multilingual labeler; its output remains a noisy substitute for manual transcription in this difficult setting.
+
+\paragraph*{Step 3: Code-Switch Detection}
+
+Code-switching is detected using Unicode script information. Bengali words use the Bengali Unicode range (U+0980--U+09FF), while English words usually appear in Latin script. Since these scripts are separate, word-level language identification can be performed almost directly from the script, without using a separate language identification model.
+
+Let $n_{\mathrm{bn}}$ be the number of Bengali-script words, $n_{\mathrm{en}}$ be the number of Latin-script words, $b$ be the number of language boundaries between adjacent words of different scripts, and $\rho = n_{\mathrm{en}}/(n_{\mathrm{en}}+n_{\mathrm{bn}})$ be the English-word ratio. A clip is labeled as code-switched if it satisfies the following conditions:
 \begin{equation}
-(n_{\mathrm{bn}}{+}n_{\mathrm{en}}) \ge 4 \;\wedge\; n_{\mathrm{bn}} \ge 2 \;\wedge\;
-n_{\mathrm{en}} \ge 1 \;\wedge\; b \ge 1 \;\wedge\; 0.05 \le \rho \le 0.80 .
+\begin{aligned}
+(n_{\mathrm{bn}} + n_{\mathrm{en}}) \ge 4,\quad
+n_{\mathrm{bn}} \ge 2,\quad
+n_{\mathrm{en}} \ge 1,\\
+b \ge 1,\quad
+0.05 \le \rho \le 0.80 .
+\end{aligned}
+\label{eq:csrule}
 \end{equation}
-A stricter high-confidence subset additionally requires $n_{\mathrm{en}} \ge 2$
-and $0.10 \le \rho \le 0.70$. The lower bound on $\rho$ excludes isolated
-borrowed words and the upper bound excludes English-dominant clips, so that only
-genuinely mixed utterances are tagged; the same rule is applied to the model
-hypotheses when computing code-switch detection F1.
 
-\paragraph*{Step 3--4: silver-standard annotation with an LLM judge}
-Manual transcription of dialectal CS speech at scale is infeasible, so a
-two-stage silver-standard strategy is used. High-confidence transcripts
-(Whisper no-speech probability below $0.30$) are accepted directly, following
-evidence that high-confidence Whisper output is a usable training
-signal~\cite{gandhi2023whisper,yang2025gigaspeech2}; clips above $0.60$ are
-rejected as noise. The
-uncertain middle band is the hard case, and here a single strong multilingual
-judge (Qwen2.5~\cite{qwen2025}) scores each transcript on Bengali validity,
-code-switch naturalness, dialect authenticity, and absence of hallucination, and
-returns accept/reject/uncertain. A single high-capacity judge is used at this
-stage---rather than an ensemble---because the borderline set is large and a
-single strong model offers the best quality-per-compute trade-off; running it
-locally also avoids API cost and keeps the data private. After this stage,
-41{,}499 clips remain.
+A stricter high-confidence subset is also created by requiring $n_{\mathrm{en}} \ge 2$ and $0.10 \le \rho \le 0.70$. During automatic annotation, an additional conservative QC check excludes CS candidates with $\rho>0.65$ from automatic acceptance. Thus, 0.80 is the detector's broad labeling boundary, whereas 0.65 is the release-stage automatic-acceptance ceiling. The broad detector rule is applied to model outputs when computing CS-F1.
 
-\paragraph*{Step 5: normalization}
-Transcripts are cleaned with Unicode NFC normalization, removal of zero-width
-characters, URLs, hashtags, mentions, and emoji, digit normalization, repeated
-character collapse, and punctuation/whitespace cleanup. A second, evaluation-only
-step maps spelling variants of borrowed English words to a single canonical form
-using a curated lexicon of 272 entries (650 variant spellings). This is
-important because dialectal Bengali has \emph{no standardized orthography} for
-loanwords, so the same spoken word may be written in several valid ways. Without
-this mapping, the word error rate would be inflated by legitimate spelling
-variation rather than genuine recognition errors. The pipeline additionally
-maintains three supporting lexicons that encode dialect- and code-switch-specific
-knowledge: a list of about 5{,}700 known ASR hallucination and noise tokens, used
-to detect and remove corrupted transcripts; a list of about 18{,}900 valid
-dialectal Bengali word forms that are explicitly \emph{protected} from being
-normalized toward standard spellings, so genuine dialect vocabulary is preserved;
-and a list of about 3{,}700 common English words that supports the script-based
-identification of code-switched tokens. These lexicons make the otherwise generic
-normalization sensitive to the two phenomena---regional dialect and
-code-switching---that this dataset targets.
+\paragraph*{Step 4: Silver-Standard Annotation with an LLM Judge}
 
-\paragraph*{Step 6--7: augmentation, quality filter, and leakage-safe split}
-Audio augmentation (speed perturbation, additive noise, pitch shift) is applied
-to the training pool to improve robustness to acoustic variation, complementing
-spectrogram-level methods such as SpecAugment~\cite{park2019specaugment}. The data is
-then split at the \emph{source} level---all clips from one original video stay
-in one split---to prevent speaker and channel leakage, which would otherwise
-inflate test scores. The split is dialect-stratified, so every dialect appears in
-all three partitions. Augmented clips inherit their source and are pinned to
-training only when that source is in the training split, so augmentation never
-leaks a source across splits.
+Since large-scale manual transcription of dialectal code-switched speech is not practical, AncholVox uses a two-stage silver-standard annotation strategy. We define $\textsc{NSP}(c)$ as the Whisper large-v3 no-speech probability for clip $c$, used as a confidence proxy for speech presence and transcript reliability. Clips with $\textsc{NSP}(c)<\tau_{\mathrm{lo}}=0.30$ are retained automatically as high-confidence speech, following prior evidence that high-confidence Whisper transcripts can provide useful training labels~\cite{yang2025gigaspeech2}. Clips with $\textsc{NSP}(c)\ge\tau_{\mathrm{hi}}=0.60$ are rejected as low-confidence or non-speech clips. The remaining clips, with $0.30 \le \textsc{NSP}(c)<0.60$, are treated as borderline cases.
 
-\subsection{Statistics}
-Table~\ref{tab:dialects} lists the 15 dialects, and Fig.~\ref{fig:dist} shows the
-clip distribution, which is intentionally broad but naturally imbalanced,
-mirroring online content availability. Of the 51{,}857 segmented clips
-($\approx$164 hours of raw audio), 41{,}499 (131.2 hours) pass silver-standard
-annotation and constitute the released dataset---the remaining $\approx$33 hours
-are clips rejected by the no-speech threshold or the LLM judge;
-Table~\ref{tab:splits} reports its train/dev/test splits. The dataset's primary
-scale is its dialect breadth---15 varieties over 131 hours---while
-code-switching forms a deliberate \emph{natural-prevalence} minority (5.7\% of
-clips): English insertion is a spontaneous, in-the-wild phenomenon, and we
-capture it at its real frequency rather than artificially oversampling it. Code-switching is therefore treated as a distinct evaluation axis layered on top
-of broad dialect coverage, and CS-specific results (Section~\ref{sec:results})
-are reported on this naturally small subset accordingly.
+For the borderline set, Qwen2.5~\cite{qwen2025} evaluates each transcript using
+the same local Ollama-based prompt. Open weights make the decision rule
+reproducible while keeping transcripts off third-party APIs. The prompt asks
+four yes/no questions: whether the transcript is valid Bengali rather than
+hallucinated text, whether Bengali--English mixing is natural, whether it
+resembles dialectal or informal spoken Bengali, and whether it resembles speech
+rather than noise, repeated text, or song lyrics. The implementation returns
+\textsc{accept} when three or four criteria pass, \textsc{uncertain} for a
+two--two split, and \textsc{reject} when zero or one criterion passes. The
+parser derives this outcome from the four criterion values rather than trusting
+the model's self-reported overall label. Only
+\textsc{accept} clips enter the release.
+
+The stored pre-judge and final manifests make the cascade auditable. Retaining
+only $\textsc{NSP}<0.30$ would yield 39{,}772 clips, whereas accepting every
+borderline candidate would yield 48{,}484. Qwen2.5 retains 1{,}727 of the
+8{,}712 borderline clips (19.8\%) and excludes 6{,}985 (80.2\%), giving the
+41{,}499-clip final set. These counts quantify the judge's practical effect, but
+not its accuracy. The judge has no access to audio and cannot establish
+acoustic correctness; no superiority over a commercial LLM or manual review is
+claimed. The two-annotator study in Section~\ref{sec:validation} instead
+provides an independent estimate of residual silver-label noise.
+
+\paragraph*{Step 5: Transcript Normalization}
+
+The stored transcripts receive release-time cleaning, including Unicode NFC
+normalization, removal of zero-width characters, URLs, hashtags, mentions, and
+emojis, digit handling, and punctuation and whitespace cleanup. Scoring is a
+separate process. Reported primary WER/CER and all human-reference results use
+surface normalization only: they do not apply pronunciation-variant mapping or
+repetition collapse. WER-RC/CER-RC add only the stated repetition-collapse
+post-processing. An optional normalization routine maps 650 spelling variants
+to 271 curated borrowed-word entries, but it is used only for exploratory
+analysis and supplies none of the reported primary, WER-RC, or human-reference
+numbers.
+
+The pipeline also includes three supporting lexical resources: about 5{,}700
+known ASR hallucination and noise tokens for transcript filtering, about
+18{,}900 dialectal Bengali word forms protected from standardization, and about
+3{,}700 common English words used as evidence in script-aware token labeling.
+Their availability does not imply that optional variant mapping was applied to
+the reported scores.
+
+\paragraph*{Step 6: Historical Split and Leakage Audit}
+
+All reported predictions and model scores use the archived historical split of 34{,}605 training, 2{,}806 development, and 4{,}088 test clips. A subsequent artifact audit found that this split is not source-disjoint: 69 of the 101 inferred test source IDs also occur elsewhere in the retained corpus, affecting 3{,}772 test clips, and 326 exact-audio duplicate groups cross the historical test boundary. Missing historical train/dev manifests prevent reconstruction of every training assignment, but the observed overlap is sufficient to rule out a leakage-free generalization claim. We therefore retain the archived scores only as diagnostics. After an additional text-quality filter, the frozen repaired partition contains 29{,}224/3{,}855/3{,}297 original train/dev/test clips, with zero inferred-source or exact-audio overlap across partitions. No system in this paper has been retrained on it. Consequently, the paper does not yet provide a leakage-free model comparison; repaired-split retraining and complete metric regeneration remain required future experimental work.
+
+\paragraph*{Step 7: Training Augmentation}
+
+Audio augmentation is applied only to the historical training partition. The augmentation methods include speed perturbation ($\times0.9$ and $\times1.1$), additive noise at 20 dB, and pitch shifting by $\pm2$ semitones, which complement spectrogram-level methods such as SpecAugment~\cite{park2019specaugment}. Augmented clips keep the same parent identifiers and are not deliberately added to development or test. This prevents augmentation-created copies from being assigned across partitions, but it does not repair the pre-existing source and exact-audio overlap in the historical split. After augmentation, the historical training set contains 60{,}936 clips.
+
+\subsection{Dataset Statistics}
+
+Table~\ref{tab:dialects} presents the 15 regional labels included in AncholVox,
+and Fig.~\ref{fig:dist} shows their clip distribution. The audited construction
+record contains 52{,}020 segmented clips (165.23 hours). Language filtering
+retains 48{,}772 clips (155.08 hours), and 48{,}484 of these enter the
+no-speech/LLM confidence cascade. The final retained set contains 41{,}499 clips
+(131.2 hours). Table~\ref{tab:splits} reports its historical train,
+development, and test partitions.
+
+The main strength of the dataset is its breadth across 15 regional labels and
+131.2 hours of retained audio. The script-based rule identifies Bengali--English
+switching in 5.7\% of the silver transcripts. Because this label is derived
+from automatic text rather than direct acoustic annotation, 5.7\% describes
+the retained transcript distribution, not the verified prevalence of switching
+in the source speech. CS-specific results are reported on this smaller subset
+in Section~\ref{sec:results}.
+
 
 \begin{table}[t]
 \caption{Dialect coverage in the released dataset.}
@@ -470,17 +432,20 @@ Tangail & 1{,}112 & 3.8 \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=\columnwidth]{dialect_distribution.png}
-\caption{Clip distribution across the 15 dialects.}
+\includegraphics[width=0.86\textwidth]{dialect_distribution.png}
+\caption{Dialect distribution across the released dataset: (a) number of clips
+and (b) total duration in hours.}
 \label{fig:dist}
-\end{figure}
+\end{figure*}
 
 \begin{table}[t]
-\caption{Train/dev/test splits of the released (real, unaugmented) dataset.
+\caption{Historical train/dev/test counts used by the reported models.
 Audio augmentation expands the training split to 60{,}936 clips for the model
-training, dev, and test remain real and unaugmented.}
+training, while dev and test remain real and unaugmented. These counts do not
+describe a verified source-disjoint split; a repaired split is released for
+future retraining.}
 \label{tab:splits}
 \centering\footnotesize
 \begin{tabular}{@{}lrrrr@{}}
@@ -498,156 +463,152 @@ Total & 41{,}499 & 131.2 & 2{,}361 & 5.7 \\
 
 \subsection{Human Validation of Silver-Standard Labels}
 \label{sec:validation}
-Because the transcripts are silver-standard, we quantify their reliability against
-human reference. A bilingual annotator transcribed 61 randomly drawn test clips
-(2--6 per dialect, balanced across the code-switching axis) by listening to the
-audio; the human transcript is treated as the reference, and the silver label as
-the hypothesis. Overall agreement is WER~$0.70$ and CER~$0.39$.
-The large WER--CER gap is informative: at the character level, the labels are far
-closer to human transcription than the word-level figure suggests, reflecting the
-absence of a standardized orthography for these dialects---annotators and Whisper
-frequently choose different spellings of the same spoken word, which inflates WER
-without indicating a semantic error.
+As the released transcripts are silver-standard labels, we evaluate them against independent human transcriptions. Two human annotators listened to the same 100 test clips and transcribed the speech independently without access to each other's annotations. Both annotators completed all 100 clips. The silver transcript is treated as the hypothesis and each human transcript as a reference. Every score in this section, in Table~\ref{tab:validation}, and in Table~\ref{tab:humaneval} is produced by the same \texttt{primary\_normalize} routine that defines the primary condition of the silver-reference benchmark: surface cleaning only, with no pronunciation-variant mapping and no repetition collapse. Human-reference and silver-reference numbers are therefore measured under one identical scoring condition.
 
-Two patterns are consistent across the sample. First, code-switched labels are
-\emph{more} reliable than Bengali-only ones (WER $0.58$ vs.\ $0.74$): the embedded
-English tokens act as clear acoustic anchors that the transcription model captures
-well. Second, label quality varies by dialect (Table~\ref{tab:validation}):
-Sandwip, Kishoreganj, Sylhet, Khulna, and Old Dhaka are transcribed reliably
-(WER~$\le 0.54$, CER~$\le 0.34$), whereas Habiganj and Noakhali are the weakest
-(WER~$>1.0$, CER~$\approx 0.6$), driven by Whisper insertions and hallucination on
-their more divergent phonology. These figures bound the silver-label noise floor,
-contextualize the absolute error rates reported in Section~\ref{sec:results}, and
-motivate label-refinement directions (e.g., \ judge-guided self-training) for future
-work. Per-dialect estimates rest on small samples ($n=2$--$6$) and are therefore
-indicative rather than definitive.
+Against the first annotator, the silver labels obtain a corpus WER/CER of $0.73/0.44$; against the second annotator, they obtain $0.80/0.49$. These values estimate silver-label noise but should not be interpreted as model accuracy against a fully adjudicated gold reference.
+
+Across all 100 clips, the two human transcripts have a normalized exact-match rate of $7.0\%$. Using the first annotator as the reference, the second annotator has WER/CER of $0.60/0.38$; using the second annotator as the reference, the first annotator has WER/CER of $0.52/0.34$. The directional difference is expected because edit-rate denominators depend on the reference length. The low exact-match rate and moderate character-level disagreement reflect both genuine listening differences and legitimate orthographic variation in dialectal Bengali.
+
+The per-dialect results in Table~\ref{tab:validation} show substantial variation. The two annotators also differ in which dialects they find difficult, demonstrating that dialectal spelling and listening uncertainty contribute to the measured label noise. Since most dialects have only five to nine clips, these breakdowns are indicative rather than definitive. We use the silver labels as noisy supervision and for relative benchmarking, while the human transcripts provide an independent validation sample rather than an adjudicated gold set. Table~\ref{tab:datasetexamples} gives de-identified excerpts from this sample, illustrating both the retained code-switching spans and a clear silver-label failure.
 
 \begin{table}[t]
-\caption{Human validation of silver-standard labels on 61 test clips (human
-reference vs.\ silver hypothesis). Lower is better; $n$ is the number of clips per dialect.}
+\caption{Silver-label quality against two independent human references on the
+100-clip validation sample. Lower is better; $n_{\mathrm{A1}}$ and
+$n_{\mathrm{A2}}$ are the numbers of completed transcripts for Annotator 1 and
+Annotator 2.}
 \label{tab:validation}
 \centering\small
-\begin{tabular}{lrrr}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lrrrrrr}
 \toprule
-\textbf{Dialect} & \textbf{$n$} & \textbf{WER} & \textbf{CER} \\
+\textbf{Dialect} & \textbf{$n_{\mathrm{A1}}$} &
+\textbf{WER$_{\mathrm{A1}}$} & \textbf{CER$_{\mathrm{A1}}$} &
+\textbf{$n_{\mathrm{A2}}$} & \textbf{WER$_{\mathrm{A2}}$} &
+\textbf{CER$_{\mathrm{A2}}$} \\
 \midrule
-Sandwip     & 3 & 0.26 & 0.10 \\
-Kishoreganj & 5 & 0.46 & 0.25 \\
-Khulna      & 3 & 0.53 & 0.32 \\
-Old Dhaka   & 6 & 0.54 & 0.31 \\
-Sylhet      & 4 & 0.54 & 0.34 \\
-Narail      & 3 & 0.63 & 0.27 \\
-Barishal    & 5 & 0.72 & 0.39 \\
-Tangail     & 4 & 0.74 & 0.41 \\
-Rangpur     & 6 & 0.75 & 0.51 \\
-Narsingdi   & 3 & 0.76 & 0.38 \\
-Chittagong  & 4 & 0.80 & 0.40 \\
-Mymensingh  & 6 & 0.84 & 0.47 \\
-Comilla     & 2 & 0.92 & 0.44 \\
-Noakhali    & 3 & 1.04 & 0.59 \\
-Habiganj    & 4 & 1.06 & 0.60 \\
+Barishal    & 8 & 0.73 & 0.45 & 8 & 0.73 & 0.43 \\
+Chittagong  & 7 & 0.89 & 0.53 & 7 & 0.76 & 0.44 \\
+Comilla     & 5 & 0.94 & 0.48 & 5 & 0.86 & 0.47 \\
+Habiganj    & 7 & 1.00 & 0.66 & 7 & 0.89 & 0.56 \\
+Khulna      & 6 & 0.68 & 0.32 & 6 & 0.76 & 0.45 \\
+Kishoreganj & 8 & 0.58 & 0.32 & 8 & 0.79 & 0.42 \\
+Mymensingh  & 9 & 0.84 & 0.49 & 9 & 0.84 & 0.43 \\
+Narail      & 6 & 0.71 & 0.31 & 6 & 0.67 & 0.29 \\
+Narsingdi   & 6 & 0.76 & 0.43 & 6 & 0.81 & 0.44 \\
+Noakhali    & 5 & 1.09 & 0.64 & 5 & 0.76 & 0.42 \\
+Old Dhaka   & 8 & 0.60 & 0.37 & 8 & 0.86 & 0.70 \\
+Rangpur     & 8 & 0.75 & 0.54 & 8 & 0.83 & 0.63 \\
+Sandwip     & 5 & 0.38 & 0.35 & 5 & 0.85 & 0.68 \\
+Sylhet      & 6 & 0.43 & 0.31 & 6 & 0.88 & 0.72 \\
+Tangail     & 6 & 0.76 & 0.47 & 6 & 0.75 & 0.41 \\
 \midrule
-\textbf{Overall} & \textbf{61} & \textbf{0.70} & \textbf{0.39} \\
+\textbf{Overall} & \textbf{100} & \textbf{0.73} & \textbf{0.44} &
+\textbf{100} & \textbf{0.80} & \textbf{0.49} \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
-\subsection{Ethical and Legal Considerations}
-All audio is sourced from publicly available social-media content. To respect
-creators and platform terms, the released dataset will distribute segmented audio
-clips and transcripts for non-commercial research use, together with the source
-identifiers and timestamps so that the original content can be located and
-attribution preserved. Because the data is conversational and may contain
-personal opinions, no speaker identities, demographic labels, or contact
-information is collected or released, and the dataset is intended only for
-building and evaluating speech-recognition systems. Dialect coverage follows
-online content availability rather than population, so it is intentionally not a
-demographic sample; this imbalance is reported transparently
-(Fig.~\ref{fig:dist}) so that downstream users can weight or resample as needed.
+\begin{table*}[t]
+\caption{De-identified qualitative examples from the existing 100-clip,
+two-annotator validation sample. Excerpts are shortened and lightly romanized
+for compact presentation; they are illustrations rather than new annotations.}
+\label{tab:datasetexamples}
+\centering\scriptsize
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{@{}lp{1.45cm}p{4.0cm}p{4.0cm}p{3.25cm}@{}}
+\toprule
+\textbf{ID} & \textbf{Dialect} & \textbf{Silver excerpt} &
+\textbf{Independent-reference excerpt} & \textbf{What it illustrates} \\
+\midrule
+E1 & Rangpur &
+``assalamu alaikum to everyone guys, this is your boy \ldots welcome to my channel'' &
+``assalamu alaikum to everyone guys, this is your boy \ldots welcome to my channel'' &
+Long mixed-language span is retained, with minor Bengali spelling variation. \\
+E2 & Comilla &
+``I think Mainamati museum-e \ldots What's inside? Forest?'' &
+``I think Mainamati museum \ldots What's inside? Forest?'' &
+Natural intra-utterance switching and an English phrase embedded in Bengali. \\
+E3 & Barishal &
+``eta change hoye jabe; the day after tomorrow \ldots the day before'' &
+``eta change hoiya jabe; the day after tomorrow \ldots the day before'' &
+English temporal phrases are preserved despite dialectal spelling variation. \\
+E4 & Narsingdi &
+``emijmen prok ek grem holade prok'' &
+``this is an amusement park, a green holiday park'' &
+Clear silver-label failure, demonstrating why the corpus is not a gold standard. \\
+\bottomrule
+\end{tabular}
+\end{table*}
 
-Several further considerations apply. \emph{Consent and platform terms:} the
-source content is public, but its creators did not explicitly consent to research
-use; we therefore release the data strictly for non-commercial research, honor
-platform Terms of Service and copyright by distributing short derived segments
-with source identifiers rather than re-hosting whole videos, and we provide a
-contact-based \emph{takedown/opt-out} process so any creator can request removal
-of their content. \emph{Voice as personal data:} speech is biometric and
-potentially identifying, so we release no speaker names, handles, faces, or
-contact information, segment the audio into short clips that hinder the reconstruction of
-full recordings, and explicitly prohibit speaker-identification, surveillance, or
-re-identification uses in the accompanying license. \emph{Potential harms:} as
-with any ASR resource, downstream models could be misused or could underperform
-for less-represented dialects; we mitigate this through per-dialect reporting,
-transparent disclosure of label noise (Section~\ref{sec:validation}), and an
-intended-use statement limiting the dataset to building and evaluating ASR for
-these under-served varieties. A formal ethics board review was not required for
-the use of public, de-identified media under the host institution's policy, but
-the above safeguards were applied throughout.
+\subsection{Ethical and Legal Considerations}
+The source material is publicly accessible social-media content, but public accessibility alone does not establish permission to redistribute audio or eliminate creators' privacy interests. We therefore retain source identifiers and timestamps, omit speaker names, handles, faces, contact information, and demographic labels, and restrict the intended use to non-commercial ASR research. The corpus contains 1{,}007 source records: 36{,}967 clips in the general collection and 4{,}532 in the UK-diaspora collection. These counts describe collection domains, not population strata.
+
+No consented age, gender, socioeconomic, education, or urban--rural metadata are
+available, and we do not infer sensitive attributes from voices or online
+profiles. Consequently, AncholVox cannot support demographic subgroup-fairness
+claims. Platform visibility, search-query design, and internet access may
+overrepresent digitally connected, urban, younger, or diaspora creators; these
+characteristics are plausible selection mechanisms, not measured labels.
+Dialect coverage therefore reflects online availability rather than population
+prevalence. Fig.~\ref{fig:dist} reports the observable dialect imbalance so that
+users can apply weighting or resampling, while future consent-based collection
+should record self-reported demographic variables for a proper fairness audit.
+
+The release follows a rights-aware governance procedure. It provides a documented takedown and opt-out channel, prohibits speaker identification, surveillance, and re-identification, and records provenance at the source level.
+
+We state the current clearance status explicitly, because describing a governance procedure is not the same as having completed it. Three determinations are treated as blocking for any public redistribution of audio: institutional confirmation of whether formal ethics review is required, legal or institutional review of the redistribution basis for each source platform and content category, and a recorded source-level allow/remove decision. At the time of writing these three determinations are pending, and they are tracked with named owners and dated evidence in the \texttt{ETHICS\_AND\_DATA\_GOVERNANCE.md} register released with the code.
+
+Neither the public accessibility of the source material nor the non-commercial licence we attach to the compilation authorizes redistribution of third-party social-media audio; only those determinations can. Until they are recorded, the audio release is provisional and the intended distribution is the metadata-only fallback: source pointers, timestamps, clip-level split manifests with checksums, transcripts where permitted, and reproducible processing code, without hosted audio. If review later declines a source, that source is removed under a versioned removal log so mirrors can honour the decision.
+
+These safeguards do not remove all risk: speech is potentially identifying, creators did not provide study-specific consent, and models may perform unevenly across dialects. We therefore report these limitations explicitly, provide per-dialect results, and maintain a removal process throughout the lifetime of the resource.
 
 % =====================================================================
 \section{ASR Models and Fine-Tuning}
 \label{sec:models}
-This work evaluates three model families, chosen to cover the two dominant ASR
-paradigms and a range of pre-training regimes.
+This work evaluates three ASR model families. These models are selected to represent the two main ASR approaches and different types of pre-training.
 
-\paragraph*{Whisper (sequence-to-sequence)}
-Whisper~\cite{radford2023whisper} is an encoder--decoder transformer trained on
-680k hours of weakly supervised multilingual audio. It is central to this work
-because its sub-word vocabulary contains both Bengali and Latin tokens so that it can
-emit mixed-script (code-switched) output in a single decoding pass---a natural
-fit for the task. While convolution-augmented architectures such as the
-Conformer~\cite{gulati2020conformer} are also competitive for ASR, Whisper's
-shared multilingual vocabulary makes it especially suited to code-switching.
-The fine-tuned models use Whisper-small (244M parameters),
-which is feasible to train on modest hardware while still benefiting from
-large-scale pre-training. All inference forces Bengali transcription.
 
-\paragraph*{Meta MMS (CTC, multilingual)}
-MMS~\cite{pratap2024mms} is a CTC model covering 1{,}000+ languages with
-per-language adapters. It is included as a strong multilingual zero-shot
-baseline; because its output vocabulary is monolingual Bengali, it cannot emit
-English script, which makes it a useful contrast for measuring how much
-code-switching specifically hurts.
+\paragraph*{Whisper (Sequence-to-Sequence)}
 
-\paragraph*{wav2vec2-XLS-R (CTC, self-supervised)}
-wav2vec2-XLS-R-300M~\cite{babu2022xlsr} is pre-trained on 436k hours of
-multilingual audio. A Bengali-fine-tuned checkpoint is used as a zero-shot
-baseline, and it is additionally fine-tuned on BanglaMix to represent the CTC
-paradigm under the same training data as Whisper.
+Whisper~\cite{radford2023whisper} is an encoder-decoder transformer model trained on 680k hours of weakly supervised multilingual audio. It is important for this work because its subword vocabulary includes both Bengali and Latin-script tokens. This allows Whisper to generate mixed-script, code-switched output in a single decoding step, making it well suited for Bengali English code-switching. Although convolution-augmented models such as Conformer~\cite{gulati2020conformer} are also strong for ASR, Whisper is especially useful here because of its shared multilingual vocabulary. For fine-tuning, we use Whisper-small, which has 244M parameters. This model is practical to train on modest hardware while still benefiting from large-scale pre-training. During inference, Bengali transcription is forced for all Whisper models.
 
-\paragraph*{Fine-tuning procedure}
-Whisper is fine-tuned with the Hugging Face
-Transformers~\cite{wolf2020transformers} and Datasets~\cite{lhoest2021datasets}
-libraries using the Adam optimizer~\cite{kingma2015adam}: learning rate
-$10^{-5}$, effective batch size 16, three epochs, 500 warm-up steps, with the
-best checkpoint selected by development WER. For the CTC model, a character vocabulary
-covering Bengali, Latin, and common punctuation is built from the training
-transcripts, the CTC head is reinitialized, and the encoder is fine-tuned at
-learning rate $10^{-4}$ for three epochs. All fine-tuning and benchmark
-inference (zero-shot baselines and fine-tuned systems) run on a single
-NVIDIA~A100-SXM4-40GB GPU, whereas the one-time silver-standard transcription of all clips
-with Whisper~large-v3 was performed on a CPU workstation (Intel~Core~i9-14900,
-24~cores, 32~GB RAM). The CTC model is trained to minimize
-the negative log-likelihood marginalized over all alignments $\pi$ that collapse
-to the target $y$,
+\paragraph*{Meta MMS (CTC, Multilingual)}
+
+MMS~\cite{pratap2024mms} is a CTC-based multilingual ASR model that supports more than 1{,}000 languages through language-specific adapters. We include it as a strong multilingual zero-shot baseline. However, its Bengali output vocabulary is monolingual, so it cannot generate English-script words. This makes MMS useful for comparison, because it helps show how much code-switching affects models that are not designed to produce mixed-script output.
+
+
+\paragraph*{wav2vec2-XLS-R (CTC, Self-Supervised)}
+
+wav2vec2-XLS-R-300M~\cite{babu2022xlsr} is a self-supervised multilingual speech model pre-trained on 436k hours of audio. We use a Bengali fine-tuned checkpoint as a zero-shot baseline. We also fine-tune the model on AncholVox so that it can be compared with Whisper using the same training data. This model represents the CTC-based ASR approach in our experiments.
+
+Together, these systems cover multilingual encoder--decoder and CTC paradigms,
+monolingual versus mixed-script output vocabularies, and zero-shot versus
+in-domain adaptation. They do not constitute an exhaustive leaderboard.
+SeamlessM4T is Bengali-capable and would be a useful future comparison, whereas
+the released Canary-1B vocabulary does not include Bengali
+\cite{seamlessm4t2023,puvvada2024canary}. We therefore restrict conclusions to
+the evaluated model set.
+
+
+\paragraph*{Fine-tuning Setup}
+Whisper is fine-tuned using the Hugging Face Transformers~\cite{wolf2020transformers} and Datasets~\cite{lhoest2021datasets} libraries with the Adam optimizer~\cite{kingma2015adam}. We use a learning rate of $10^{-5}$, an effective batch size of 16, three training epochs, and 500 warm-up steps. The best checkpoint is selected based on development WER. For the CTC model, we build a character vocabulary from the training transcripts, covering Bengali, Latin characters, and common punctuation. The CTC output head is reinitialized, and the encoder is fine-tuned for three epochs with a learning rate of $10^{-4}$. All fine-tuning and benchmark inference, including both zero-shot and fine-tuned systems, are run on a single NVIDIA~A100-SXM4-40GB GPU. The one-time silver-standard transcription of all clips using Whisper large-v3 is performed on a CPU workstation with an Intel~Core~i9-14900 processor, 24 cores, and 32~GB RAM.
+
+The CTC model is trained by minimizing the negative log-likelihood over all possible alignments $\pi$ that collapse to the target sequence $y$:
 \begin{equation}
-\mathcal{L}_{\text{CTC}} = -\log \!\!\sum_{\pi \in \mathcal{B}^{-1}(y)} \prod_{t} p(\pi_t \mid x)
+\mathcal{L}_{\text{CTC}} = -\log \sum_{\pi \in \mathcal{B}^{-1}(y)} \prod_{t} p(\pi_t \mid x)
 \end{equation}
-where $\mathcal{B}$ is the CTC collapsing function, whereas Whisper is trained
-with the standard token-level cross-entropy of its decoder. Key
-hyperparameters are listed in Table~\ref{tab:hparams}. Fig.~\ref{fig:train}
-shows that all
-Whisper variants converge within about 2k steps; the CS\_ONLY ablation runs for
-fewer steps because it uses only the roughly 4.5k code-switched clips.
+where $\mathcal{B}$ is the CTC collapsing function. In contrast, Whisper is trained using the standard token-level cross-entropy loss of its decoder. The main hyperparameters are reported in Table~\ref{tab:hparams}. Fig.~\ref{fig:train} shows that all Whisper variants converge within about 2k steps. The CS\_ONLY configuration runs for fewer steps because it uses only the approximately 4.5k code-switched clips.
 
-\begin{figure}[t]
+
+\begin{figure*}[t]
 \centering
-\includegraphics[width=\columnwidth]{training_curves.png}
-\caption{Training loss (left) and development WER (right) during fine-tuning.
-The development WER is the raw training-time value and is higher than the final
-normalized test WER in Section~\ref{sec:results}.}
+\includegraphics[width=0.86\textwidth]{training_curves.png}
+\caption{(a) Training loss and (b) development WER during fine-tuning.
+Development WER follows the training-time evaluation pipeline and is not
+directly comparable to the separately reported test WER-RC condition.}
 \label{fig:train}
-\end{figure}
+\end{figure*}
 
 \begin{table}[t]
 \caption{Fine-tuning hyperparameters for the two trained model families.}
@@ -669,26 +630,33 @@ Model selection & best dev WER & best dev WER \\
 \end{tabular}
 \end{table}
 
-\paragraph*{Training subset ablation}
-To isolate the contribution of each data type, three Whisper variants are
-trained: BN\_ONLY (dialect-only clips), CS\_ONLY
-(code-switched clips only), and ALL (both). All three share the same
-base model, procedure, and test set, so any difference is attributable to the
-training data composition.
+\paragraph*{Comparative Training Configurations}
+
+We train three Whisper variants: BN\_ONLY, which uses only clips whose silver transcript is Bengali-only; CS\_ONLY, which uses only clips whose silver transcript is code-switched; and ALL, which uses both. The base model, optimizer settings, and historical test set are shared, but the configurations have substantially different sample sizes, lexical coverage, and numbers of optimization steps. Their results therefore compare practical training recipes; they do not isolate the causal effect of training-data composition.
+
 
 % =====================================================================
 \section{Experimental Setup}
 \label{sec:setup}
 
-This section explains how the experiments are conducted to evaluate the proposed models. It describes the evaluation metrics, baseline systems, and statistical testing methods. The main goal is to fairly measure model performance on dialectal and code-switched speech. Different metrics are used to capture different types of errors, including word-level errors, character-level errors, and code-switching errors. Standard baseline models are used for comparison, and statistical tests are applied to ensure that the results are reliable.
+This section defines the evaluation metrics, scoring conditions, baseline
+systems, and statistical tests used for dialectal and code-switched Bengali
+speech.
 
-\subsection{Metrics and Why Each is Used}
 
-We use Word Error Rate (WER) and Character Error Rate (CER) as the main evaluation metrics. CER is more important in this work because dialectal Bengali does not have a fixed spelling system. Because of this, WER can wrongly penalize correct answers that are just spelled differently, while CER better reflects how accurately the speech is recognized.
+\subsection{Evaluation Metrics}
 
-WER is further divided into WER-BN and WER-EN, which measure errors separately for Bengali and English words. This helps us understand where the model performs well or poorly. We also use Mixed Error Rate (MIX-ER), which checks whether both word meaning and script (Bengali or English) are correctly recognized together. In addition, Code-Switch Detection F1 (CS-F1) is used to measure whether the model can correctly detect if code-switching is present in the output.
+We use Word Error Rate (WER) and Character Error Rate (CER) as the main evaluation metrics. Because the benchmark references are automatic silver labels, these scores measure surface agreement with the silver reference, not definitive transcription accuracy. CER is especially important in this work because dialectal Bengali does not have a standardized spelling system. As a result, WER may penalize valid transcriptions that use different spellings for the same spoken word, while CER measures character-level agreement with the same noisy reference.
 
-Before evaluation, all outputs are normalized using the same rules described in Section~\ref{sec:dataset}, including removing repeated or noisy text patterns. Standard evaluation tools are used for all calculations~\cite{jiwer,evaluate2022}.
+To characterize code-switched speech, we report WER separately for Bengali-script and English-script reference words within the 176 silver-labelled code-switched clips (WER-BN-CS and WER-EN-CS). These are not scores for Bengali-only or English-only clips. Both are computed on the same code-switched subset, so they share a scope with the language-balanced WER (LB-WER) defined as the unweighted mean
+\begin{equation}
+\text{LB-WER}=\tfrac{1}{2}(\text{WER-BN-CS}+\text{WER-EN-CS}).
+\end{equation}
+Keeping all three quantities on one subset is what makes the identity above hold in the reported tables; computing the components corpus-wide and the mean on the CS subset would combine incompatible scopes. LB-WER gives the two scripts equal influence despite unequal token counts; it does not test a joint word-and-language label.
+
+Code-Switch Detection F1 (CS-F1) measures whether the hypothesis contains both Bengali and English according to the script-based detector. Unlike the metrics above, CS-F1 is a \emph{clip-level binary classification} score evaluated over the entire test set: all 4{,}088 clips are classified, of which 176 are code-switched positives and 3{,}912 are negatives. Precision therefore depends on false positives raised on Bengali-only clips, which is the intended behaviour --- a system that emits spurious Latin tokens everywhere should be penalized. CS-F1 is thus not restricted to the 176-clip subset, even though its recall term and the confidence intervals we report are governed by that small positive count.
+
+We distinguish two scoring conditions. The \emph{primary} condition applies conventional surface normalization (Unicode normalization, case handling, punctuation removal, and whitespace cleanup) while retaining every repeated character and word, so decoder insertion errors remain in WER and CER. The \emph{WER-RC/CER-RC} condition additionally collapses excessive character and consecutive-word repetitions and is reported as explicit system post-processing. All models use the same procedure within each condition.
 
 Formally, WER is calculated using substitutions, deletions, and insertions:
 
@@ -697,6 +665,7 @@ Formally, WER is calculated using substitutions, deletions, and insertions:
 \end{equation}
 
 where $S$, $D$, and $I$ represent substitution, deletion, and insertion errors, and $N$ is the total number of words.
+WER can exceed $1.0$ when insertion errors are large; in this work, that happens on a small number of hallucination-heavy zero-shot outputs, so values above $1.0$ are expected and do not indicate a scoring bug.
 
 CER is calculated in the same way but at the character level:
 
@@ -704,9 +673,7 @@ CER is calculated in the same way but at the character level:
 \text{CER} = \frac{S_c + D_c + I_c}{N_c}
 \end{equation}
 
-Here, CER is more reliable for dialectal speech because spelling can vary a lot even when the pronunciation is correct.
-
-WER-BN and WER-EN measure errors separately for Bengali-script words and English-script words. MIX-ER checks whether both the word and its language (Bengali or English) are correctly predicted.
+CER complements WER because dialectal spellings may differ even when their character sequences remain similar; it is not treated as a replacement for human-reference evaluation.
 
 For code-switch detection, we treat it as a yes/no problem: whether code-switching appears in the output or not. We use Precision, Recall, and F1 score:
 
@@ -726,78 +693,128 @@ Finally, English-word survival (EN-Surv) measures how many English words in the 
 
 where $\mathcal{P}$ is the set of code-switched (reference, hypothesis) pairs.
 
+In the discussion below, EN-Surv is our primary code-switching metric because it directly measures English-token retention. WER-CS, WER-BN-CS, WER-EN-CS and LB-WER are reported as supporting diagnostics computed on the smaller 176-clip code-switched test subset; CS-F1 is a detection score over the whole 4{,}088-clip test set, and only its 176 positives limit the precision of its recall term.
+
 \subsection{Baselines}
 
-We compare our method with four zero-shot baseline models. These include Whisper-small (used as a base model), Whisper large-v3 (the strongest open ASR model), MMS-1B, and wav2vec2-XLS-R-BN, which is trained on standard Bengali speech.
+We compare our method with four zero-shot baseline models. These include
+Whisper-small (used as a base model), Whisper large-v3 (the largest evaluated
+Whisper checkpoint), MMS-1B, and wav2vec2-XLS-R-BN, which is trained on standard
+Bengali speech.
+
+Whisper large-v3 also generated the silver labels, so its 0.930 evaluation WER
+requires an artifact-level explanation. The two relevant comparisons are
+distinct. First, treating each archived construction-time transcript as the
+reference and the paired evaluation-time large-v3 output as the hypothesis
+gives 0.927 WER. Second, comparing the same evaluation-time outputs with the
+stored silver references gives 0.930 WER. By contrast, construction-time
+transcripts and stored silver references differ by only 0.005 WER after final
+text cleaning.
+
+The current source paths are materially different: construction defaults to
+faster-whisper/CTranslate2 large-v3 with beam size 1,
+\texttt{condition\_on\_previous\_text=False}, word timestamps, and no VAD;
+benchmark inference uses Hugging Face Transformers, batches of 16, forced
+Bengali transcription, and a 128-new-token cap. Current scripts record package
+versions, requested and resolved revisions where available, decoding metadata,
+and audio SHA-256 values on new runs. The archived rows contain none of those
+fields, however, so neither historical model revision nor historical software
+versions can be recovered. Present local WAV hashes likewise cannot prove the
+bytes used in remote historical inference. Artifact hashes and the precise
+known/unknown provenance fields are released in
+\texttt{REFERENCE\_PIPELINE\_PROVENANCE.md}. The discrepancy therefore remains
+unresolved and is not treated as a self-reproduction check.
 
 \subsection{Significance Testing}
 
-To ensure results are reliable, we use a paired bootstrap test with 10,000 resamples over the test set. For each sample, we compute WER and then estimate confidence intervals. This method is appropriate because all models are tested on the same dataset, making the comparison fair and consistent.
+To quantify uncertainty, we use two-sided paired bootstrap tests~\cite{berg2012empirical} with 10{,}000 clip-level resamples. For each resample, corpus WER is recomputed from the summed edit and reference-word counts. The two-sided $p$-value is twice the smaller bootstrap tail probability around zero, with a plus-one Monte Carlo correction; percentile intervals provide 95\% confidence intervals. Tests use a fixed seed and are reported separately for primary WER and WER-RC. Clips cut from the same or related source videos are not statistically independent, so clip resampling can understate uncertainty. The released analysis also reports exploratory source-video-cluster resampling, but inferred source IDs do not establish speaker independence and the contaminated historical split remains unresolved. We consequently treat all significance tests involving fine-tuned systems as diagnostic rather than as generalization evidence.
+
 
 % ==================================================================
 \section{Results}
 \label{sec:results}
 
-Table~\ref{tab:main} summarizes the main experimental results, while Fig.~\ref{fig:wer} presents an overall comparison of word error rate (WER) across all evaluated models. The results indicate clear performance differences between zero-shot models, task-adapted systems, and the proposed approach under dialectal and code-switched speech conditions.
+Table~\ref{tab:main} and Fig.~\ref{fig:wer} compare zero-shot and task-adapted
+systems under both primary and repetition-collapsed scoring.
 
 \begin{table*}[t]
-\caption{Main results on the BanglaMix test set (lower is better except CS-F1).
-\best{Bold green} marks the best overall system; ``--'' denotes a metric not
-applicable to a monolingual CTC model.}
+\caption{Agreement with the AncholVox silver references on the historical test set. WER, WER-RC and CER
+are corpus-wide over all 4{,}088 test clips; WER retains all repetitions, while
+WER-RC applies explicit repetition-collapse post-processing. WER-BN-CS, WER-EN-CS,
+LB-WER and WER-CS are all scoped to the same 176 code-switched test clips, so
+LB-WER is exactly the equal-weight mean of the WER-BN-CS and WER-EN-CS columns in the
+same row. CS-F1 is a clip-level detection score over all 4{,}088 clips (176
+positives). Bold numeric values are column minima (or the maximum for CS-F1);
+the bold model name identifies the joint-data Whisper system.}
 \label{tab:main}
-\centering\small
-\begin{tabular}{llrrrrrrr}
+\centering\footnotesize
+\renewcommand{\arraystretch}{1.35}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrrrrrr}
 \toprule
-& \textbf{Model} & \textbf{WER} & \textbf{CER} & \textbf{WER-BN} & \textbf{WER-EN} & \textbf{MIX-ER} & \textbf{WER-CS} & \textbf{CS-F1} \\
+\textbf{Model} & \textbf{WER} & \textbf{WER-RC} & \textbf{CER} &
+\textbf{WER-BN-CS} & \textbf{WER-EN-CS} & \textbf{LB-WER} &
+\textbf{WER-CS} & \textbf{CS-F1} \\
 \midrule
 \multicolumn{9}{l}{\textit{Zero-shot baselines}}\\
-& Whisper-small      & 1.07 & 1.02 & 1.07 & 1.26 & 1.15 & 1.02 & 0.00 \\
-& Whisper large-v3   & 0.91 & 0.76 & 0.92 & 1.08 & 0.98 & 0.80 & 0.14 \\
-& MMS-1B             & 0.99 & 0.57 & 0.99 & 1.11 & --   & 0.94 & 0.04 \\
-& wav2vec2-XLS-R-BN  & 0.96 & 0.62 & 0.96 & 1.03 & --   & 0.94 & 0.04 \\
+Whisper-small      & 1.142 & 1.066 & 1.031 & 1.000 & 1.463 & 1.232 & 1.133 & 0.000 \\
+Whisper large-v3   & 0.930 & 0.910 & 0.757 & \best{0.818} & 1.106 & 0.962 & \best{0.818} & 0.144 \\
+MMS-1B             & 0.989 & 0.990 & 0.571 & 1.000 & 1.131 & 1.066 & 0.940 & 0.041 \\
+wav2vec2-XLS-R-BN  & 0.963 & 0.963 & 0.622 & 0.964 & 1.039 & 1.001 & 0.935 & 0.044 \\
 \midrule
-\multicolumn{9}{l}{\textit{CTC fine-tuned on BanglaMix}}\\
-& wav2vec2           & 0.86 & 0.49 & 0.86 & 1.00 & 0.97 & 0.88 & 0.14 \\
+\multicolumn{9}{l}{\textit{CTC fine-tuned on AncholVox}}\\
+wav2vec2           & \best{0.861} & 0.861 & \best{0.493} & 0.942 & 0.996 & 0.969 & 0.877 & 0.135 \\
 \midrule
-\multicolumn{9}{l}{\textit{Whisper fine-tuned on BanglaMix (ablation)}}\\
-& BN\_ONLY (A)       & 0.80 & 0.49 & 0.80 & 1.00 & 0.94 & 0.82 & 0.01 \\
-& CS\_ONLY (B)       & 0.88 & 0.55 & 0.89 & \textbf{0.76} & \textbf{0.82} & 0.81 & \textbf{0.28} \\
-& \best{ALL (proposed)} & \best{0.80} & \best{0.49} & \best{0.80} & \best{0.93} & \best{0.91} & \best{0.82} & \best{0.19} \\
+\multicolumn{9}{l}{\textit{Whisper comparative training configurations}}\\
+BN\_ONLY (A)       & 0.923 & \best{0.800} & 0.575 & 1.047 & 0.994 & 1.021 & 0.933 & 0.011 \\
+CS\_ONLY (B)       & 1.065 & 0.883 & 0.679 & 1.105 & \best{0.737} & \best{0.921} & 0.963 & \best{0.276} \\
+\best{ALL (joint data)} & 0.964 & 0.801 & 0.597 & 1.106 & 0.902 & 1.004 & 0.959 & 0.192 \\
 \bottomrule
 \end{tabular}
+}
 \end{table*}
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=\columnwidth]{wer_comparison.png}
-\caption{Word error rate across all models. Fine-tuned systems are clearly
-separated from zero-shot baselines.}
+\includegraphics[width=0.90\textwidth]{wer_comparison.png}
+\caption{Surface-normalized WER (repetitions retained) and WER-RC after
+explicit repetition-collapse post-processing. The large Whisper-specific gap
+shows why the two conditions must be reported separately.}
 \label{fig:wer}
-\end{figure}
+\end{figure*}
 
-\paragraph*{Performance of zero-shot models}
-Zero-shot models show limited robustness under dialectal and code-switched conditions. In particular, Whisper large-v3 achieves a WER of 0.91 despite being trained on large-scale multilingual data (680k hours). Whisper-small yields a higher WER of 1.07. These observations suggest that large-scale multilingual pre-training alone may not be sufficient for reliable generalization to dialectal and code-switched Bengali speech.
+The zero-shot models show limited silver-reference agreement: Whisper large-v3
+obtains 0.930 primary WER and Whisper-small obtains 1.142. On the historical
+split, joint-data Whisper scores 0.964 and fine-tuned wav2vec2 has the lowest
+primary WER, 0.861. These differences are diagnostic associations with the
+training recipes and cannot establish leakage-free adaptation gains.
 
-\paragraph*{Effect of task-specific fine-tuning}
-Fine-tuning on BanglaMix leads to noticeable improvements in performance. Whisper-small reduces WER from 1.07 to 0.80 and CER from 1.02 to 0.49, corresponding to an approximate 25\% relative reduction in WER. This indicates that dataset-specific adaptation may play an important role beyond model scale for this task.
-
-\paragraph*{Overall system performance}
-The proposed ALL configuration achieves the most balanced performance across evaluation metrics, with a WER of 0.80 and CER of 0.49. It outperforms all zero-shot baselines and the fine-tuned wav2vec2 model (0.86 WER), with statistical significance at $p < 0.001$ (paired bootstrap; Section~\ref{sec:analysis}). Compared with Whisper large-v3, consistent improvements are observed across all reported error metrics. However, the difference between ALL and the BN\_ONLY configuration is not statistically significant in terms of overall WER ($p = 0.54$), suggesting that gains may primarily arise from improved handling of code-switching rather than general recognition accuracy.
-
-\paragraph*{Ablation analysis}
-The ablation results indicate trade-offs between overall recognition accuracy and code-switching capability. The BN\_ONLY model achieves competitive WER (0.80) but exhibits limited ability to handle code-switching, as reflected by a CS-F1 of 0.01. In contrast, the CS\_ONLY model improves code-switching related metrics (CS-F1 = 0.28; WER-EN = 0.76), but shows degraded overall WER (0.88). The proposed ALL model provides a more balanced performance across both general recognition and code-switching behavior.
+The Whisper training configurations expose a trade-off. BN\_ONLY has lower primary WER than
+ALL (0.923 versus 0.964) but almost no code-switch detection (0.011 CS-F1).
+CS\_ONLY has the strongest English and switching indicators (0.737 WER-EN-CS and
+0.921 LB-WER on CS clips; 0.276 CS-F1) but the weakest fine-tuned primary WER
+(1.065). ALL occupies the
+middle ground. Its primary WER/CER are 0.964/0.597, while explicit repetition
+collapse gives 0.801/0.490 WER-RC/CER-RC. The WER-RC score differs from all
+zero-shot systems and fine-tuned wav2vec2 ($p=0.0002$), but not from BN\_ONLY
+($p=0.911$); its clearer descriptive difference from BN\_ONLY is in the
+switching measures.
 
 \subsection{Per-Dialect Results}
 
-Table~\ref{tab:perdialect} reports per-dialect performance for the proposed model, while Fig.~\ref{fig:heatmap} shows the corresponding WER heatmap across dialects and systems. The results indicate noticeable variability across dialects, with relatively higher error rates for more phonetically divergent varieties.
+Table~\ref{tab:perdialect} reports the repetition-collapsed Whisper ALL scores,
+while Fig.~\ref{fig:heatmap} and Table~\ref{tab:cross} retain repetitions and
+therefore show primary per-dialect WER. Both conditions reveal substantial
+dialect-to-dialect variability.
 
 \begin{table}[t]
-\caption{Per-dialect WER/CER for the proposed Whisper ALL model.}
+\caption{Per-dialect WER-RC/CER-RC for Whisper ALL after explicit
+repetition-collapse post-processing.}
 \label{tab:perdialect}
 \centering\small
 \begin{tabular}{lrrr}
 \toprule
-\textbf{Dialect} & \textbf{Clips} & \textbf{WER} & \textbf{CER} \\
+\textbf{Dialect} & \textbf{Clips} & \textbf{WER-RC} & \textbf{CER-RC} \\
 \midrule
 Sylhet & 1{,}111 & 0.93 & 0.65 \\
 Old Dhaka & 360 & 0.78 & 0.53 \\
@@ -820,385 +837,406 @@ Noakhali & 70 & 0.70 & 0.36 \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=\columnwidth]{dialect_wer_heatmap.png}
-\caption{Model $\times$ dialect WER heatmap. Darker is higher WER.}
+\includegraphics[width=0.88\textwidth]{dialect_wer_heatmap.png}
+\caption{Primary surface-normalized per-dialect WER for four representative
+systems; repetitions are retained and darker cells indicate higher WER.
+Complete eight-model results remain available in the released metrics.}
 \label{fig:heatmap}
-\end{figure}
+\end{figure*}
 
-Table~\ref{tab:cross} compares representative models across dialects. The proposed system achieves the best or tied-best performance in 14 out of 15 dialects. A slight advantage of Whisper large-v3 is observed in one dialect (Barishal), which may indicate that model scale still plays a role in certain acoustic conditions.
+Table~\ref{tab:cross} compares representative models under primary scoring.
+Fine-tuned wav2vec2 has the lowest overall WER and leads on six dialects;
+Whisper ALL leads on six, and large-v3 leads on three. This heterogeneous
+ranking motivates per-dialect reporting rather than a single universal claim.
+
 
 \begin{table}[t]
-\caption{Per-dialect WER for representative models. \best{Bold green} = best per
-dialect.}
+\caption{Primary per-dialect WER for representative models; repetitions are
+retained. Bold = best per dialect.}
 \label{tab:cross}
 \centering\scriptsize
 \begin{tabular}{@{}lrrr@{}}
 \toprule
 \textbf{Dialect} & \textbf{large-v3} & \textbf{wav2vec2} & \textbf{Whisper ALL} \\
 \midrule
-Sylhet & 1.09 & 0.93 & \best{0.93} \\
-Old Dhaka & 0.97 & 0.86 & \best{0.78} \\
-Sandwip & 1.09 & 0.94 & \best{0.92} \\
-Barishal & \best{0.82} & 0.87 & 0.87 \\
-Chittagong & 0.80 & 0.87 & \best{0.79} \\
-Khulna & 0.81 & 0.75 & \best{0.66} \\
-Kishoreganj & 0.79 & 0.83 & \best{0.75} \\
-Comilla & 0.88 & 0.87 & \best{0.78} \\
-Narail & 0.82 & 0.79 & \best{0.70} \\
-Rangpur & 1.00 & 0.85 & \best{0.79} \\
-Narsingdi & 0.79 & 0.75 & \best{0.72} \\
-Mymensingh & 0.86 & 0.83 & \best{0.70} \\
-Habiganj & 0.93 & 0.95 & \best{0.90} \\
-Tangail & 0.80 & 0.83 & \best{0.74} \\
-Noakhali & 0.80 & 0.83 & \best{0.70} \\
+Sylhet & 1.124 & \best{0.936} & 1.352 \\
+Old Dhaka & 0.997 & \best{0.861} & 1.114 \\
+Sandwip & 1.096 & \best{0.941} & 1.057 \\
+Barishal & \best{0.821} & 0.872 & 0.907 \\
+Chittagong & 0.829 & 0.872 & \best{0.819} \\
+Khulna & 0.817 & \best{0.753} & 0.756 \\
+Kishoreganj & 0.822 & 0.832 & \best{0.770} \\
+Comilla & 0.883 & 0.866 & \best{0.817} \\
+Narail & 0.822 & 0.792 & \best{0.728} \\
+Rangpur & 1.028 & \best{0.850} & 1.041 \\
+Narsingdi & 0.799 & \best{0.750} & 0.817 \\
+Mymensingh & 0.863 & 0.829 & \best{0.734} \\
+Habiganj & \best{0.935} & 0.951 & 1.021 \\
+Tangail & \best{0.827} & 0.831 & 0.831 \\
+Noakhali & 0.803 & 0.825 & \best{0.724} \\
+\midrule
+\textbf{Overall} & 0.930 & \best{0.861} & 0.964 \\
 \bottomrule
 \end{tabular}
 \end{table}
 % =====================================================================
 \section{Analysis and Discussion}
 \label{sec:analysis}
-This section provides a detailed analysis of model behavior beyond aggregate error metrics. It examines error decomposition, code-switching performance, and qualitative failure cases across models and dialects. In addition, it evaluates code-switch structure preservation, compares performance against human references, and analyzes statistical significance. The goal is to better understand where improvements arise and which aspects of dialectal and code-switched ASR remain challenging.
-
+This section analyzes model behavior beyond overall error rates. It examines error patterns, code-switching behavior, and qualitative failure cases across different models and dialects. It also evaluates how well models preserve code-switching structure, compares model outputs with human references, and reports statistical significance. The goal is to characterize the observed differences and identify which parts of dialectal and code-switched ASR remain difficult.
 
 \subsection{Error Types and English-Word Survival}
-Table~\ref{tab:errors} breaks WER into substitution (S), deletion (D), and
-insertion (I) rates, and reports English-word survival (EN-Surv), the fraction
-of English reference words that appear in the hypothesis on CS clips.
-Fig.~\ref{fig:err} visualizes the S/D/I breakdown.
+
+Table~\ref{tab:errors} separates WER into three error types: substitutions (S), deletions (D), and insertions (I). It also reports English-word survival (EN-Surv), which measures the proportion of English words in the reference that are correctly preserved in the model output for code-switched clips. Fig.~\ref{fig:err} shows the substitution, deletion, and insertion breakdown visually.
+
 
 \begin{table}[t]
-\caption{Error-type rates and English-word survival (EN-Surv).}
+\caption{Primary-score error rates per reference word and English-word survival
+(EN-Surv); repetitions are retained.}
 \label{tab:errors}
 \centering\footnotesize
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
 \textbf{Model} & \textbf{S} & \textbf{D} & \textbf{I} & \textbf{EN-Surv} \\
 \midrule
-Whisper large-v3 (zs) & 0.31 & 0.48 & 0.12 & \textbf{0.65} \\
-Whisper-small (zs)    & 0.25 & 0.75 & 0.07 & 0.12 \\
+Whisper large-v3 (zs) & 0.35 & 0.45 & 0.14 & \textbf{0.65} \\
+Whisper-small (zs)    & 0.32 & 0.67 & 0.14 & 0.12 \\
 MMS-1B                & 0.66 & 0.13 & 0.19 & 0.00 \\
 wav2vec2 (zs)         & 0.52 & 0.36 & 0.08 & 0.00 \\
-wav2vec2 (FT)         & 0.52 & 0.23 & 0.10 & 0.00 \\
-Whisper BN\_ONLY      & 0.45 & 0.21 & 0.14 & 0.01 \\
-Whisper CS\_ONLY      & 0.53 & 0.19 & 0.16 & 0.37 \\
-\textbf{Whisper ALL}  & 0.45 & 0.21 & 0.14 & 0.13 \\
+wav2vec2 (FT)         & 0.53 & 0.23 & 0.10 & 0.00 \\
+Whisper BN\_ONLY      & 0.53 & 0.13 & 0.26 & 0.01 \\
+Whisper CS\_ONLY      & 0.62 & 0.10 & 0.34 & 0.37 \\
+\textbf{Whisper ALL}  & 0.54 & 0.12 & 0.31 & 0.13 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=\columnwidth]{error_analysis.png}
-\caption{Substitution/deletion/insertion rates per model.}
+\includegraphics[width=0.90\textwidth]{error_analysis.png}
+\caption{Error analysis by model: (a) substitution, deletion, and insertion
+rates per reference word; and (b) English-word survival rate on code-switched
+clips.}
 \label{fig:err}
-\end{figure}
+\end{figure*}
 
-A clear pattern emerges. Monolingual CTC models (MMS, wav2vec2) and the
-Bengali-only ablation essentially never reproduce English words (EN-Surv at most
-0.01): they delete English or map it to the Bengali script. Code-switch training
-raises this sharply---CS\_ONLY reaches 0.37, the best among fine-tuned models,
-and ALL retains 0.13 while keeping the lowest overall WER. Zero-shot Whisper
-large-v3 preserves English best of all (0.65), but at a far higher overall WER
-(0.91), as it captures neither dialect phonology nor a coherent transcript. This
-confirms that sequence-to-sequence models with a shared multilingual vocabulary,
-fine-tuned on code-switched data, handle CS words far more faithfully than
-monolingual CTC models.
+A clear pattern is observed. Monolingual CTC models and the BN\_ONLY
+configuration preserve almost no exact English tokens. CS\_ONLY reaches the highest
+EN-Surv among fine-tuned models (0.37), while ALL reaches 0.13. Large-v3
+preserves the most English tokens overall (0.65) and obtains 0.930 primary WER,
+whereas ALL obtains 0.964 primary WER but 0.801 WER-RC. The joint-data recipe
+is associated with higher switching measures than BN\_ONLY, while decoder
+repetition remains a separate weakness.
 
-\subsection{Where Code-Switching Difficulty Lives}
-We first note the scope of the CS evidence: the per-clip CS metrics
-(WER-CS, CS-F1) are computed on the 176 code-switched test clips and are
-therefore \emph{indicative} rather than high-precision. The central CS finding,
-however, does not depend on that sample size: it is the \emph{qualitative}
-English-deletion effect---monolingual and Bengali-only models drop English words
-almost entirely---which is a large, unambiguous effect visible across thousands
-of English tokens (Table~\ref{tab:errors}), not a marginal difference on a small
-subset. Consistent with this, a paired bootstrap ($N{=}10{,}000$) on the 176 CS
-clips yields a wide 95\% confidence interval for the proposed model's WER-CS,
-$[0.76,0.87]$, that overlaps those of the other Whisper systems (BN\_ONLY
-$[0.78,0.86]$; zero-shot large-v3 $[0.75,0.84]$): whole-clip WER-CS does
-\emph{not} statistically separate models at this sample size, which is precisely
-why we treat English-word survival---not WER-CS---as the discriminative
-code-switching measure.
 
-Table~\ref{tab:csgap} reports WER on CS versus Bengali-only clips. The whole clip
-gap is small (within $\pm0.12$): because CS clips are predominantly Bengali,
-code-switching does not greatly change overall clip WER. The difficulty instead
-lives in the English tokens themselves, as Table~\ref{tab:errors} shows---English
-survival is near zero for monolingual and BN\_ONLY models. Fig.~\ref{fig:cs}
-shows that models never trained on CS collapse to near-zero CS-F1, and that
-training on code-switched data is what recovers code-switch behavior.
+\subsection{Code-Switching Error Analysis}
+
+We first clarify the scope of the code-switching results. The per-clip CS error rates --- WER-CS, WER-BN-CS, WER-EN-CS and LB-WER --- are computed on only 176 code-switched test clips. WER-BN-CS means Bengali-script words within those mixed clips; it is distinct from whole-clip WER on the 3{,}912 Bengali-only clips, denoted WER-BN-only below. CS-F1 is scoped differently: every one of the 4{,}088 test clips is classified as code-switched or not, so its false positives come from the Bengali-only clips even though only 176 positives are available to estimate recall. Therefore, these results should be treated as indicative rather than highly precise. The strongest descriptive pattern is that monolingual and Bengali-only models almost completely drop exact English tokens, but this too requires confirmation against adjudicated references.
+
+Because only 176 test clips are labeled as code-switched, whole-clip WER-CS and
+the recall side of CS-F1 are treated as descriptive supporting measures rather
+than definitive rankings. English-word survival provides a directly interpretable complementary
+measure, but it likewise requires confirmation on a larger adjudicated subset.
+
+Bootstrap intervals from the existing predictions quantify this uncertainty.
+For Whisper ALL, WER-CS is 0.959 (95\% CI $[0.868,1.063]$), CS-F1 is 0.192
+($[0.120,0.264]$), and English-word survival is 0.127
+($[0.064,0.201]$). CS\_ONLY has the higher CS-F1, 0.276
+($[0.220,0.328]$). The paired CS-F1 difference for ALL minus BN\_ONLY is
+$+0.181$ ($[0.111,0.253]$), whereas ALL minus CS\_ONLY is $-0.083$
+($[-0.153,-0.015]$). Thus, on these historical predictions, ALL has higher
+CS-F1 than BN\_ONLY but lower CS-F1 than CS\_ONLY; this is a descriptive recipe
+comparison rather than a causal training effect.
+
+Table~\ref{tab:csgap} gives a descriptive comparison of primary WER on
+code-switched and Bengali-only clips, and Fig.~\ref{fig:cs} shows the same
+contrast alongside the detection scores. Most gaps are small or negative, so this
+comparison does not support a causal claim that the CS subset is intrinsically
+harder; the subsets differ in content and length. The clearer finding is
+token-specific: English survival is near zero for monolingual and BN\_ONLY
+systems, while CS-supervised Whisper systems recover more mixed-script output.
+
+
+
 
 \begin{table}[t]
-\caption{WER on CS vs.\ Bengali-only clips. Gap = WER-CS $-$ WER-BN.}
+\caption{Primary whole-clip WER on CS vs.\ Bengali-only clips. Gap = WER-CS $-$ WER-BN-only.
+The bold model name identifies the joint-data system.}
 \label{tab:csgap}
 \centering\small
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{lrrr}
 \toprule
-\textbf{Model} & \textbf{WER-CS} & \textbf{WER-BN} & \textbf{Gap} \\
+\textbf{Model} & \textbf{WER-CS} & \textbf{WER-BN-only} & \textbf{Gap} \\
 \midrule
-Whisper large-v3 (zs) & 0.80 & 0.92 & $-$0.12 \\
-Whisper-small (zs)    & 1.02 & 1.07 & $-$0.05 \\
+Whisper large-v3 (zs) & 0.818 & 0.936 & $-$0.118 \\
+Whisper-small (zs)    & 1.133 & 1.142 & $-$0.009 \\
 MMS-1B                & 0.94 & 0.99 & $-$0.05 \\
-wav2vec2 (FT)         & 0.88 & 0.86 & $+$0.02 \\
-Whisper CS\_ONLY      & 0.81 & 0.89 & $-$0.08 \\
-\best{Whisper ALL}    & \best{0.82} & \best{0.80} & \best{$+$0.02} \\
+wav2vec2 (FT)         & 0.877 & 0.860 & $+$0.017 \\
+Whisper CS\_ONLY      & 0.963 & 1.071 & $-$0.108 \\
+\best{Whisper ALL}    & 0.959 & 0.964 & $-$0.005 \\
 \bottomrule
 \end{tabular}
+}
 \end{table}
 
-Beyond \emph{whether} English words survive, we also measure whether models
-reproduce the code-switching \emph{structure}---the number of intra-utterance
-language switches---computed over roughly 600 reference switch points (more stable
-than per-clip WER). We report this for the Whisper seq2seq family, for which
-code-switching is genuinely representable; monolingual CTC models (MMS) are
-excluded because they cannot reliably emit Latin script (EN-survival $0.00$;
-Table~\ref{tab:errors}), so any apparent ``switches'' in their output are
-character-level artifacts rather than real code-switching. To avoid that
-artifact, a Latin token is counted as English only when it has at least two
-letters. Reference CS clips contain, on average, 3.5 switches, yet every Whisper
-system produces far fewer (Table~\ref{tab:switch}): models systematically
-\emph{collapse} code-switching rather than reproduce it. Among the fine-tuned
-systems, the ordering tracks code-switch supervision---CS\_ONLY preserves the most
-switch structure (47\%), Bengali-only the least (20\%), and the proposed model
-lies in between (33\%)---confirming from a third independent angle that
-code-switch training restores switching behavior. Zero-shot large-v3 preserves a
-comparable fraction (44\%), but only by over-generating text: it also shows the
-highest English survival (Table~\ref{tab:errors}) yet the worst overall WER
-(0.91), i.e.\ it keeps switches at the cost of accuracy. The measure counts switch
-\emph{density} rather than exact positions, so it upper-bounds positional
-accuracy.
+Beyond checking whether English words are preserved, we compare the number of language transitions produced by each system. Walking through a transcript from left to right, we label every language-bearing token as Bengali or English and count a \emph{switch} at each adjacent pair whose labels differ; the 176 code-switched test clips contain 463 reference switches. The count-recall diagnostic is $\sum_c \min(\hat{s}_c, s_c)/\sum_c s_c$, where $s_c$ and $\hat{s}_c$ are the reference and hypothesis switch counts of clip $c$; the cap limits rewards for over-generation. This statistic compares counts only: it does not determine whether a switch occurred at the correct word or boundary, so it is not a positional-preservation score. We report it only for the Whisper sequence-to-sequence models, because they can naturally generate mixed Bengali and Latin script. Monolingual CTC models such as MMS are excluded because they cannot reliably produce Latin-script words, with EN-survival of $0.00$ in Table~\ref{tab:errors}. To reduce character-level artifacts, a Latin token is counted as English only if it contains at least two letters.
+
+Table~\ref{tab:switch} reports this count-based analysis. Reference code-switched clips
+contain an average of 2.63 language switches, and every Whisper system produces
+fewer. Within the fine-tuned family, preservation
+tracks the amount of code-switch supervision exactly as expected: CS\_ONLY
+preserves 36\% of reference switches, ALL 12\%, and BN\_ONLY almost none (2\%).
+Zero-shot large-v3 is highest overall (46\%), consistent with it also having the
+highest English survival in Table~\ref{tab:errors}. A model can match the count
+while placing switches at the wrong words, and the measure may still be
+inflated by over-generation that the cap does not fully remove. It is therefore
+reported as a descriptive count-recall upper bound, not evidence that the
+correct switching positions were preserved. Relative to BN\_ONLY, the
+joint-data recipe is associated with higher code-switch detection
+(Table~\ref{tab:main}); relative to CS\_ONLY, however, it has lower switch-count
+recall.
+
 
 \begin{table}[t]
-\caption{Code-switch structure preservation on CS clips (Whisper seq2seq family):
-average intra-utterance language switches produced, and the fraction of reference
-switches preserved. Reference clips average 3.48 switches.}
+\caption{Code-switch counts on the 176 CS test clips (Whisper seq2seq family):
+average intra-utterance language switches produced and capped count recall over
+the 463 reference switches,
+$\sum_c \min(\hat{s}_c, s_c) / \sum_c s_c$. Reference clips average 2.63
+switches. This does not evaluate exact boundary positions. Computed by
+\texttt{evaluation/17\_cs\_structure\_preservation.py}.}
 \label{tab:switch}
-\centering\small
-\begin{tabular}{lrr}
+\centering\footnotesize
+\begin{tabular}{@{}lrr@{}}
 \toprule
-\textbf{Model} & \textbf{Switches/clip} & \textbf{Switch preserved} \\
+\textbf{Model} & \textbf{Sw./clip} & \textbf{Count recall} \\
 \midrule
-\textit{Reference (human silver)} & 3.48 & --- \\
+\textit{Reference} & 2.63 & --- \\
 \midrule
-Whisper CS\_ONLY      & \best{2.19} & \best{47\%} \\
-Whisper large-v3 (zs) & 1.71 & 44\% \\
-Whisper ALL (proposed)& 1.32 & 33\% \\
-Whisper BN\_ONLY      & 0.85 & 20\% \\
+Whisper large-v3 (zs) & \best{1.50} & \best{46\%} \\
+Whisper CS\_ONLY      & 1.35 & 36\% \\
+Whisper ALL           & 0.31 & 12\% \\
+Whisper BN\_ONLY      & 0.05 & 2\% \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\begin{minipage}{0.49\columnwidth}
-\centering
-\includegraphics[width=\linewidth]{cs_vs_bn_wer.png}
-\footnotesize (a) WER: CS vs.\ BN clips.
-\end{minipage}
-\hfill
-\begin{minipage}{0.49\columnwidth}
-\centering
-\includegraphics[width=\linewidth]{cs_f1_comparison.png}
-\footnotesize (b) Code-switch detection F1.
-\end{minipage}
-\caption{Code-switching analysis. Models never trained on CS show near-zero
+\includegraphics[width=0.82\textwidth]{cs_vs_bn_wer.png}\\[-0.3em]
+\footnotesize (a) WER on code-switched and Bengali-only clips.\\[0.6em]
+\includegraphics[width=0.82\textwidth]{cs_f1_comparison.png}\\[-0.3em]
+\footnotesize (b) Code-switch detection precision, recall, and F1.
+\caption{Code-switching analysis: (a) surface-normalized WER on code-switched
+and Bengali-only clips; and (b) code-switch detection precision, recall, and
+F1. Models never trained on CS show near-zero
 CS-F1.}
 \label{fig:cs}
-\end{figure}
+\end{figure*}
 
 \subsection{Qualitative Error Analysis}
 
-Inspecting model outputs reveals three recurring error patterns, illustrated using romanized Bengali examples for readability (Bengali script omitted).
+Inspection of model outputs shows three repeated error patterns. For readability, the examples below use romanized Bengali and omit Bengali script.
 
 \begin{itemize}[leftmargin=*]
-\item Repetition hallucination refers to a failure mode where, on out-of-distribution clips, zero-shot Whisper produces degenerate repetitions. For example, a short reference such as ``\textit{tai}'' may be expanded into many repeated tokens. This behavior contributes substantially to insertion errors in zero-shot systems and is largely removed by repetition-collapse normalization during scoring.
+\item Repetition hallucination occurs when Whisper generates repeated words on
+difficult clips. For example, a short reference such as ``\textit{tai}'' may be
+expanded into many repeated tokens. Primary WER counts every insertion; WER-RC
+reports the behavior of an explicitly post-processed system.
 
-\item English deletion refers to a pattern where monolingual and Bengali-focused models systematically drop English words from code-switched utterances. For example, the reference ``\textit{ami office-e meeting korlam}'' may be decoded as ``\textit{ami $\dots$ korlam}'', omitting the English portion. This explains the near-zero English-word survival reported in Table~\ref{tab:errors}.
+\item English deletion occurs when monolingual or Bengali-focused models remove English words from code-switched speech. For example, the reference ``\textit{ami office-e meeting korlam}'' may be decoded as ``\textit{ami $\dots$ korlam}'', where the English words are missing. This explains the near-zero English-word survival shown in Table~\ref{tab:errors}.
 
-\item Spelling variance refers to cases where fine-tuned models produce phonetically correct outputs with different orthographic forms, such as ``\textit{kortasi}'' versus ``\textit{kortechi}'' for the same spoken word. These cases are counted as word-level errors but do not necessarily indicate recognition failure, which is reflected in the substantially lower CER compared to WER.
+\item Spelling variation occurs when fine-tuned models produce phonetically correct words using different spellings, such as ``\textit{kortasi}'' and ``\textit{kortechi}'' for the same spoken form. These cases are counted as word-level errors, but they do not always indicate real recognition failure. This also explains why CER is much lower than WER.
 \end{itemize}
 
-These patterns explain the main trends in the results: fine-tuning primarily reduces hallucination and English-word deletion, while the remaining errors are largely driven by benign spelling variation due to unstandardized dialectal orthography.
+These patterns explain the main trends in the results. Fine-tuning mainly reduces hallucination and English-word deletion, while many remaining errors come from acceptable spelling differences caused by the lack of standardized dialect spelling.
 
-To make this quantitative, Table~\ref{tab:taxonomy} decomposes every word error
-into deletions, insertions, and substitutions, and further estimates the share
-of \emph{all} errors that are benign spelling variants---substitutions whose
-reference and hypothesis words differ by a normalized character distance
-$\le 0.34$ (i.e.\ a near-identical spelling). The contrast is stark: zero-shot
-large-v3 is dominated by \emph{deletions} (53\%)---it simply fails to transcribe
-large spans of dialect speech---whereas fine-tuning halves the deletion share
-(to $\sim$26\%) and converts the output into mostly complete transcripts whose
-errors are predominantly substitutions, roughly one-sixth of which (15--17\% of
-all errors) are mere spelling variants rather than genuine recognition mistakes.
-This quantifies why CER is substantially lower than WER for the fine-tuned
-systems and why WER overstates their true error.
+Table~\ref{tab:taxonomy} expresses substitutions, deletions, and insertions as
+shares of all primary word errors. Large-v3 has a 48\% deletion share. For ALL,
+the deletion share falls to 12\%, but the insertion share rises to 32\%, exposing
+the repetition behavior hidden by WER-RC. Approximately 14--15\% of errors in
+the fine-tuned systems satisfy the near-spelling threshold, against 5\% for
+zero-shot large-v3, so fine-tuning shifts error mass from outright deletion
+toward orthographic near-misses. These are reported as potential orthographic
+variants, not automatically relabeled as correct.
+
 
 \begin{table}[t]
-\caption{Error taxonomy: deletion/insertion/substitution share of all word
-errors, and the fraction of all errors that are benign spelling variants
-(near-identical substitutions, char-distance $\le 0.34$).}
+\caption{Error taxonomy showing deletion, insertion, and substitution shares,
+plus benign spelling variants, each as a share of all word errors ($S+D+I$)
+recovered from the \texttt{jiwer} alignment. A spelling variant is a
+substitution whose normalized character edit distance
+$\mathrm{lev}(r,h)/\max(|r|,|h|)$ is $\le 0.34$. Computed by
+\texttt{evaluation/18\_spelling\_variant\_analysis.py}; such pairs are reported,
+never relabeled as correct.}
 \label{tab:taxonomy}
 \centering\footnotesize
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
 \textbf{Model} & \textbf{Del} & \textbf{Ins} & \textbf{Sub} & \textbf{Spell. var.} \\
 \midrule
-Whisper large-v3 (zs)   & 53\% & 13\% & 34\% & 5\% \\
-wav2vec2 (FT)           & 27\% & 12\% & 61\% & 15\% \\
-\best{Whisper ALL} & 26\% & 18\% & 56\% & \best{17\%} \\
+Whisper large-v3 (zs)   & 48\% & 15\% & 37\% & 5\% \\
+wav2vec2 (FT)           & 27\% & 12\% & 61\% & \best{15\%} \\
+\best{Whisper ALL} & 12\% & 32\% & 56\% & 14\% \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\subsection{Ablation Study}
-Two ablations isolate key design choices. The \textit{training-subset} ablation
-(Table~\ref{tab:main}) shows that BN\_ONLY and CS\_ONLY each sacrifice one
-capability---BN\_ONLY collapses on English (CS-F1 0.01) while CS\_ONLY loses
-overall accuracy (0.88 WER)---so only training on all data is strong on both.
-The \textit{normalization} ablation (Table~\ref{tab:ablnorm}) isolates the
-repetition-collapse step: applying it lowers the proposed model's WER from 0.96
-to 0.80 and CER from 0.60 to 0.49 \emph{without changing the model}, by
-preventing Whisper's degenerate decoding loops from dominating the score.
+\subsection{Training-Recipe and Post-Processing Comparisons}
+BN\_ONLY, CS\_ONLY, and ALL compare recipes with unequal data budgets; they do
+not isolate the causal effect of the training subset. Descriptively, BN\_ONLY
+has stronger primary WER than ALL but almost no code-switch detection, while
+CS\_ONLY has stronger English retention but substantially weaker overall WER.
+Repetition collapse reduces ALL from 0.964 to 0.801 WER and from 0.597 to
+0.490 CER without changing model parameters. Because this operation removes
+genuine insertion errors, the uncollapsed result remains primary and the
+collapsed result is labeled WER-RC/CER-RC throughout.
+
 
 \begin{table}[t]
-\caption{Effect of the repetition-collapse normalization on the proposed model
-(model unchanged; scoring only).}
+\caption{Explicit system post-processing comparison for Whisper ALL. Primary
+WER/CER retain repetitions; WER-RC/CER-RC collapse degenerate runs.}
 \label{tab:ablnorm}
 \centering\small
 \begin{tabular}{lcc}
 \toprule
 \textbf{Configuration} & \textbf{WER} & \textbf{CER} \\
 \midrule
-Without repetition collapse & 0.96 & 0.60 \\
-\best{With repetition collapse (proposed)} & \best{0.80} & \best{0.49} \\
+Primary: repetitions retained & 0.964 & 0.597 \\
+System output: repetition collapse & 0.801 & 0.490 \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 \subsection{Case Study}
-A single concrete case illustrates the dominant failure mode. On a short Sylheti
-test clip whose reference is one word, zero-shot Whisper-small emits the same
-token roughly forty times in a degenerate loop, producing an enormous per-clip
-insertion count; the proposed fine-tuned model, decoded with repetition
-collapse, instead returns a short hypothesis of the correct length. This case
-explains both why zero-shot insertion rates are high (Table~\ref{tab:errors})
-and why the normalization ablation (Table~\ref{tab:ablnorm}) yields such a large
-apparent gain: a small number of pathological clips, rather than a uniform
-degradation, drive much of the zero-shot error. The complementary failure on
-code-switched clips is the deletion of English tokens by monolingual and
-Bengali-only models, quantified by the near-zero English-word survival in
-Table~\ref{tab:errors}.
+
+A single Sylheti test clip illustrates decoder repetition: a one-word reference
+is expanded by zero-shot Whisper-small into roughly forty repeated tokens.
+Primary scoring correctly counts these as insertions. Repetition-collapse
+post-processing shortens such degenerate runs, explaining the WER-RC change in
+Table~\ref{tab:ablnorm}; it does not constitute an improvement to the underlying
+acoustic model. A second recurring failure is English-token deletion by
+monolingual and Bengali-only systems.
 
 \subsection{Statistical Significance}
-All WER improvements of the proposed system over the four zero-shot baselines
-and the fine-tuned CTC model are significant at $p<0.001$ (paired bootstrap,
-$N{=}10{,}000$). The 95\% confidence interval for the proposed system's WER is
-$[0.79,0.81]$, which does not overlap with that of any baseline (for example,
-zero-shot large-v3, $[0.90,0.92]$). The proposed model is \emph{not}
-significantly different from the BN\_ONLY ablation on overall WER
-($0.8009$ vs.\ $0.8004$, $p{=}0.54$); the two are equivalent on this metric, and
-the benefit of training on all data instead appears in code-switch handling
-(CS-F1 $0.19$ vs.\ $0.01$). Effect sizes against the baselines are statistically
-robust but numerically small (Cohen's $d=0.09$ versus large-v3), as expected
-when comparing models that all operate in a high-error regime on this
-challenging benchmark.
 
-\subsection{LLM-Ensemble Evaluation}
-Word error rate captures surface accuracy but not whether a hypothesis is
-\emph{semantically} faithful or preserves code-switching. As a complementary,
-reference-free signal, an ensemble of three open LLMs
-(Mistral-7B~\cite{jiang2023mistral}, LLaMA-3.1-8B~\cite{dubey2024llama},
-Gemma-3-12B~\cite{team2024gemma}) scores each hypothesis from 0--5 on semantic
-correctness, code-switch preservation, and dialect naturalness, on a stratified
-50-clip sample per model. Table~\ref{tab:llmjudge} reports the means. The
-proposed Whisper~ALL model attains the highest overall score (2.56/5), the best
-semantic correctness (2.55), and the best code-switch preservation (2.71);
-zero-shot large-v3 is marginally higher only on dialect naturalness
-(2.57 vs.\ 2.43), and the CS\_ONLY ablation is lowest overall (2.21).
-Inter-annotator (inter-judge) agreement among the three LLM judges---the fraction
-of judge pairs whose per-clip scores agree within one point on the 0--5 scale---is
-0.73--0.85, indicating the ensemble is internally consistent rather than arbitrary. This corroborates the WER findings under an
-independent, semantics-aware metric---the proposed model is judged best, and its
-advantage is largest precisely on code-switch preservation---while the
-mid-range absolute scores reflect the same task difficulty discussed above.
+Because the historical split is contaminated and clips from related source
+videos are dependent, the following clip-bootstrap results are secondary
+descriptive evidence, not confirmatory tests of generalization. Exploratory
+source-video-cluster resampling is included in the released report, but it
+cannot undo train--test source overlap or establish speaker independence.
 
-\begin{table}[t]
-\caption{LLM-ensemble evaluation (mean score 0--5; three open judges; stratified
-50-clip sample per model). \best{Bold green} = best per column.}
-\label{tab:llmjudge}
-\centering\scriptsize
-\begin{tabular}{@{}lcccc@{}}
-\toprule
-\textbf{Model} & \textbf{Sem.} & \textbf{CS-pres.} & \textbf{Dialect} & \textbf{Overall} \\
-\midrule
-Whisper large-v3 & 2.41 & 2.46 & \best{2.57} & 2.48 \\
-Whisper CS\_ONLY      & 2.27 & 2.32 & 2.05 & 2.21 \\
-\best{Whisper ALL} & \best{2.55} & \best{2.71} & 2.43 & \best{2.56} \\
-\bottomrule
-\end{tabular}
-\end{table}
+Under that limited interpretation, the primary-WER bootstrap reports lower ALL
+error than Whisper-small ($p=0.0002$) and MMS-1B ($p=0.0066$), no detectable
+difference from the zero-shot wav2vec2 Bengali checkpoint ($p=0.9411$), and
+higher error than large-v3 ($p=0.0012$), fine-tuned wav2vec2 ($p=0.0002$), and
+BN\_ONLY ($p=0.0002$). For WER-RC, ALL has a 95\% interval of
+$[0.789,0.813]$; its clip-bootstrap difference from BN\_ONLY is not detectable
+($p=0.9109$). Code-switch intervals are wider because the test set contains
+only 176 transcript-labeled positive clips. The estimates therefore describe
+the archived artifacts and do not establish a universal model ranking.
 
-\subsection{Why Absolute Error Rates are High}
-A WER near 0.80 is high relative to clean ASR (typically 0.05--0.20). Three
-factors explain this and frame how the numbers should be read. First, the task
-is intrinsically hard: 15 low-resource dialects combined with code-switching.
-Second, dialectal Bengali has no standardized spelling, so word-level WER
-penalizes valid spelling variants---which is why CER (0.49) is the more
-informative metric here. Third, the reference labels are silver-standard
-(generated by Whisper large-v3), so part of the measured error reflects label
-noise rather than model failure. For these reasons, BanglaMix is positioned as a
-\emph{challenging open benchmark} rather than a solved task, and the relative,
-statistically significant gains are the central result.
 
-\subsection{Evaluation Against Human References}
+\subsection{Interpreting High Error Rates}
+
+Primary WER remains high for every system, ranging from 0.861 to 1.142. Values
+above 1.0 arise when insertions exceed the number of reference words. This
+reflects difficult dialectal speech, non-standard spelling, decoder failures,
+and noise in Whisper-derived silver references. CER and WER-RC illuminate
+specific aspects of that difficulty, but neither removes the need for primary
+WER and human-reference evaluation. AncholVox is therefore positioned as a
+stress-test benchmark with transparent scoring conditions.
+
+
+\subsection{Human-Reference Evaluation}
 \label{sec:humaneval}
-Because the test labels are silver-standard, the main table scores each model
-against Whisper-generated references, which can favor Whisper-family systems. As
-a bias-free check, we re-score every model against the \emph{human} transcripts on
-the 61 human-validated clips (Section~\ref{sec:validation});
-Table~\ref{tab:humaneval} reports the result. The silver-label ranking partially
-reverses: against human references, the zero-shot MMS-1B model attains the lowest
-WER (0.76) and CER (0.41), whereas the proposed Whisper~ALL system---best under
-silver-label scoring on this subset (0.69 WER; cf.\ 0.80 on the full test
-set)---rises to 0.83. This is the expected signature of
-label-source bias: silver labels generated by Whisper inflate the apparent quality
-of Whisper-family hypotheses, and removing that bias with human references exposes
-it. Two observations keep the picture coherent. First, fine-tuning still helps
-\emph{within} the Whisper family even on human references (Whisper~ALL 0.83 vs.\
-zero-shot Whisper-small 1.03 and large-v3 0.90), so the value of training on
-BanglaMix is real. Second, MMS-1B's lead is consistent with its much larger
-($1$B) multilingual backbone versus the $244$M Whisper-small used here, echoing
-the per-dialect evidence that backbone scale matters
-(Section~\ref{sec:results}). We therefore report results under both reference
-types and present BanglaMix as an open benchmark rather than crowning a single
-system. These figures rest on a small sample ($n{=}61$, $14$ code-switched) and
-are indicative; the \emph{direction} follows directly from the bias mechanism and
-is unlikely to be an artifact.
+
+Since the test labels are silver-standard, the main benchmark may favor systems
+whose output resembles Whisper. We therefore evaluate every model against both
+human transcripts in the 100-clip validation sample, under the same primary
+scoring condition used for Table~\ref{tab:main}. The ranking changes
+substantially. MMS-1B has the lowest WER and CER against both annotators
+($0.76/0.39$ and $0.70/0.36$), followed by fine-tuned wav2vec2; the whole
+Whisper family, including the proposed joint-data system, falls behind both.
+Against the first annotator the three Whisper training configurations are effectively tied
+($0.92$--$0.93$), so the CS/BN/ALL ordering seen on the silver benchmark does
+not survive a human reference. This ranking change is important evidence of
+reference-dependent bias and is reported as a central result rather than a
+secondary caveat.
+
+The fine-tuned Whisper systems have lower error than zero-shot Whisper-small
+under both human references, and MMS-1B's result motivates a
+larger adjudicated evaluation across model families. Because the current sample
+contains only 100 clips and two independent, non-adjudicated transcripts, the
+human ranking is informative but not definitive; this is a limited validation
+study rather than a conclusive model-ranking experiment.
+
 
 \begin{table}[t]
-\caption{Model error against human references vs.\ silver labels on the 61
-human-validated test clips. WER(human) is the bias-free, gold-reference number;
-WER(silver) is on the same clips for comparison. Lower is better.}
+\caption{Model errors on the 100-clip validation sample using the two
+independent human references. Both annotators completed all 100 references.
+Scoring uses the same primary condition as Table~\ref{tab:main} (surface
+normalization only; no pronunciation-variant mapping and no repetition
+collapse), so the two tables are directly comparable. Lower values are better.}
 \label{tab:humaneval}
 \centering
 \small
 \resizebox{\columnwidth}{!}{%
-\begin{tabular}{lrrr}
+\begin{tabular}{lrrrr}
 \toprule
-\textbf{Model} & \textbf{WER$_\text{human}$} & \textbf{CER$_\text{human}$} & \textbf{WER$_\text{silver}$} \\
+\textbf{Model} & \textbf{WER$_{\mathrm{A1}}$} &
+\textbf{CER$_{\mathrm{A1}}$} & \textbf{WER$_{\mathrm{A2}}$} &
+\textbf{CER$_{\mathrm{A2}}$} \\
 \midrule
-MMS-1B (zero-shot)           & \best{0.76} & \best{0.41} & 0.89 \\
-Whisper ALL (proposed)       & 0.83 & 0.49 & \best{0.69} \\
-Whisper BN\_ONLY             & 0.84 & 0.52 & 0.70 \\
-wav2vec2 (fine-tuned)        & 0.85 & 0.48 & 0.78 \\
-wav2vec2-XLS-R-BN (zero-shot)& 0.87 & 0.55 & 0.92 \\
-Whisper CS\_ONLY             & 0.88 & 0.52 & 0.81 \\
-Whisper large-v3 (zero-shot) & 0.90 & 0.72 & 0.81 \\
-Whisper-small (zero-shot)    & 1.03 & 0.99 & 1.04 \\
+MMS-1B (zero-shot)           & \best{0.76} & \best{0.39} & \best{0.70} & \best{0.36} \\
+wav2vec2 (fine-tuned)        & 0.85 & 0.47 & 0.82 & 0.47 \\
+wav2vec2-XLS-R-BN (zero-shot)& 0.87 & 0.54 & 0.86 & 0.57 \\
+Whisper large-v3 (zero-shot) & 0.92 & 0.74 & 0.86 & 0.71 \\
+Whisper BN\_ONLY             & 0.92 & 0.56 & 0.86 & 0.52 \\
+Whisper ALL (joint data)     & 0.93 & 0.54 & 0.86 & 0.50 \\
+Whisper CS\_ONLY             & 0.93 & 0.56 & 0.86 & 0.51 \\
+Whisper-small (zero-shot)    & 1.11 & 1.00 & 1.03 & 0.96 \\
 \bottomrule
 \end{tabular}%
+}
+\end{table}
+
+\subsection{LLM-Ensemble Diagnostic}
+
+After the human-reference evaluation, we include a secondary text-only
+diagnostic using Mistral-7B~\cite{jiang2023mistral}, LLaMA-3.1-8B~\cite{dubey2024llama},
+and Gemma-3-12B~\cite{gemmateam2025gemma3technicalreport}. The judges score the
+same fixed, released 50-clip list (25 transcript-labeled CS and 25 Bengali-only
+clips) for semantic plausibility, apparent code-switch preservation, and
+dialect naturalness. They see neither audio nor a reference transcript.
+
+BN\_ONLY has the highest nominal overall score (2.89/5), followed by ALL
+(2.81), CS\_ONLY (2.68), and large-v3 (2.47); the ALL--BN\_ONLY paired
+difference is not detectable on this sample ($p=0.1532$). More importantly,
+BN\_ONLY receives the highest apparent code-switch score despite an EN-Surv of
+only 0.01. This mismatch demonstrates that the judges assess textual
+plausibility, not fidelity to spoken English tokens. The diagnostic is not a
+human mean-opinion score and does not override the human-reference, WER,
+EN-Surv, or CS-F1 results.
+
+\begin{table}[t]
+\caption{Secondary text-only LLM diagnostic (mean score 0--5) on one shared
+50-clip sample. ``Agree'' is the mean fraction of judge pairs within one point.
+These scores measure output plausibility, not acoustic fidelity.}
+\label{tab:llmjudge}
+\centering\scriptsize
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\textbf{Model} & \textbf{Sem.} & \textbf{CS-pres.} & \textbf{Dialect} & \textbf{Overall} & \textbf{Agree} \\
+\midrule
+Whisper large-v3 (zs) & 2.40 & 2.43 & 2.57 & 2.47 & 0.713 \\
+Whisper BN\_ONLY (A)  & \best{2.91} & \best{3.03} & \best{2.73} & \best{2.89} & \best{0.811} \\
+Whisper CS\_ONLY (B)  & 2.74 & 2.73 & 2.56 & 2.68 & 0.789 \\
+Whisper ALL (joint)   & 2.82 & 2.92 & 2.68 & 2.81 & 0.787 \\
+\bottomrule
+\end{tabular}
 }
 \end{table}
 
@@ -1206,7 +1244,66 @@ Whisper-small (zero-shot)    & 1.03 & 0.99 & 1.04 \\
 \section{Limitations}
 \label{sec:limitations}
 
-Several limitations frame the scope of this work and should guide the interpretation of the results. First, the transcripts are \emph{silver-standard}: they are produced by Whisper large-v3 and validated by an LLM judge rather than by human annotators, so part of the measured error may reflect label noise. Human validation on 61 clips (Section~\ref{sec:validation}) estimates this noise at WER~0.70 / CER~0.39 and shows that it varies across dialects (WER~$0.26$--$1.06$). Because the silver labels originate from Whisper large-v3, the benchmark may also slightly favor Whisper-family systems over other architectures; therefore, a larger human-validated subset would be useful for more reliable per-dialect estimates. Second, the fine-tuned models use Whisper-small for tractability, and larger backbones would likely reduce absolute error, as suggested by the per-dialect comparison for dialects such as Barishal. Third, code-switched clips are a minority of the dataset ($\sim$6\%), reflecting their natural prevalence, although more targeted query design could increase their proportion. Fourth, dialect coverage follows online content availability and is therefore imbalanced, with Sylhet dominating; as broader low-resource ASR studies note, such imbalance may under-serve speakers of less-represented language varieties, making per-dialect reporting and fairness-aware evaluation important~\cite{imam2025african}. Finally, the data is drawn from informal social-media domains such as vlogs, comedy, and reviews, so models trained on BanglaMix may not directly transfer to formal domains such as broadcast news, healthcare, or education.
+Several limitations bound the claims of this study. First, the transcripts are
+\emph{silver-standard}: they are generated by Whisper large-v3 and textually
+filtered by Qwen2.5, which cannot inspect the audio. The two-annotator
+validation on 100 clips estimates silver-label WER/CER at $0.73/0.44$ and
+$0.80/0.49$ against the two independent references, but it is neither large nor
+adjudicated. Because Whisper generated the silver references, rankings may also
+favor Whisper-like outputs. The Qwen cascade is reproducible and its retention
+rate is reported, but its accept/reject accuracy has not been independently
+human-labeled. The archived construction snapshot stores overall Qwen votes but
+not all four criterion values; the released script now records those values and
+derives the decision deterministically. A regenerated release should therefore
+be versioned rather than assumed to be byte-identical to the archived snapshot.
+
+Second, the script-based detector labels 2{,}361 of 41{,}499 silver transcripts
+(5.7\%) as code-switched, with only 176 positives in the test set. The reported bootstrap intervals
+expose the resulting uncertainty, and the CS findings should not be generalized
+beyond Bengali--English switching in these social-media domains. Third, the
+baseline suite is representative rather than exhaustive. Larger fine-tuned
+models and Bengali-capable SeamlessM4T may change absolute rankings; Canary-1B
+is not a Bengali baseline. No cross-corpus evaluation on Ben-10, Common Voice,
+or another external Bengali test set was run, so this study makes no claim of
+out-of-domain generalization.
+
+The archived historical split is also not source-disjoint. Sixty-nine of 101
+inferred test sources occur elsewhere in the retained corpus, and 326 exact-
+audio duplicate groups cross the test boundary. Consequently, fine-tuned model
+scores cannot be interpreted as leakage-free generalization. A repaired split
+is frozen, but the systems require retraining before it can support new model
+comparisons. Within the historical test set, clips from the same source video
+are dependent; clip-level bootstrap intervals may therefore be too narrow.
+Released source-cluster analyses address that unit of dependence only
+partially, because source IDs neither prove speaker independence nor repair
+cross-split contamination.
+
+The large-v3 reference/evaluation discrepancy is likewise not fully
+reconstructible. With construction-time transcripts as references, the paired
+evaluation-time outputs differ at 0.927 WER; against the stored silver
+references, those same outputs obtain 0.930 WER. The current code shows
+different inference backends and decoding settings, but missing historical
+revisions, software versions, and paired audio hashes prevent a unique causal
+diagnosis. Current-environment details and available artifact hashes are
+archived separately in 
+\texttt{REFERENCE\_PIPELINE\_PROVENANCE.md}; they are not attributed to the
+historical runs.
+
+Finally, dialect and source domain are the only available audit dimensions.
+The absence of consented demographic metadata prevents age-, gender-,
+socioeconomic-, and urban--rural fairness analyses. Search and platform
+selection may overrepresent more visible, digitally connected speakers, and the
+dialect distribution is imbalanced. The informal vlog, comedy, review, and
+diaspora domains also differ from broadcast news, healthcare, and education.
+The LLM-ensemble semantic scores add a meaning-preservation diagnostic, but
+they remain model-based and cannot substitute for human judgments; being
+reference-free and text-only, they also cannot detect content that the model
+silently omitted, which is why code-switching fidelity is claimed only from the
+reference-based metrics. These
+limitations motivate consent-based demographic auditing, targeted CS
+collection, external-corpus testing, and a larger adjudicated human set when resources
+permit.
+
 
 
 
@@ -1216,11 +1313,67 @@ Several limitations frame the scope of this work and should guide the interpreta
 \section{Conclusion}
 \label{sec:conclusion}
 
-This work introduces BanglaMix, to the best of our knowledge, the first large-scale dataset and benchmark for dialectal Bengali--English code-switching ASR, together with a fully automated, annotator-free construction pipeline that enables systematic evaluation of ASR systems under realistic multi-dialect and code-switched speech conditions. The experimental results across three model families indicate that zero-shot multilingual models perform poorly on this task, while fine-tuning on BanglaMix yields substantial and statistically significant improvements. The analysis further suggests that code-switching errors are primarily concentrated in English tokens rather than in overall utterance-level recognition errors. The proposed fine-tuned Whisper-based system achieves 0.80 WER and 0.49 CER, outperforming all zero-shot baselines as well as the fine-tuned CTC model under the evaluated setting. Despite these improvements, absolute error rates remain relatively high, which is consistent with challenges arising from dialectal variation, non-standard orthography, and silver-standard annotations, and therefore BanglaMix is released as an open benchmark to support further research in this direction. Future work may explore larger backbone models, the creation of a human-validated evaluation subset, and more targeted data collection for underrepresented dialects such as Sylhet, along with $n$-gram language model shallow fusion for CTC-based systems using KenLM~\cite{heafield2011kenlm} and beam-search decoding~\cite{pyctcdecode}, as well as further integration of language models and dialect-aware tokenization strategies following recent low-resource language model fusion approaches~\cite{dezuazo2025whisperlm,li2025contextual}.
+AncholVox contributes a silver-standard diagnostic benchmark rather than a new
+state-of-the-art ASR model. All model comparisons use a contaminated historical
+split and therefore do not constitute leakage-free generalization results. On
+that split, fine-tuned wav2vec2 has the lowest primary silver-reference WER
+(0.861), whereas the limited 100-clip human-reference study gives MMS-1B the
+lowest WER against both annotators. The changed ordering demonstrates that the
+rankings are reference-dependent.
+
+The Whisper recipes describe trade-offs rather than a single winner. Compared
+with BN\_ONLY, ALL has higher transcript-derived CS-F1 (0.192 versus 0.011) and
+English-token survival (0.13 versus 0.01), but CS\_ONLY is higher on both
+switching measures and has worse overall silver-reference WER. Because these
+recipes differ in coverage, sample count, and optimization budget, the
+differences are descriptive associations, not causal estimates of training-data
+composition. Repetition collapse likewise changes the deployed output condition
+rather than the acoustic model and is therefore reported separately.
+
+The benchmark is useful for studying silver-reference bias, regional variation,
+English-token retention, and decoder repetition under transparent validity
+limits. Priorities for future work are retraining on the repaired source-disjoint
+split, expanding and adjudicating the human test set, completing rights review,
+testing external Bengali corpora and Bengali-capable architectures, improving
+repetition-aware decoding, and conducting consent-based demographic auditing.
+
 
 \section*{Data and Code Availability}
 
-The BanglaMix dataset, including segmented audio clips, silver-standard transcripts, and train/dev/test split manifests, is publicly available on the Hugging Face Hub at \url{https://huggingface.co/datasets/niloycste68/Bangali_local_dialect_ASR_HF_Dataset}. The complete data construction and evaluation codebase is available on GitHub at \url{https://github.com/niloycste/ASR-Bengali-Local-Dialect-}. Both resources are released for non-commercial research use to support reproducibility. The fine-tuned model checkpoints will be released upon acceptance. All experiments are fully reproducible using a single configuration file that fixes model identifiers, hyperparameters, and random seeds, ensuring deterministic data splits and evaluation. Additionally, evaluation applies consistent normalization across all models, and bootstrap significance testing uses a fixed seed, enabling exact replication of reported confidence intervals and $p$-values from the prediction files.
+The dataset landing page and code are available at
+\url{https://huggingface.co/datasets/niloycste68/Bangali_local_dialect_ASR_HF_Dataset}
+and \url{https://github.com/niloycste/ASR-Bengali-Local-Dialect-}. The public
+resource name is AncholVox; these legacy URL slugs are retained to avoid
+breaking existing links. Audio is
+under gated access: the release register (\texttt{ETHICS\_AND\_DATA\_GOVERNANCE.md}
+in the code repository) records three blocking determinations --- institutional
+ethics confirmation, redistribution review, and per-source allow/remove
+decisions --- none of which has yet been made, and hosted audio is not publicly
+downloadable until they are. Describing this procedure is not a claim to have
+completed it; the register states its status as of the submission date. The repository
+documents the multi-stage commands, augmentation step, model identifiers,
+hyperparameters, split settings, fixed statistical seed, dependency lock file,
+and checkpoint manifest. Released prediction files reproduce the reported
+metrics, confidence intervals, and two-sided $p$-values without retraining.
+
+The historical test manifest on which every reported number depends is archived
+in full: 4{,}088 clips, 176 transcript-labelled code-switched clips, and 13.2
+hours, matching Table~\ref{tab:splits}. Historical train and development
+manifests are absent, and the audit shows that the historical test set is not
+source-disjoint from the retained remainder. We therefore do not describe the
+archived scores as leakage-free. For future retraining, the construction code
+now sorts inferred sources before seeded assignment, and a separate repaired
+split is frozen as original-clip manifests with SHA-256 checksums under
+\texttt{dataset\_pipeline/repaired\_split\_manifests}. The historical and
+repaired partitions must not be conflated; no result from the repaired split is
+reported in this paper.
+End-to-end checkpoint reuse additionally requires depositing the large trained
+weights at the archived locations listed in the manifest. Audio redistribution
+is governed by the rights-review procedure described in Section~\ref{sec:dataset};
+where redistribution is not authorized, the release is limited to permissible
+metadata, source pointers, and processing code.
+
+
 
 
 
